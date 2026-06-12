@@ -168,7 +168,11 @@ export default function OrdersPage() {
 
         {/* Right Content Area */}
         <section className="flex-grow flex flex-col gap-6">
-
+          {/* Back button */}
+          <Link href="/" className="flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-[#1b3322] transition-colors self-start w-fit">
+            <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+            <span>กลับสู่หน้าหลัก</span>
+          </Link>
 
           {/* Title */}
           <h1 className="text-3xl font-bold text-[#1b3322] font-headline-lg">คำสั่งซื้อของฉัน</h1>
