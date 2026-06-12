@@ -158,12 +158,13 @@ INSERT INTO `categories` (`name`, `main_type`) VALUES
 -- ----------------------------------------------------------
 INSERT INTO `users`
     (`username`, `password`, `name`, `email`, `phone`, `role`, `address`, `subdistrict`, `district`, `province`, `postal_code`) VALUES
-('admin', '$2b$10$1Ip/QIuQdtSXJgNsLsxoF.pv2GHCepjeF6QY65GBTJlrlZeUj8fMK', 'ผู้ดูแลระบบ', 'admin@example.com', '0800000000', 'admin',
+('admin', '$2b$10$MlsnCAbYCn/gh/d/tE3opOZHqhBK9303mbjICUpL5zNdWb8U3sVUS', 'ผู้ดูแลระบบ', 'admin@example.com', '0800000000', 'admin',
     '99/1 อาคาร Smartket-Farm', 'บางรัก', 'บางรัก', 'กรุงเทพมหานคร', '10500'),
-('user1', '$2b$10$A/tQzmlQ80JSAjVx0zDYxeWHYnEIfdt/bht5C0K0C.aekKh5GVQx6', 'ผู้ใช้งานคนที่ 1', 'user1@example.com', '0811111111', 'customer',
+('user1', '$2b$10$zZ8WzY4BOt2DwyG0uQSJBe703fyls.vWG7uwoh6nxUEbBNzBuYmXW', 'ผู้ใช้งานคนที่ 1', 'user1@example.com', '0811111111', 'customer',
     '12/5 หมู่ 3 ถนนสุขุมวิท', 'บางนา', 'บางนา', 'กรุงเทพมหานคร', '10260'),
 ('user2', '$2b$10$WlMzsAfxaBwpK4Yi24LrJOwHgbnUodEo9KgGLlpnb32fVTjZJ7SzK', 'ผู้ใช้งานคนที่ 2', 'user2@example.com', '0822222222', 'customer',
     '88/8 หมู่ 4 ถนนรามคำแหง', 'หัวหมาก', 'บางกะปิ', 'กรุงเทพมหานคร', '10240');
+
 
 
 
