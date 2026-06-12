@@ -35,6 +35,24 @@ export default function RegisterPage() {
         </div>
 
         <form className="space-y-stack-md relative z-10" onSubmit={handleRegister}>
+          {/* Full Name */}
+          <div>
+            <label
+              className="block font-label-lg text-on-surface mb-2"
+              htmlFor="fullname"
+            >
+              ชื่อ-นามสกุล <span className="text-error">*</span>
+            </label>
+            <input
+              className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
+              id="fullname"
+              name="fullname"
+              placeholder="Full Name"
+              type="text"
+              required
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Username */}
             <div>
@@ -84,24 +102,6 @@ export default function RegisterPage() {
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* Full Name */}
-          <div>
-            <label
-              className="block font-label-lg text-on-surface mb-2"
-              htmlFor="fullname"
-            >
-              ชื่อ-นามสกุล <span className="text-error">*</span>
-            </label>
-            <input
-              className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
-              id="fullname"
-              name="fullname"
-              placeholder="Full Name"
-              type="text"
-              required
-            />
           </div>
 
           {/* Phone Number */}
