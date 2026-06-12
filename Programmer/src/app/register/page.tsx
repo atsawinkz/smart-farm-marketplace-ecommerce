@@ -232,7 +232,6 @@ export default function RegisterPage() {
                 </div>
               </div>
             </div>
-          </div>
 
           {/* Submit Button */}
           <button
