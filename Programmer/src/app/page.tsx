@@ -128,6 +128,34 @@ export default function HomePage() {
     }
   }, []);
 
+  // Sync category filter from URL query parameter
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleLocationChange = () => {
+        const params = new URLSearchParams(window.location.search);
+        const typeParam = params.get('type');
+        if (typeParam === 'vegetable' || typeParam === 'fruit') {
+          setSelectedMainType(typeParam);
+        } else {
+          setSelectedMainType(null);
+        }
+      };
+
+      handleLocationChange();
+
+      window.addEventListener('popstate', handleLocationChange);
+      // Custom event listener for router navigation
+      window.addEventListener('pushstate', handleLocationChange);
+      window.addEventListener('replacestate', handleLocationChange);
+
+      return () => {
+        window.removeEventListener('popstate', handleLocationChange);
+        window.removeEventListener('pushstate', handleLocationChange);
+        window.removeEventListener('replacestate', handleLocationChange);
+      };
+    }
+  }, []);
+
   // Load products from API
   useEffect(() => {
     async function fetchProducts() {

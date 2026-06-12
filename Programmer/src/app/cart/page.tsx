@@ -45,6 +45,19 @@ export default function CartPage() {
   // Total quantity for the header cart badge
   const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Load user from localStorage
+  const [user, setUser] = React.useState<any>(null);
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Failed to parse user from localStorage:", err);
+      }
+    }
+  }, []);
+
   // Checkout action
   const handleCheckout = () => {
     if (checkedItemsCount === 0) {
@@ -84,6 +97,20 @@ export default function CartPage() {
             >
               หน้าหลัก
             </Link>
+
+            <Link
+              href="/?type=vegetable"
+              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
+            >
+              ผักสด
+            </Link>
+
+            <Link
+              href="/?type=fruit"
+              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
+            >
+              ผลไม้
+            </Link>
           </nav>
 
           {/* Actions */}
@@ -102,6 +129,31 @@ export default function CartPage() {
                 </span>
               )}
             </Link>
+
+            {/* User Profile / Registration Buttons */}
+            {user ? (
+              <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
+                <div className="w-[1px] h-6 bg-white/20"></div>
+                <div className="flex flex-col text-right">
+                  <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
+                  <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
+                </div>
+                <div
+                  className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]"
+                >
+                  <span className="material-symbols-outlined text-[24px]">person</span>
+                </div>
+              </Link>
+            ) : (
+              <div className="hidden md:flex items-center gap-2">
+                <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">
+                  เข้าสู่ระบบ
+                </Link>
+                <Link href="/register" className="bg-on-primary text-primary font-label-lg px-4 py-2 rounded-full hover:bg-inverse-primary transition-all shadow-sm cursor-pointer">
+                  สมัครสมาชิก
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </header>
