@@ -175,7 +175,10 @@ export default function ProfilePage() {
               <span className="material-symbols-outlined text-[20px]">person</span>
               <span>โปรไฟล์ของฉัน</span>
             </Link>
-            <Link href="/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-gray-50 text-sm transition-colors">
+            <Link
+              href="/orders"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-gray-50 text-sm transition-colors"
+            >
               <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
               <span>คำสั่งซื้อ</span>
             </Link>

@@ -19,6 +19,14 @@ const PAYMENT_LABELS: Record<string, string> = {
   credit_card: 'บัตรเครดิต',
 };
 
+const TABS = [
+  { id: 'all', label: 'ทั้งหมด' },
+  { id: 'pending', label: 'รอชำระเงิน' },
+  { id: 'paid', label: 'ชำระแล้ว' },
+  { id: 'shipped', label: 'จัดส่งแล้ว' },
+  { id: 'cancelled', label: 'ยกเลิก' },
+];
+
 export default function OrdersPage() {
   const router = useRouter();
   const { cartItems } = useCart();
@@ -27,6 +35,7 @@ export default function OrdersPage() {
   const [user, setUser] = React.useState<any>(null);
   const [orders, setOrders] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [activeTab, setActiveTab] = React.useState('all');
 
   React.useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -46,6 +55,10 @@ export default function OrdersPage() {
     } catch { /* ignore */ }
     setLoading(false);
   };
+
+  const filteredOrders = activeTab === 'all'
+    ? orders
+    : orders.filter(o => o.status === activeTab);
 
   const formatDate = (d: string) => {
     const date = new Date(d);
@@ -79,28 +92,54 @@ export default function OrdersPage() {
       </header>
 
       <main className="flex-grow max-w-container-max w-full mx-auto px-margin-mobile md:px-margin-desktop py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Link href="/profile" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-surface-tint transition-colors">
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>กลับ</span>
-          </Link>
-          <h1 className="text-3xl md:text-4xl font-headline-lg font-bold text-primary">คำสั่งซื้อของฉัน</h1>
+        <Link href="/profile" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-surface-tint transition-colors mb-6 w-fit">
+          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span>กลับ</span>
+        </Link>
+
+        <h1 className="text-3xl md:text-4xl font-headline-lg font-bold text-primary mb-6">คำสั่งซื้อของฉัน</h1>
+
+        <div className="border-b border-outline-variant/30 mb-6 overflow-x-auto">
+          <div className="flex gap-6 min-w-max">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`pb-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${
+                  activeTab === tab.id
+                    ? 'border-primary text-primary font-bold'
+                    : 'border-transparent text-outline hover:text-on-surface-variant'
+                }`}
+              >
+                {tab.label}
+                {tab.id !== 'all' && (
+                  <span className="ml-1.5 text-xs">({orders.filter(o => o.status === tab.id).length})</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
           </div>
-        ) : orders.length === 0 ? (
+        ) : filteredOrders.length === 0 ? (
           <div className="text-center py-20 bg-surface-container-lowest rounded-3xl border border-outline-variant/20">
             <span className="material-symbols-outlined text-6xl text-outline">shopping_bag</span>
-            <h3 className="text-xl font-headline-md text-on-surface-variant font-medium mt-4">ยังไม่มีคำสั่งซื้อ</h3>
-            <p className="text-body-md text-outline mt-2">คุณยังไม่มีประวัติการสั่งซื้อ</p>
-            <Link href="/" className="inline-block bg-primary text-on-primary font-label-md px-6 py-2.5 rounded-full hover:bg-surface-tint transition-all mt-6">เลือกซื้อสินค้า</Link>
+            <h3 className="text-xl font-headline-md text-on-surface-variant font-medium mt-4">
+              {activeTab === 'all' ? 'ยังไม่มีคำสั่งซื้อ' : 'ไม่มีคำสั่งซื้อในหมวดนี้'}
+            </h3>
+            <p className="text-body-md text-outline mt-2">
+              {activeTab === 'all' ? 'คุณยังไม่มีประวัติการสั่งซื้อ' : 'ลองตรวจสอบหมวดหมู่อื่น'}
+            </p>
+            {activeTab === 'all' && (
+              <Link href="/" className="inline-block bg-primary text-on-primary font-label-md px-6 py-2.5 rounded-full hover:bg-surface-tint transition-all mt-6">เลือกซื้อสินค้า</Link>
+            )}
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {orders.map(order => {
+            {filteredOrders.map(order => {
               const statusInfo = STATUS_MAP[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-800' };
               const itemCount = order.items ? order.items.reduce((s: number, i: any) => s + i.quantity, 0) : 0;
               return (
