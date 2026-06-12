@@ -89,16 +89,6 @@ export default function CartPage() {
             Smart Farm Marketplace
           </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-gutter">
-            <Link
-              href="/"
-              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
-            >
-              หน้าหลัก
-            </Link>
-          </nav>
-
           {/* Actions */}
           <div className="flex items-center gap-stack-md">
             {/* Shopping Cart button */}
@@ -146,6 +136,12 @@ export default function CartPage() {
 
       {/* Main Cart Content */}
       <main className="flex-grow max-w-container-max w-full mx-auto px-margin-mobile md:px-margin-desktop py-12">
+        {/* Back button */}
+        <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-surface-tint transition-colors mb-6 self-start w-fit">
+          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span>กลับสู่หน้าหลัก</span>
+        </Link>
+
         <div className="flex flex-col lg:flex-row gap-12 items-start">
           
           {/* Cart Items List */}
