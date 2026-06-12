@@ -9,9 +9,12 @@ interface Product {
   category_id: number;
   name: string;
   description: string;
+  original_price: number;
+  promo_price: number | null;
   price: string | number;
   stock_quantity: number;
   image_url: string;
+  is_best_seller?: boolean;
   category_name?: string;
   main_type?: string;
 }
@@ -43,46 +46,58 @@ const BANNERS = [
 const INITIAL_PRODUCTS: Product[] = [
   {
     id: 1,
-    category_id: 2,
-    name: 'แครอทออร์แกนิค (500g)',
-    description: 'แครอทสดใหม่จากสวนเกษตรอินทรีย์ ปลอดภัยไร้สารเคมี',
-    price: 45.00,
-    stock_quantity: 50,
-    image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKxj_O4Ii3B1pH-lKpdIhIojjXNi77FbrTSoFU78MU2CLQjedEzYi04cDpNKJ73AQ-DP4v2jZjjjkI9bcaDYWDuKELatvd4BB_oRyvd9JYHXf2yxGtEH3HJLn49XosKoMeLjgaFPnUbxeBVMjMz81dg4y5pCxqgReEOYiW2cYPU4CWzUaNkjjWIGu-xmmWtpU-aRbVcFZIugC_Ieaoq9Ut_GSf-4UJX89mhjq5PmdcudE5AcudyrzIzGwE9ryWhMufvxujSgKPDC71',
+    category_id: 5,
+    name: 'แครอต (Carrot)',
+    description: 'แครอต (Carrot) สดคุณภาพดีจาก Smartket-Farm คัดสรรจากเกษตรกรในชุมชน จำหน่าย 1 กิโลกรัม/ถุง',
+    original_price: 30,
+    promo_price: null,
+    price: 30,
+    stock_quantity: 91,
+    image_url: 'https://placehold.co/400x300?text=Carrot',
+    is_best_seller: true,
     category_name: 'ผักกินหัวหรือราก',
     main_type: 'vegetable'
   },
   {
     id: 2,
-    category_id: 4,
-    name: 'มะเขือเทศเชอร์รี่ (250g)',
-    description: 'มะเขือเทศเชอร์รี่รสหวานอมเปรี้ยว สดกรอบ อุดมด้วยวิตามินซี',
-    price: 65.00,
-    stock_quantity: 30,
-    image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA2F5eSsHpmqp_ZqzwaZbV3CrjREvmYD9PssxhI9A98bgeYHbNJ9k6nrIGoYWO0XVWibS3k9WYi-N_PFGm0flm-Lzhcqkc3yp1bKPS3G24YwtFe0TwjR1igkPI0CP8jxMB4P39xvvcsits33lQWACcr7N7K1qg3STKYozAmg24QiQ6kk1qg9KfKGncpfqq33fADuH9G1xxYXC49xqEpz2Kx36KWINn7EnVVl3dQVicMcl1YKK3xCM1VMV3HCNPcaPAUMo1RB_4ptLy0',
+    category_id: 2,
+    name: 'มะเขือเทศ (Tomato)',
+    description: 'มะเขือเทศ (Tomato) สดคุณภาพดีจาก Smartket-Farm คัดสรรจากเกษตรกรในชุมชน จำหน่าย 1 กิโลกรัม/ถุง',
+    original_price: 30,
+    promo_price: null,
+    price: 30,
+    stock_quantity: 79,
+    image_url: 'https://placehold.co/400x300?text=Tomato',
+    is_best_seller: true,
     category_name: 'ผักกินผล',
     main_type: 'vegetable'
   },
   {
     id: 3,
-    category_id: 1,
-    name: 'บรอกโคลีพรีเมียม (1 หัว)',
-    description: 'บรอกโคลีออร์แกนิคหัวใหญ่ ดอกแน่น กรอบอร่อย',
-    price: 55.00,
-    stock_quantity: 25,
-    image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4obRn2UP7lbHZGum891fYJ0X0ThVq6V_dlBkTJtjO7biJlkKKr133g-AM-1ANN2qtRlaANVVlsZTl6yS-9udf9HjV5m0zFhR5CzE0zTqZBZjQjyFwtfb_WCBPKlGuse1KPh_kLfbE3cCuZqD6R1NCT52VfG2-EMDc93KsOuyGLFoTAsp0zx7pHlYSsRH7i_2ZJYoA7N6YvA96_ZAR4kC1Y-Pt0uedz7TH4br370YxAPy1w1wQ1hxQL2LPAIpViVUJ5T8oDX4hyzbG',
-    category_name: 'ผักใบเขียว',
+    category_id: 3,
+    name: 'บรอกโคลี (Broccoli)',
+    description: 'บรอกโคลี (Broccoli) สดคุณภาพดีจาก Smartket-Farm คัดสรรจากเกษตรกรในชุมชน จำหน่าย 1 กิโลกรัม/หัว',
+    original_price: 45,
+    promo_price: null,
+    price: 45,
+    stock_quantity: 59,
+    image_url: 'https://placehold.co/400x300?text=Broccoli',
+    is_best_seller: false,
+    category_name: 'ผักกินดอก',
     main_type: 'vegetable'
   },
   {
     id: 4,
-    category_id: 8,
-    name: 'แอปเปิ้ลฟูจิ (4 ผล)',
-    description: 'แอปเปิ้ลฟูจินำเข้า รสหวานกรอบ อร่อยเต็มคำ',
-    price: 120.00,
-    stock_quantity: 15,
-    image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBDQIVvNMzIAvECEo3B1CKJ4bmveZ3rUy0KurX2geGEvFiLekKmSsU3JJ85evm3ajvjvzQsBTHx1y0VgdLdBRYR2JhnNVxwQSRrAxKRexrblOgFT9gCwOua96FCfhi4dTy85An7lTAYxv4GLiT4ZJbIGC13khMpcxKIr3FYbKE03MzRvwHEV4fSJxc8AGrcznVUyV_MUjkcd1R4acdeV7KYUgxMQFPHFobj4XYN7uVa_l5SlsWteKfLjRgvSfcx4tOKZzNXitfvvbFz',
-    category_name: 'ผลไม้เมืองหนาว / นำเข้า',
+    category_id: 7,
+    name: 'มะม่วง (Mango)',
+    description: 'มะม่วง (Mango) สดคุณภาพดีจาก Smartket-Farm คัดสรรจากเกษตรกรในชุมชน จำหน่าย 1 กิโลกรัม/ถุง',
+    original_price: 60,
+    promo_price: null,
+    price: 60,
+    stock_quantity: 147,
+    image_url: 'https://placehold.co/400x300?text=Mango',
+    is_best_seller: true,
+    category_name: 'ผลไม้เมืองร้อน',
     main_type: 'fruit'
   }
 ];
@@ -447,14 +462,14 @@ export default function HomePage() {
                   {/* Card Container */}
                   <div className="bg-surface-container-low rounded-xl aspect-[4/5] p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
                     {/* Tags */}
-                    {product.id === 1 && (
+                    {product.is_best_seller && (
                       <span className="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
                         ขายดี
                       </span>
                     )}
-                    {product.id === 3 && (
-                      <span className="absolute top-3 left-3 bg-secondary text-on-secondary text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
-                        ใหม่
+                    {product.promo_price != null && (
+                      <span className="absolute top-3 left-3 bg-error text-on-error text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm" style={product.is_best_seller ? { left: '4.5rem' } : {}}>
+                        โปรโมชั่น
                       </span>
                     )}
 
@@ -493,9 +508,16 @@ export default function HomePage() {
                       {product.description || 'สดสะอาด คุณภาพออร์แกนิคแท้ 100%'}
                     </p>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-headline-md font-headline-md text-primary font-bold">
-                        ฿{typeof product.price === 'number' ? product.price.toFixed(0) : parseFloat(product.price).toFixed(0)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-headline-md font-headline-md text-primary font-bold">
+                          ฿{typeof product.price === 'number' ? product.price.toFixed(0) : parseFloat(String(product.price)).toFixed(0)}
+                        </span>
+                        {product.promo_price != null && (
+                          <span className="text-body-sm text-outline line-through">
+                            ฿{product.original_price}
+                          </span>
+                        )}
+                      </div>
                       <button
                         onClick={() => addToCart(product)}
                         aria-label="เพิ่มลงตะกร้า"

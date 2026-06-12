@@ -7,9 +7,12 @@ export interface Product {
   category_id: number;
   name: string;
   description: string;
+  original_price: number;
+  promo_price: number | null;
   price: string | number;
   stock_quantity: number;
   image_url: string;
+  is_best_seller?: boolean;
   category_name?: string;
   main_type?: string;
 }
