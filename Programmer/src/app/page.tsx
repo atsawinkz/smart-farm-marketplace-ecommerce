@@ -189,8 +189,8 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col font-body-md text-body-md bg-surface text-on-surface">
       {/* TopNavBar */}
       <header
-        className={`sticky top-0 z-50 w-full bg-surface/95 dark:bg-inverse-surface/95 backdrop-blur-md transition-all duration-300 ${
-          hasScrolled ? 'shadow-sm border-transparent' : 'border-b border-outline-variant/30'
+        className={`sticky top-0 z-50 w-full bg-primary/95 dark:bg-primary-container/95 backdrop-blur-md transition-all duration-300 ${
+          hasScrolled ? 'shadow-sm border-transparent' : 'border-b border-primary-container/20'
         }`}
       >
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
@@ -203,7 +203,7 @@ export default function HomePage() {
             }}
           >
             <span
-              className="material-symbols-outlined text-primary text-3xl group-hover:-rotate-12 transition-transform duration-300"
+              className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform duration-300"
               data-weight="fill"
             >
               eco
@@ -216,7 +216,7 @@ export default function HomePage() {
             <button
               className={`font-label-lg text-label-lg pb-1 transition-all duration-200 ${
                 !selectedMainType
-                  ? 'text-white border-b-2 border-primary font-semibold'
+                  ? 'text-white border-b-2 border-inverse-primary font-semibold'
                   : 'text-white/70 hover:text-white'
               }`}
               onClick={() => setSelectedMainType(null)}
@@ -228,7 +228,7 @@ export default function HomePage() {
               <button
                 className={`font-label-lg text-label-lg transition-colors flex items-center gap-1 py-2 ${
                   selectedMainType === 'vegetable'
-                    ? 'text-white border-b-2 border-primary font-semibold'
+                    ? 'text-white border-b-2 border-inverse-primary font-semibold'
                     : 'text-white/70 hover:text-white'
                 }`}
                 onClick={() => setSelectedMainType('vegetable')}
@@ -258,7 +258,7 @@ export default function HomePage() {
               <button
                 className={`font-label-lg text-label-lg transition-colors flex items-center gap-1 py-2 ${
                   selectedMainType === 'fruit'
-                    ? 'text-white border-b-2 border-primary font-semibold'
+                    ? 'text-white border-b-2 border-inverse-primary font-semibold'
                     : 'text-white/70 hover:text-white'
                 }`}
                 onClick={() => setSelectedMainType('fruit')}
@@ -316,7 +316,7 @@ export default function HomePage() {
               <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">
                 เข้าสู่ระบบ
               </Link>
-              <Link href="/register" className="bg-primary text-on-primary font-label-lg px-4 py-2 rounded-full hover:bg-surface-tint transition-all shadow-sm cursor-pointer">
+              <Link href="/register" className="bg-on-primary text-primary font-label-lg px-4 py-2 rounded-full hover:bg-inverse-primary transition-all shadow-sm cursor-pointer">
                 สมัครสมาชิก
               </Link>
             </div>
