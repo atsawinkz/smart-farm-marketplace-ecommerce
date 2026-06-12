@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8faf6;
+  --foreground: #191c1a;
+}
+
+@theme {
+  --color-surface: #f8faf6;
+  --color-surface-dim: #d8dbd7;
+  --color-surface-bright: #f8faf6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f0;
+  --color-surface-container: #eceeeb;
+  --color-surface-container-high: #e7e9e5;
+  --color-surface-container-highest: #e1e3df;
+  --color-on-surface: #191c1a;
+  --color-on-surface-variant: #434840;
+  --color-inverse-surface: #2e312f;
+  --color-inverse-on-surface: #eff1ed;
+  --color-outline: #73796f;
+  --color-outline-variant: #c3c8bd;
+  --color-surface-tint: #476642;
+  --color-primary: #173416;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #2d4b2a;
+  --color-on-primary-container: #98ba90;
+  --color-inverse-primary: #add0a4;
+  --color-secondary: #54634b;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d4e5c7;
+  --color-on-secondary-container: #58674f;
+  --color-tertiary: #482508;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #623b1c;
+  --color-on-tertiary-container: #dda67f;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-primary-fixed: #c8ecbf;
+  --color-primary-fixed-dim: #add0a4;
+  --color-on-primary-fixed: #042105;
+  --color-on-primary-fixed-variant: #304e2d;
+  --color-secondary-fixed: #d7e8ca;
+  --color-secondary-fixed-dim: #bbccaf;
+  --color-on-secondary-fixed: #121f0c;
+  --color-on-secondary-fixed-variant: #3c4b35;
+  --color-tertiary-fixed: #ffdcc5;
+  --color-tertiary-fixed-dim: #f4bb92;
+  --color-on-tertiary-fixed: #301400;
+  --color-on-tertiary-fixed-variant: #653d1e;
+  --color-background-custom: #f8faf6;
+  --color-on-background: #191c1a;
+  --color-surface-variant: #e1e3df;
+
+  /* Custom sizes and spacing */
+  --spacing-stack-sm: 8px;
+  --spacing-margin-desktop: 64px;
+  --spacing-section-gap: 80px;
+  --spacing-container-max: 1280px;
+  --spacing-stack-md: 16px;
+  --spacing-margin-mobile: 20px;
+  --spacing-gutter: 24px;
+  --spacing-stack-lg: 32px;
+
+  /* Custom fonts mapped to google fonts variables loaded in layout.tsx */
+  --font-newsreader: var(--font-newsreader);
+  --font-plus-jakarta-sans: var(--font-plus-jakarta-sans);
+
+  /* Semantic fonts for easy utility classes */
+  --font-headline-xl: var(--font-newsreader);
+  --font-headline-lg: var(--font-newsreader);
+  --font-headline-md: var(--font-newsreader);
+  --font-headline-xl-mobile: var(--font-newsreader);
+  --font-body-lg: var(--font-plus-jakarta-sans);
+  --font-body-md: var(--font-plus-jakarta-sans);
+  --font-label-lg: var(--font-plus-jakarta-sans);
+  --font-label-md: var(--font-plus-jakarta-sans);
+
+  /* Border radius */
+  --radius-DEFAULT: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-plus-jakarta-sans), sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+}
+.material-symbols-outlined[data-weight="fill"] {
+  font-variation-settings: 'FILL' 1;
+}

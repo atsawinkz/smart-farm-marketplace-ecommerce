@@ -1,0 +1,11 @@
+{
+  "name": "smart-farm-marketplace-ecommerce-root",
+  "version": "1.0.0",
+  "description": "Root package runner for Smart-Farm Marketplace E-commerce",
+  "scripts": {
+    "dev": "npm run dev --prefix Programmer",
+    "build": "npm run build --prefix Programmer",
+    "start": "npm run start --prefix Programmer",
+    "lint": "npm run lint --prefix Programmer"
+  }
+}

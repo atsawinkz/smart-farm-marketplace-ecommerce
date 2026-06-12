@@ -1,0 +1,535 @@
+<!DOCTYPE html><html lang="th" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Smart Farm Marketplace - สดใหม่จากฟาร์มถึงโต๊ะคุณ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400..700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#f4bb92",
+                      "primary-fixed-dim": "#add0a4",
+                      "on-tertiary-fixed-variant": "#653d1e",
+                      "surface-bright": "#f8faf6",
+                      "inverse-on-surface": "#eff1ed",
+                      "on-surface-variant": "#434840",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-highest": "#e1e3df",
+                      "on-primary-container": "#98ba90",
+                      "surface-tint": "#476642",
+                      "tertiary-fixed": "#ffdcc5",
+                      "secondary-container": "#d4e5c7",
+                      "tertiary": "#482508",
+                      "on-error": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#121f0c",
+                      "surface-container-low": "#f2f4f0",
+                      "primary-container": "#2d4b2a",
+                      "on-primary-fixed": "#042105",
+                      "surface-container-high": "#e7e9e5",
+                      "primary": "#173416",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed": "#301400",
+                      "on-secondary-container": "#58674f",
+                      "surface": "#f8faf6",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#191c1a",
+                      "tertiary-container": "#623b1c",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#c8ecbf",
+                      "outline": "#73796f",
+                      "background": "#f8faf6",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#191c1a",
+                      "inverse-primary": "#add0a4",
+                      "outline-variant": "#c3c8bd",
+                      "secondary": "#54634b",
+                      "surface-variant": "#e1e3df",
+                      "secondary-fixed": "#d7e8ca",
+                      "secondary-fixed-dim": "#bbccaf",
+                      "surface-dim": "#d8dbd7",
+                      "on-tertiary-container": "#dda67f",
+                      "on-secondary-fixed-variant": "#3c4b35",
+                      "inverse-surface": "#2e312f",
+                      "surface-container": "#eceeeb",
+                      "on-primary-fixed-variant": "#304e2d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "margin-desktop": "64px",
+                      "section-gap": "80px",
+                      "container-max": "1280px",
+                      "stack-md": "16px",
+                      "margin-mobile": "20px",
+                      "gutter": "24px",
+                      "stack-lg": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Newsreader"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-xl-mobile": [
+                              "Newsreader"
+                      ],
+                      "headline-xl": [
+                              "Newsreader"
+                      ],
+                      "headline-md": [
+                              "Newsreader"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-lg": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-xl-mobile": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+      </style>
+</head>
+<body class="antialiased font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface sticky top-0 z-50 w-full flat no shadows border-b border-outline-variant/30 transition-shadow duration-300" id="main-header">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
+<!-- Brand Logo -->
+<a class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim flex items-center gap-2 group" href="#">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-3xl group-hover:-rotate-12 transition-transform duration-300" data-weight="fill">eco</span>
+                Smart Farm Marketplace
+            </a>
+<!-- Navigation Links (Desktop) -->
+<nav class="hidden md:flex items-center gap-gutter">
+<a class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 font-label-lg text-label-lg hover:text-primary dark:hover:text-primary-fixed-dim transition-colors scale-98 transition-all duration-200" href="#">หน้าหลัก</a>
+<div class="relative group">
+<a class="text-on-surface-variant dark:text-outline-variant font-label-lg text-label-lg hover:text-primary dark:hover:text-primary-fixed-dim transition-colors flex items-center gap-1 py-2" href="#">
+        ผักสด
+        <span class="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform duration-300">expand_more</span>
+</a>
+<div class="absolute top-full left-0 w-64 bg-surface-bright border border-outline-variant/30 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-2">
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผักกินใบและลำต้น</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผักกินผล</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผักกินดอก</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผักกินฝักและเมล็ด</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผักกินหัวหรือราก</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผักกินหัวที่เกิดจากกาบใบ</a>
+</div>
+</div>
+<div class="relative group">
+<a class="text-on-surface-variant dark:text-outline-variant font-label-lg text-label-lg hover:text-primary dark:hover:text-primary-fixed-dim transition-colors flex items-center gap-1 py-2" href="#">
+        ผลไม้
+        <span class="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform duration-300">expand_more</span>
+</a>
+<div class="absolute top-full left-0 w-64 bg-surface-bright border border-outline-variant/30 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-2">
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผลไม้เมืองร้อน</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ผลไม้เมืองหนาว / นำเข้า</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ตระกูลส้มและมะนาว</a>
+<a class="block px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors" href="#">ตระกูลแตง</a>
+</div>
+</div>
+</nav>
+<!-- Actions (Search, Cart, Profile) -->
+<div class="flex items-center gap-stack-md">
+<!-- Search -->
+<div class="relative hidden sm:block">
+<input class="bg-surface-container-low border-outline-variant/50 text-on-surface rounded-full py-2 pl-4 pr-10 focus:ring-primary focus:border-primary transition-all duration-300 w-48 lg:w-64" placeholder="ค้นหาสินค้าเกษตร..." type="text">
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-outline">search</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-highest flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="hidden md:flex items-center gap-2">
+<a class="text-on-surface-variant hover:text-primary font-label-lg transition-colors px-4 py-2" href="#">เข้าสู่ระบบ</a>
+<a class="bg-primary text-on-primary font-label-lg px-4 py-2 rounded-full hover:bg-surface-tint transition-all shadow-sm" href="#">สมัครสมาชิก</a>
+</div>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden text-on-surface-variant p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative w-full h-[80vh] min-h-[600px] overflow-hidden bg-primary-container" id="hero-slider">
+<!-- Slides Container -->
+<div class="relative h-full w-full">
+<!-- Slide 1 -->
+<div class="slide absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-0 z-0">
+<img alt="Organic Vegetables" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdEyFvY50vwZScc2ZUCyhwxU9gzZgcKJnSglEqWk3CSLKtLjkVzv6D9Gq2uyUqAEvIjfJ9vGfW0-Ht2Gh82V1tKXiunYJfUgEyPDxY7KyDFENqwo6kjX8zLkNF5Va4i_QJWVeU5EZcuYR45mJCw5QDVXuedp2fYeUYr-Rwbvg373vLd_vXDwE-y7VJyy6j0y9E5ratEnCSBjLueaIMlXmC9xUnl02HycAaOkbC1fH-h0LeOmI0SSGo_pP-e05Ehi0Jn4OgtdqowkCp" style="filter: brightness(1.1);">
+<div class="absolute inset-0 bg-black/10"></div>
+
+</div>
+<!-- Slide 2 -->
+<div class="slide absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-0 z-0">
+<img alt="Seasonal Fruits" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLtPj2-aCOiaTCWwL25YIX8XeMk8m1V5FPr54JCWgxj8Dc99SIvWX7c87M_RyAJIIpJ_QFiy699FNPJS9r4nW_dd8UeEB8kL40lOnqKIqhw_7oJ60mSS_Y-SmKVe2ct5lsv-TdMnaG5DmREcLk0TNEbNEYFg1JwqGZ6AG5nOVtd2ZWjkcF1YN26zlgqMw_DWHk64uxR_WfUchcv8sLyEL3q00RVypNDUcJqCN-rZQT52W33AWJjP320Y4uPX" style="filter: brightness(1.1);">
+<div class="absolute inset-0 bg-black/10"></div>
+
+</div>
+<!-- Slide 3 -->
+<div class="slide absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-100 z-10">
+<img alt="Farmer with Harvest" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLux-qgrv3qb4wxhBrlNjAX4BGWyuGlcgZTw-Gw_UNXA4KkDCLdm-oawjYwMidrWjuV2zmGSKpd8Hoq-h86EpdYlTcv2WwQVbPc0a6U8TUm_JecTCBa1CsgmUQCF4mYZWSWEs6GGcA3jg-l0ha2RmW_c-3e58tamn9kJbQoLFMOuLi1JhrAPLkz7aI7wPWbDwd0bptTJFkAOC2Dl-W9CD70ckFxXc9RHiYL-xnZTOrSsmZ_5dh7yCpC-RqTN" style="filter: brightness(1.1);">
+<div class="absolute inset-0 bg-black/10"></div>
+
+</div>
+</div>
+<!-- Navigation Arrows -->
+<button class="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors" id="prevSlide">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors" id="nextSlide">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<!-- Pagination Dots -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+<button class="dot h-3 rounded-full transition-all bg-white/50 w-3" data-index="0"></button>
+<button class="dot h-3 rounded-full hover:bg-white/80 transition-all bg-white/50 w-3" data-index="1"></button>
+<button class="dot h-3 rounded-full hover:bg-white/80 transition-all bg-white w-6" data-index="2"></button>
+</div>
+<script>
+        (function() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            let currentSlide = 0;
+            let slideInterval;
+
+            function showSlide(index) {
+                slides.forEach((s, i) => {
+                    s.classList.toggle('opacity-100', i === index);
+                    s.classList.toggle('z-10', i === index);
+                    s.classList.toggle('opacity-0', i !== index);
+                    s.classList.toggle('z-0', i !== index);
+                });
+                dots.forEach((d, i) => {
+                    d.classList.toggle('bg-white', i === index);
+                    d.classList.toggle('bg-white/50', i !== index);
+                    d.classList.toggle('w-6', i === index);
+                    d.classList.toggle('w-3', i !== index);
+                });
+                currentSlide = index;
+            }
+
+            function next() {
+                showSlide((currentSlide + 1) % slides.length);
+            }
+
+            function prev() {
+                showSlide((currentSlide - 1 + slides.length) % slides.length);
+            }
+
+            function startAutoPlay() {
+                stopAutoPlay();
+                slideInterval = setInterval(next, 5000);
+            }
+
+            function stopAutoPlay() {
+                clearInterval(slideInterval);
+            }
+
+            document.getElementById('nextSlide').addEventListener('click', () => { next(); startAutoPlay(); });
+            document.getElementById('prevSlide').addEventListener('click', () => { prev(); startAutoPlay(); });
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', () => { showSlide(i); startAutoPlay(); });
+            });
+
+            startAutoPlay();
+            showSlide(0);
+        })();
+    </script>
+</section>
+<!-- Main Content Area -->
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap flex flex-col gap-section-gap">
+<!-- Category Highlights (Bento Grid Style) -->
+<!-- Featured Products -->
+<section aria-labelledby="featured-products">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-primary" id="featured-products">สินค้าแนะนำสัปดาห์นี้</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant mt-2">คัดสรรความสดใหม่ คุณภาพระดับพรีเมียม</p>
+</div>
+<a class="hidden sm:flex items-center gap-1 text-primary hover:text-surface-tint font-label-lg transition-colors" href="#">
+                        ดูสินค้าทั้งหมด <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg">
+<!-- Product Card 1 -->
+<article class="flex flex-col group">
+<div class="bg-surface-container-low rounded-xl aspect-[4/5] p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 hover:border-primary/30 transition-colors shadow-sm hover:shadow-md">
+<span class="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container text-xs px-2 py-1 rounded-full font-label-md">ขายดี</span>
+<button class="absolute top-3 right-3 text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-bright z-10 opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+<img alt="Fresh Carrots" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-lg" data-alt="A pristine bunch of freshly picked organic carrots with lush green tops, displayed on a soft neutral cream background. The lighting is soft and natural, emphasizing the vibrant orange hue and crisp texture of the carrots. The styling is minimalist and elegant, suitable for a high-end organic marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKxj_O4Ii3B1pH-lKpdIhIojjXNi77FbrTSoFU78MU2CLQjedEzYi04cDpNKJ73AQ-DP4v2jZjjjkI9bcaDYWDuKELatvd4BB_oRyvd9JYHXf2yxGtEH3HJLn49XosKoMeLjgaFPnUbxeBVMjMz81dg4y5pCxqgReEOYiW2cYPU4CWzUaNkjjWIGu-xmmWtpU-aRbVcFZIugC_Ieaoq9Ut_GSf-4UJX89mhjq5PmdcudE5AcudyrzIzGwE9ryWhMufvxujSgKPDC71">
+</div>
+<div class="flex flex-col gap-1 px-1">
+<span class="text-label-md text-outline font-label-md uppercase tracking-wider">ผักราก</span>
+<h3 class="text-body-lg font-body-lg text-on-surface font-medium line-clamp-1 group-hover:text-primary transition-colors">แครอทออร์แกนิค (500g)</h3>
+<div class="flex items-center justify-between mt-2">
+<span class="text-headline-md font-headline-md text-primary">฿45</span>
+<button aria-label="เพิ่มลงตะกร้า" class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint transition-colors focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="flex flex-col group">
+<div class="bg-surface-container-low rounded-xl aspect-[4/5] p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 hover:border-primary/30 transition-colors shadow-sm hover:shadow-md">
+<button class="absolute top-3 right-3 text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-bright z-10 opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+<img alt="Fresh Tomatoes" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-lg" data-alt="Vibrant, ripe red tomatoes on the vine, elegantly placed on a pale sage green surface. The natural light catches the smooth, glossy skin of the tomatoes, creating soft, beautiful highlights. The overall aesthetic is fresh, organic, and visually striking, highlighting premium agricultural quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2F5eSsHpmqp_ZqzwaZbV3CrjREvmYD9PssxhI9A98bgeYHbNJ9k6nrIGoYWO0XVWibS3k9WYi-N_PFGm0flm-Lzhcqkc3yp1bKPS3G24YwtFe0TwjR1igkPI0CP8jxMB4P39xvvcsits33lQWACcr7N7K1qg3STKYozAmg24QiQ6kk1qg9KfKGncpfqq33fADuH9G1xxYXC49xqEpz2Kx36KWINn7EnVVl3dQVicMcl1YKK3xCM1VMV3HCNPcaPAUMo1RB_4ptLy0">
+</div>
+<div class="flex flex-col gap-1 px-1">
+<span class="text-label-md text-outline font-label-md uppercase tracking-wider">ผักผลเดี่ยว</span>
+<h3 class="text-body-lg font-body-lg text-on-surface font-medium line-clamp-1 group-hover:text-primary transition-colors">มะเขือเทศเชอร์รี่ (250g)</h3>
+<div class="flex items-center justify-between mt-2">
+<span class="text-headline-md font-headline-md text-primary">฿65</span>
+<button aria-label="เพิ่มลงตะกร้า" class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 3 -->
+<article class="flex flex-col group">
+<div class="bg-surface-container-low rounded-xl aspect-[4/5] p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 hover:border-primary/30 transition-colors shadow-sm hover:shadow-md">
+<span class="absolute top-3 left-3 bg-secondary text-on-secondary text-xs px-2 py-1 rounded-full font-label-md">ใหม่</span>
+<button class="absolute top-3 right-3 text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-bright z-10 opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+<img alt="Fresh Broccoli" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-lg" data-alt="A perfect, vibrant green head of broccoli presented on a soft neutral cream background. The texture of the florets is detailed and sharp, while the soft, diffused lighting creates gentle ambient shadows. The mood conveys pure, healthy, and premium organic quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4obRn2UP7lbHZGum891fYJ0X0ThVq6V_dlBkTJtjO7biJlkKKr133g-AM-1ANN2qtRlaANVVlsZTl6yS-9udf9HjV5m0zFhR5CzE0zTqZBZjQjyFwtfb_WCBPKlGuse1KPh_kLfbE3cCuZqD6R1NCT52VfG2-EMDc93KsOuyGLFoTAsp0zx7pHlYSsRH7i_2ZJYoA7N6YvA96_ZAR4kC1Y-Pt0uedz7TH4br370YxAPy1w1wQ1hxQL2LPAIpViVUJ5T8oDX4hyzbG">
+</div>
+<div class="flex flex-col gap-1 px-1">
+<span class="text-label-md text-outline font-label-md uppercase tracking-wider">ผักใบเขียว</span>
+<h3 class="text-body-lg font-body-lg text-on-surface font-medium line-clamp-1 group-hover:text-primary transition-colors">บรอกโคลีพรีเมียม (1 หัว)</h3>
+<div class="flex items-center justify-between mt-2">
+<span class="text-headline-md font-headline-md text-primary">฿55</span>
+<button aria-label="เพิ่มลงตะกร้า" class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 4 -->
+<article class="flex flex-col group">
+<div class="bg-surface-container-low rounded-xl aspect-[4/5] p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 hover:border-primary/30 transition-colors shadow-sm hover:shadow-md">
+<button class="absolute top-3 right-3 text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-bright z-10 opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+<img alt="Fresh Apples" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-lg" data-alt="Crisp, bright red apples resting delicately on a pale sage green surface. A single leaf is attached to one apple, emphasizing freshness. The natural light casts soft, flattering shadows, creating a high-end, editorial look suitable for a premium farm marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDQIVvNMzIAvECEo3B1CKJ4bmveZ3rUy0KurX2geGEvFiLekKmSsU3JJ85evm3ajvjvzQsBTHx1y0VgdLdBRYR2JhnNVxwQSRrAxKRexrblOgFT9gCwOua96FCfhi4dTy85An7lTAYxv4GLiT4ZJbIGC13khMpcxKIr3FYbKE03MzRvwHEV4fSJxc8AGrcznVUyV_MUjkcd1R4acdeV7KYUgxMQFPHFobj4XYN7uVa_l5SlsWteKfLjRgvSfcx4tOKZzNXitfvvbFz">
+</div>
+<div class="flex flex-col gap-1 px-1">
+<span class="text-label-md text-outline font-label-md uppercase tracking-wider">ผลไม้</span>
+<h3 class="text-body-lg font-body-lg text-on-surface font-medium line-clamp-1 group-hover:text-primary transition-colors">แอปเปิ้ลฟูจิ (4 ผล)</h3>
+<div class="flex items-center justify-between mt-2">
+<span class="text-headline-md font-headline-md text-primary">฿120</span>
+<button aria-label="เพิ่มลงตะกร้า" class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Brand Values -->
+<section class="bg-surface-container py-section-gap px-margin-mobile md:px-margin-desktop rounded-3xl mt-stack-lg">
+<div class="text-center mb-stack-lg">
+<h2 class="text-headline-lg font-headline-lg text-primary">ทำไมต้อง Smart Farm?</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant mt-2 max-w-2xl mx-auto">เรามุ่งมั่นส่งมอบวัตถุดิบที่ดีที่สุด เพื่อสุขภาพที่ดีของคุณและครอบครัว</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Value 1 -->
+<div class="flex flex-col items-center text-center p-6 bg-surface-bright rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="w-16 h-16 bg-secondary-container rounded-full flex items-center justify-center mb-stack-md">
+<span class="material-symbols-outlined text-[32px] text-surface-tint">agriculture</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">สดจากฟาร์ม (Fresh from Farm)</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">เก็บเกี่ยวสดใหม่ทุกวัน ไม่ผ่านพ่อค้าคนกลาง เพื่อให้คุณได้รับความสดใหม่ที่สุด</p>
+</div>
+<!-- Value 2 -->
+<div class="flex flex-col items-center text-center p-6 bg-surface-bright rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="w-16 h-16 bg-secondary-container rounded-full flex items-center justify-center mb-stack-md">
+<span class="material-symbols-outlined text-[32px] text-surface-tint">verified</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">รับรองออร์แกนิค (Organic Certified)</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">ปลูกด้วยวิธีธรรมชาติ ปลอดภัยจากสารเคมี 100% ผ่านการรับรองมาตรฐานสากล</p>
+</div>
+<!-- Value 3 -->
+<div class="flex flex-col items-center text-center p-6 bg-surface-bright rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="w-16 h-16 bg-secondary-container rounded-full flex items-center justify-center mb-stack-md">
+<span class="material-symbols-outlined text-[32px] text-surface-tint">local_shipping</span>
+</div>
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">จัดส่งรวดเร็ว (Fast Delivery)</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">ระบบจัดส่งควบคุมอุณหภูมิ ส่งตรงถึงหน้าบ้านคุณภายใน 24 ชั่วโมง</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-primary dark:bg-primary-container full-width flat no shadows">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-section-gap px-margin-mobile md:px-margin-desktop py-section-gap max-w-container-max mx-auto">
+<!-- Brand Info -->
+<div class="flex flex-col gap-stack-md">
+<a class="text-headline-md font-headline-md text-on-primary dark:text-on-primary-container flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-3xl" data-weight="fill">eco</span>
+                    Smart Farm Marketplace
+                </a>
+<p class="text-body-md font-body-md text-on-primary/80 dark:text-on-primary-container/80 max-w-xs mt-2">
+                    ตลาดออนไลน์สำหรับคนรักสุขภาพ รวบรวมสินค้าเกษตรอินทรีย์คุณภาพสูงจากเกษตรกรไทย
+                </p>
+<p class="text-label-md font-label-md text-on-primary/60 dark:text-on-primary-container/60 mt-auto">
+                    © 2024 Smart Farm Marketplace. All rights reserved. Cultivating transparency.
+                </p>
+</div>
+<!-- Quick Links -->
+<div class="flex flex-col gap-stack-md">
+<h3 class="text-body-lg font-headline-md text-on-primary dark:text-on-primary-container font-semibold">ลิงก์ด่วน</h3>
+<nav class="flex flex-col gap-3">
+<a class="text-body-md font-body-md text-on-primary/80 dark:text-on-primary-container/80 hover:text-tertiary-fixed-dim transition-colors w-fit" href="#">About Us</a>
+<a class="text-body-md font-body-md text-on-primary/80 dark:text-on-primary-container/80 hover:text-tertiary-fixed-dim transition-colors w-fit" href="#">Quick Links</a>
+<a class="text-body-md font-body-md text-on-primary/80 dark:text-on-primary-container/80 hover:text-tertiary-fixed-dim transition-colors w-fit" href="#">Privacy Policy</a>
+<a class="text-body-md font-body-md text-on-primary/80 dark:text-on-primary-container/80 hover:text-tertiary-fixed-dim transition-colors w-fit" href="#">Shipping Info</a>
+</nav>
+</div>
+<!-- Social / Follow Us -->
+<div class="flex flex-col gap-stack-md">
+<h3 class="text-body-lg font-headline-md text-on-primary dark:text-on-primary-container font-semibold">ติดตามเรา (Follow Us)</h3>
+<div class="flex gap-4 mt-2">
+<a class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-on-primary hover:bg-white/20 hover:text-tertiary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-on-primary hover:bg-white/20 hover:text-tertiary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-on-primary hover:bg-white/20 hover:text-tertiary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</a>
+</div>
+<div class="mt-stack-md">
+<p class="text-label-md font-label-md text-on-primary/80 mb-2">สมัครรับข่าวสารและโปรโมชั่นพิเศษ</p>
+<div class="flex">
+<input class="bg-white/10 border-none text-on-primary placeholder-on-primary/50 rounded-l-md px-4 py-2 w-full focus:ring-1 focus:ring-tertiary-fixed-dim" placeholder="อีเมลของคุณ" type="email">
+<button class="bg-tertiary-fixed-dim text-on-tertiary-fixed-variant px-4 py-2 rounded-r-md font-label-md hover:bg-tertiary-fixed transition-colors">
+                             สมัคร
+                         </button>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Simple script to add shadow to header on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-sm');
+                header.classList.remove('border-outline-variant/30');
+                header.classList.add('border-transparent');
+            } else {
+                header.classList.remove('shadow-sm');
+                header.classList.add('border-outline-variant/30');
+                header.classList.remove('border-transparent');
+            }
+        });
+    </script>
+
+
+</body></html>
