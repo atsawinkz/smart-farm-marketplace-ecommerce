@@ -281,8 +281,7 @@ export default function HomePage() {
               ผลไม้
             </button>
           </nav>
-
-          {/* Actions (Search, Cart, Profile) */}
+          {/* Actions (Cart, Profile) */}
           <div className="flex items-center gap-stack-md">
             {/* Search Input */}
             <div className="relative hidden sm:block">
