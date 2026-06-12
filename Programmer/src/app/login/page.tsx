@@ -6,16 +6,45 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, redirect to the homepage on login
-    router.push("/");
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || "การเข้าสู่ระบบล้มเหลว");
+      } else {
+        // Store user state
+        localStorage.setItem("user", JSON.stringify(data.user));
+        router.push("/");
+      }
+    } catch (err) {
+      console.error("Login client error:", err);
+      setError("ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,6 +76,13 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {error && (
+            <div className="bg-red-50 text-red-700 border border-red-200 p-4 rounded-lg text-sm mb-6 flex items-center gap-3 relative z-10 animate-fade-in">
+              <span className="material-symbols-outlined text-[20px] text-red-600">error</span>
+              <span>{error}</span>
+            </div>
+          )}
+          
           <form className="space-y-stack-md relative z-10" onSubmit={handleLogin}>
             <div>
               <label
@@ -65,6 +101,10 @@ export default function LoginPage() {
                   name="username"
                   placeholder="กรอกชื่อผู้ใช้งาน"
                   type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -86,12 +126,17 @@ export default function LoginPage() {
                   name="password"
                   placeholder="กรอกรหัสผ่าน"
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
                 />
                 <button
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors"
                   id="togglePassword"
                   type="button"
                   onClick={togglePasswordVisibility}
+                  disabled={loading}
                 >
                   <span className="material-symbols-outlined" id="visibilityIcon">
                     {showPassword ? "visibility" : "visibility_off"}
@@ -105,6 +150,7 @@ export default function LoginPage() {
                 <input
                   className="rounded border-outline-variant text-primary focus:ring-primary bg-surface-container-lowest w-4 h-4 cursor-pointer"
                   type="checkbox"
+                  disabled={loading}
                 />
                 <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">
                   จดจำฉันไว้ในระบบ
@@ -119,13 +165,16 @@ export default function LoginPage() {
             </div>
 
             <button
-              className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group"
+              className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group disabled:opacity-50"
               type="submit"
+              disabled={loading}
             >
-              เข้าสู่ระบบ
-              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
-                arrow_forward
-              </span>
+              {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+              {!loading && (
+                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+                  arrow_forward
+                </span>
+              )}
             </button>
 
             <div className="text-center pt-stack-md border-t border-surface-variant mt-stack-md">
