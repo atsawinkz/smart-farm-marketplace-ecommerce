@@ -141,10 +141,8 @@ export default function RegisterPage() {
           </div>
 
           {/* Address Section */}
-          <div className="pt-4 border-t border-outline-variant/30">
-            <h3 className="font-label-lg text-primary mb-4">ข้อมูลที่อยู่จัดส่ง</h3>
-            <div className="space-y-4">
-              {/* Full Address */}
+          <div className="space-y-4 pt-2">
+            {/* Full Address */}
               <div>
                 <label
                   className="block font-label-lg text-on-surface mb-2"
