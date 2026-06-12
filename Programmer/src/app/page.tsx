@@ -196,14 +196,14 @@ export default function HomePage() {
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
           {/* Brand Logo */}
           <a
-            className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim flex items-center gap-2 group cursor-pointer"
+            className="text-white font-headline-md font-bold flex items-center gap-2 group cursor-pointer"
             onClick={() => {
               setSelectedMainType(null);
               setSearchQuery('');
             }}
           >
             <span
-              className="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-3xl group-hover:-rotate-12 transition-transform duration-300"
+              className="material-symbols-outlined text-primary text-3xl group-hover:-rotate-12 transition-transform duration-300"
               data-weight="fill"
             >
               eco
@@ -214,10 +214,10 @@ export default function HomePage() {
           {/* Navigation Links (Desktop) */}
           <nav className="hidden md:flex items-center gap-gutter">
             <button
-              className={`font-label-lg text-label-lg pb-1 hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-200 ${
+              className={`font-label-lg text-label-lg pb-1 transition-all duration-200 ${
                 !selectedMainType
-                  ? 'text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim font-semibold'
-                  : 'text-on-surface-variant dark:text-outline-variant'
+                  ? 'text-white border-b-2 border-primary font-semibold'
+                  : 'text-white/70 hover:text-white'
               }`}
               onClick={() => setSelectedMainType(null)}
             >
@@ -226,10 +226,10 @@ export default function HomePage() {
 
             <div className="relative group">
               <button
-                className={`font-label-lg text-label-lg hover:text-primary dark:hover:text-primary-fixed-dim transition-colors flex items-center gap-1 py-2 ${
+                className={`font-label-lg text-label-lg transition-colors flex items-center gap-1 py-2 ${
                   selectedMainType === 'vegetable'
-                    ? 'text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim font-semibold'
-                    : 'text-on-surface-variant dark:text-outline-variant'
+                    ? 'text-white border-b-2 border-primary font-semibold'
+                    : 'text-white/70 hover:text-white'
                 }`}
                 onClick={() => setSelectedMainType('vegetable')}
               >
@@ -256,10 +256,10 @@ export default function HomePage() {
 
             <div className="relative group">
               <button
-                className={`font-label-lg text-label-lg hover:text-primary dark:hover:text-primary-fixed-dim transition-colors flex items-center gap-1 py-2 ${
+                className={`font-label-lg text-label-lg transition-colors flex items-center gap-1 py-2 ${
                   selectedMainType === 'fruit'
-                    ? 'text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim font-semibold'
-                    : 'text-on-surface-variant dark:text-outline-variant'
+                    ? 'text-white border-b-2 border-primary font-semibold'
+                    : 'text-white/70 hover:text-white'
                 }`}
                 onClick={() => setSelectedMainType('fruit')}
               >
@@ -300,7 +300,7 @@ export default function HomePage() {
             </div>
 
             {/* Shopping Cart button */}
-            <button className="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-highest flex items-center justify-center relative">
+            <button className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
               <span className="material-symbols-outlined" data-icon="shopping_cart">
                 shopping_cart
               </span>
