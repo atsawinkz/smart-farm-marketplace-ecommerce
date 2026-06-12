@@ -122,22 +122,22 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Address */}
+          {/* Email */}
           <div>
             <label
               className="block font-label-lg text-on-surface mb-2"
-              htmlFor="address"
+              htmlFor="email"
             >
-              ที่อยู่ <span className="text-error">*</span>
+              อีเมล <span className="text-error">*</span>
             </label>
-            <textarea
-              className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md resize-none"
-              id="address"
-              name="address"
-              placeholder="Address details..."
-              rows={3}
+            <input
+              className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
+              id="email"
+              name="email"
+              placeholder="Email Address"
+              type="email"
               required
-            ></textarea>
+            />
           </div>
 
           {/* Submit Button */}
