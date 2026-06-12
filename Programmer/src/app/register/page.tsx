@@ -6,16 +6,47 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [fullname, setFullname] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful registration, redirect to login
-    router.push("/login");
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fullname, username, password, phone, email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || "การสมัครสมาชิกล้มเหลว");
+      } else {
+        setShowSuccessPopup(true);
+      }
+    } catch (err) {
+      console.error("Register client error:", err);
+      setError("ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,6 +65,13 @@ export default function RegisterPage() {
           </p>
         </div>
 
+        {error && (
+          <div className="bg-red-50 text-red-700 border border-red-200 p-4 rounded-lg text-sm mb-6 flex items-center gap-3 relative z-10">
+            <span className="material-symbols-outlined text-[20px] text-red-600">error</span>
+            <span>{error}</span>
+          </div>
+        )}
+
         <form className="space-y-stack-md relative z-10" onSubmit={handleRegister}>
           {/* Full Name */}
           <div>
@@ -49,7 +87,10 @@ export default function RegisterPage() {
               name="fullname"
               placeholder="ชื่อ-นามสกุล"
               type="text"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
 
@@ -68,7 +109,10 @@ export default function RegisterPage() {
                 name="username"
                 placeholder="ชื่อผู้ใช้งาน"
                 type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -87,7 +131,10 @@ export default function RegisterPage() {
                   name="password"
                   placeholder="รหัสผ่าน"
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={loading}
                 />
                 <button
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors flex items-center"
@@ -95,6 +142,7 @@ export default function RegisterPage() {
                   type="button"
                   onClick={togglePasswordVisibility}
                   aria-label="Toggle password visibility"
+                  disabled={loading}
                 >
                   <span className="material-symbols-outlined text-[20px]">
                     {showPassword ? "visibility" : "visibility_off"}
@@ -118,7 +166,10 @@ export default function RegisterPage() {
               name="phone"
               placeholder="เบอร์โทรศัพท์"
               type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
 
@@ -136,21 +187,25 @@ export default function RegisterPage() {
               name="email"
               placeholder="อีเมล"
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
 
-
-
           {/* Submit Button */}
           <button
-            className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg hover:bg-surface-tint transition-all flex items-center justify-center gap-2 group mt-6"
+            className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg hover:bg-surface-tint transition-all flex items-center justify-center gap-2 group mt-6 disabled:opacity-50"
             type="submit"
+            disabled={loading}
           >
-            สมัครสมาชิก
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform text-[20px]">
-              arrow_forward
-            </span>
+            {loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
+            {!loading && (
+              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform text-[20px]">
+                arrow_forward
+              </span>
+            )}
           </button>
 
           {/* Footer Link */}
@@ -167,6 +222,53 @@ export default function RegisterPage() {
           </div>
         </form>
       </div>
+
+      {/* Success Modal Popup */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-[420px] p-8 text-center shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex flex-col items-center gap-5 border border-gray-100 relative">
+            
+            {/* Logo */}
+            <div className="flex flex-col items-center gap-1 mt-2">
+              <div className="flex items-center justify-center text-[#1b3322] text-xl font-bold gap-1">
+                <span className="material-symbols-outlined text-[#2e7d32] text-[28px]">shopping_cart_checkout</span>
+                <span className="font-headline-md tracking-tight text-[#1b3322]">Smartket</span>
+              </div>
+            </div>
+
+            {/* Check Circle Icon */}
+            <div className="w-24 h-24 rounded-full bg-[#e8f5e9] flex items-center justify-center my-2">
+              <span className="material-symbols-outlined text-[#2e7d32] text-[56px]">check_circle</span>
+            </div>
+
+            {/* Content Text */}
+            <div className="space-y-2">
+              <h2 className="text-[#1b3322] text-2xl font-bold">
+                สมัครสมาชิกสำเร็จ!
+              </h2>
+              <div className="text-[#5c7268] text-sm leading-relaxed">
+                <p>ยินดีต้อนรับเข้าสู่ครอบครัว Smartket</p>
+                <p>คุณสามารถเริ่มต้นการสั่งซื้อผลผลิตจากฟาร์มได้ทันที</p>
+              </div>
+            </div>
+
+            {/* Actions Button */}
+            <button
+              onClick={() => router.push("/login")}
+              className="w-full bg-[#1b3322] hover:bg-[#122417] text-white py-4 px-6 rounded-full font-medium flex items-center justify-center gap-2 transition-colors mt-3 shadow-md shadow-green-900/10 cursor-pointer text-base"
+            >
+              <span>เข้าสู่ระบบ</span>
+              <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+            </button>
+
+            {/* Footer Shield */}
+            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mt-2">
+              <span className="material-symbols-outlined text-[16px]">verified_user</span>
+              <span>Verified Secure Account</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
