@@ -313,7 +313,7 @@ export default function HomePage() {
 
             {/* Registration/User buttons */}
             <div className="hidden md:flex items-center gap-2">
-              <Link href="/login" className="text-on-surface dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim font-label-lg transition-colors px-4 py-2 cursor-pointer">
+              <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">
                 เข้าสู่ระบบ
               </Link>
               <Link href="/register" className="bg-primary text-on-primary font-label-lg px-4 py-2 rounded-full hover:bg-surface-tint transition-all shadow-sm cursor-pointer">
