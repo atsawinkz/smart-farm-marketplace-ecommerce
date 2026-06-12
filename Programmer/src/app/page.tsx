@@ -223,65 +223,33 @@ export default function HomePage() {
               หน้าหลัก
             </button>
 
-            <div className="relative group">
-              <button
-                className={`font-label-lg text-label-lg transition-colors flex items-center gap-1 py-2 ${
-                  selectedMainType === 'vegetable'
-                    ? 'text-white border-b-2 border-inverse-primary font-semibold'
-                    : 'text-white/70 hover:text-white'
-                }`}
-                onClick={() => setSelectedMainType('vegetable')}
-              >
-                ผักสด
-                <span className="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform duration-300">
-                  expand_more
-                </span>
-              </button>
-              <div className="absolute top-full left-0 w-64 bg-surface-bright border border-outline-variant/30 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-2">
-                {['ผักใบเขียว', 'ผักกินผล', 'ผักกินดอก', 'ผักกินฝักและเมล็ด', 'ผักกินหัวหรือราก'].map((cat) => (
-                  <button
-                    key={cat}
-                    className="w-full text-left px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors"
-                    onClick={() => {
-                      setSelectedMainType('vegetable');
-                      setSearchQuery(cat);
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <button
+              className={`font-label-lg text-label-lg pb-1 transition-all duration-200 ${
+                selectedMainType === 'vegetable'
+                  ? 'text-white border-b-2 border-inverse-primary font-semibold'
+                  : 'text-white/70 hover:text-white'
+              }`}
+              onClick={() => {
+                setSelectedMainType('vegetable');
+                setSearchQuery('');
+              }}
+            >
+              ผักสด
+            </button>
 
-            <div className="relative group">
-              <button
-                className={`font-label-lg text-label-lg transition-colors flex items-center gap-1 py-2 ${
-                  selectedMainType === 'fruit'
-                    ? 'text-white border-b-2 border-inverse-primary font-semibold'
-                    : 'text-white/70 hover:text-white'
-                }`}
-                onClick={() => setSelectedMainType('fruit')}
-              >
-                ผลไม้
-                <span className="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform duration-300">
-                  expand_more
-                </span>
-              </button>
-              <div className="absolute top-full left-0 w-64 bg-surface-bright border border-outline-variant/30 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-2">
-                {['ผลไม้เมืองร้อน', 'ผลไม้เมืองหนาว / นำเข้า', 'ตระกูลส้มและมะนาว', 'ตระกูลแตง'].map((cat) => (
-                  <button
-                    key={cat}
-                    className="w-full text-left px-4 py-2 text-body-md font-headline-md hover:bg-surface-container-low hover:text-primary transition-colors"
-                    onClick={() => {
-                      setSelectedMainType('fruit');
-                      setSearchQuery(cat);
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <button
+              className={`font-label-lg text-label-lg pb-1 transition-all duration-200 ${
+                selectedMainType === 'fruit'
+                  ? 'text-white border-b-2 border-inverse-primary font-semibold'
+                  : 'text-white/70 hover:text-white'
+              }`}
+              onClick={() => {
+                setSelectedMainType('fruit');
+                setSearchQuery('');
+              }}
+            >
+              ผลไม้
+            </button>
           </nav>
 
           {/* Actions (Search, Cart, Profile) */}
