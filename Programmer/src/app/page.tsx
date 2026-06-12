@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 
 interface Product {
@@ -111,7 +112,21 @@ export default function HomePage() {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [selectedMainType, setSelectedMainType] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [user, setUser] = useState<any>(null);
   const slideInterval = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
+
+  // Load user from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Failed to parse user from localStorage:", err);
+      }
+    }
+  }, []);
 
   // Load products from API
   useEffect(() => {
@@ -293,15 +308,45 @@ export default function HomePage() {
               )}
             </Link>
 
-            {/* Registration/User buttons */}
-            <div className="hidden md:flex items-center gap-2">
-              <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">
-                เข้าสู่ระบบ
-              </Link>
-              <Link href="/register" className="bg-on-primary text-primary font-label-lg px-4 py-2 rounded-full hover:bg-inverse-primary transition-all shadow-sm cursor-pointer">
-                สมัครสมาชิก
-              </Link>
-            </div>
+            {/* User Profile / Registration Buttons */}
+            {user ? (
+              <div className="flex items-center gap-3 relative group">
+                <div className="w-[1px] h-6 bg-white/20"></div>
+                <div className="flex flex-col text-right">
+                  <span className="text-white font-medium text-sm leading-tight">{user.name}</span>
+                  <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
+                </div>
+                <button
+                  className="w-10 h-10 rounded-full bg-[#e2efe0] hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322] cursor-pointer"
+                  aria-label="User profile menu"
+                >
+                  <span className="material-symbols-outlined text-[24px]">person</span>
+                </button>
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg py-1 border border-gray-100 hidden group-hover:block z-50">
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem("user");
+                      setUser(null);
+                      router.refresh();
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer font-medium"
+                  >
+                    <span className="material-symbols-outlined text-sm">logout</span>
+                    ออกจากระบบ
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center gap-2">
+                <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">
+                  เข้าสู่ระบบ
+                </Link>
+                <Link href="/register" className="bg-on-primary text-primary font-label-lg px-4 py-2 rounded-full hover:bg-inverse-primary transition-all shadow-sm cursor-pointer">
+                  สมัครสมาชิก
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </header>
