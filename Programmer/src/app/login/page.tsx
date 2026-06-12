@@ -2,12 +2,20 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // For now, redirect to the homepage on login
+    router.push("/");
   };
 
   return (
@@ -39,7 +47,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-stack-md relative z-10">
+          <form className="space-y-stack-md relative z-10" onSubmit={handleLogin}>
             <div>
               <label
                 className="block font-label-lg text-label-lg text-on-surface mb-2"

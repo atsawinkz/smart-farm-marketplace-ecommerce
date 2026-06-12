@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 interface Product {
   id: number;
@@ -312,9 +313,9 @@ export default function HomePage() {
 
             {/* Registration/User buttons */}
             <div className="hidden md:flex items-center gap-2">
-              <a className="text-on-surface-variant hover:text-primary font-label-lg transition-colors px-4 py-2 cursor-pointer">
+              <Link href="/login" className="text-on-surface-variant hover:text-primary font-label-lg transition-colors px-4 py-2 cursor-pointer">
                 เข้าสู่ระบบ
-              </a>
+              </Link>
               <a className="bg-primary text-on-primary font-label-lg px-4 py-2 rounded-full hover:bg-surface-tint transition-all shadow-sm cursor-pointer">
                 สมัครสมาชิก
               </a>
