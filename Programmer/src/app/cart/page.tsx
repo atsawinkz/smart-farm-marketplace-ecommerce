@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 
 export default function CartPage() {
@@ -10,7 +11,6 @@ export default function CartPage() {
     removeFromCart,
     updateQuantity,
     toggleCheck,
-    clearCheckedItems,
   } = useCart();
 
   // Parse product name and unit (e.g. "แครอทออร์แกนิค (500g)" -> name: "แครอทออร์แกนิค", unit: "500g")
@@ -45,6 +45,8 @@ export default function CartPage() {
   // Total quantity for the header cart badge
   const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const router = useRouter();
+
   // Load user from localStorage
   const [user, setUser] = React.useState<any>(null);
   React.useEffect(() => {
@@ -64,8 +66,7 @@ export default function CartPage() {
       alert('กรุณาเลือกสินค้าอย่างน้อย 1 รายการเพื่อสั่งซื้อ');
       return;
     }
-    alert('สั่งซื้อสินค้าสำเร็จ');
-    clearCheckedItems();
+    router.push('/checkout');
   };
 
   return (
