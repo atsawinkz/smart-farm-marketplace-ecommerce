@@ -47,7 +47,7 @@ export default function RegisterPage() {
               className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
               id="fullname"
               name="fullname"
-              placeholder="Full Name"
+              placeholder="ชื่อ-นามสกุล"
               type="text"
               required
             />
@@ -66,7 +66,7 @@ export default function RegisterPage() {
                 className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
                 id="username"
                 name="username"
-                placeholder="Username"
+                placeholder="ชื่อผู้ใช้งาน"
                 type="text"
                 required
               />
@@ -85,7 +85,7 @@ export default function RegisterPage() {
                   className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-4 pr-12 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
                   id="password"
                   name="password"
-                  placeholder="Password"
+                  placeholder="รหัสผ่าน"
                   type={showPassword ? "text" : "password"}
                   required
                 />
@@ -116,7 +116,7 @@ export default function RegisterPage() {
               className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
               id="phone"
               name="phone"
-              placeholder="Phone Number"
+              placeholder="เบอร์โทรศัพท์"
               type="tel"
               required
             />
@@ -134,7 +134,7 @@ export default function RegisterPage() {
               className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface font-body-md"
               id="email"
               name="email"
-              placeholder="Email Address"
+              placeholder="อีเมล"
               type="email"
               required
             />
