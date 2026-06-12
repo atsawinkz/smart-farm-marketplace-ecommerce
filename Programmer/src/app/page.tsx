@@ -316,9 +316,9 @@ export default function HomePage() {
               <Link href="/login" className="text-on-surface-variant hover:text-primary font-label-lg transition-colors px-4 py-2 cursor-pointer">
                 เข้าสู่ระบบ
               </Link>
-              <a className="bg-primary text-on-primary font-label-lg px-4 py-2 rounded-full hover:bg-surface-tint transition-all shadow-sm cursor-pointer">
+              <Link href="/register" className="bg-primary text-on-primary font-label-lg px-4 py-2 rounded-full hover:bg-surface-tint transition-all shadow-sm cursor-pointer">
                 สมัครสมาชิก
-              </a>
+              </Link>
             </div>
           </div>
         </div>
