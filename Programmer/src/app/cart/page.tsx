@@ -97,20 +97,6 @@ export default function CartPage() {
             >
               หน้าหลัก
             </Link>
-
-            <Link
-              href="/?type=vegetable"
-              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
-            >
-              ผักสด
-            </Link>
-
-            <Link
-              href="/?type=fruit"
-              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
-            >
-              ผลไม้
-            </Link>
           </nav>
 
           {/* Actions */}
