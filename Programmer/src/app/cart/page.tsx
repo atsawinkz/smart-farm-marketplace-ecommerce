@@ -1,0 +1,293 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { useCart } from '@/lib/CartContext';
+
+export default function CartPage() {
+  const {
+    cartItems,
+    removeFromCart,
+    updateQuantity,
+    toggleCheck,
+    clearCheckedItems,
+  } = useCart();
+
+  // Parse product name and unit (e.g. "แครอทออร์แกนิค (500g)" -> name: "แครอทออร์แกนิค", unit: "500g")
+  const getProductDetails = (fullName: string) => {
+    const match = fullName.match(/^(.*?)\s*\((.*?)\)$/);
+    if (match) {
+      return { name: match[1], unit: match[2] };
+    }
+    return { name: fullName, unit: 'ชิ้น' };
+  };
+
+  // Calculations
+  const checkedItems = cartItems.filter((item) => item.checked);
+  
+  // Total unique checked products
+  const checkedItemsCount = checkedItems.length;
+
+  // Subtotal for checked items
+  const itemsSubtotal = checkedItems.reduce((sum, item) => {
+    const price = typeof item.product.price === 'number'
+      ? item.product.price
+      : parseFloat(item.product.price);
+    return sum + price * item.quantity;
+  }, 0);
+
+  // Flat shipping fee
+  const shippingFee = itemsSubtotal > 0 ? 40 : 0;
+
+  // Net total
+  const netTotal = itemsSubtotal + shippingFee;
+
+  // Total quantity for the header cart badge
+  const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Checkout action
+  const handleCheckout = () => {
+    if (checkedItemsCount === 0) {
+      alert('กรุณาเลือกสินค้าอย่างน้อย 1 รายการเพื่อสั่งซื้อ');
+      return;
+    }
+    alert('สั่งซื้อสินค้าสำเร็จ');
+    clearCheckedItems();
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col font-body-md text-body-md bg-surface text-on-surface">
+      {/* TopNavBar */}
+      <header
+        className="sticky top-0 z-50 w-full bg-primary/95 dark:bg-primary-container/95 backdrop-blur-md transition-all duration-300 border-b border-primary-container/20"
+      >
+        <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
+          {/* Brand Logo */}
+          <Link
+            href="/"
+            className="text-white font-headline-md font-bold flex items-center gap-2 group cursor-pointer"
+          >
+            <span
+              className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform duration-300"
+              data-weight="fill"
+            >
+              eco
+            </span>
+            Smart Farm Marketplace
+          </Link>
+
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center gap-gutter">
+            <Link
+              href="/"
+              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
+            >
+              หน้าหลัก
+            </Link>
+          </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-stack-md">
+            {/* Shopping Cart button */}
+            <Link
+              href="/cart"
+              className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative bg-white/10"
+            >
+              <span className="material-symbols-outlined" data-icon="shopping_cart">
+                shopping_cart
+              </span>
+              {totalCartQuantity > 0 && (
+                <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-bounce">
+                  {totalCartQuantity}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Cart Content */}
+      <main className="flex-grow max-w-container-max w-full mx-auto px-margin-mobile md:px-margin-desktop py-12">
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          
+          {/* Cart Items List */}
+          <div className="w-full lg:w-2/3 flex flex-col gap-6">
+            <div className="mb-4">
+              <h1 className="text-3xl md:text-4xl font-headline-lg font-bold text-primary">
+                ตะกร้าสินค้าขายส่ง
+              </h1>
+              <p className="text-body-lg text-on-surface-variant mt-1 font-light">
+                ทบทวนรายการสินค้าและดำเนินการสั่งซื้อแบบขายส่ง
+              </p>
+            </div>
+
+            {cartItems.length === 0 ? (
+              <div className="text-center py-16 bg-surface-container-lowest rounded-3xl border border-outline-variant/20 shadow-sm flex flex-col items-center gap-4">
+                <span className="material-symbols-outlined text-outline text-6xl">
+                  shopping_cart_off
+                </span>
+                <h3 className="text-xl font-headline-md text-on-surface-variant font-medium">
+                  ไม่มีสินค้าในตะกร้าของคุณ
+                </h3>
+                <p className="text-body-md text-outline max-w-sm">
+                  คุณยังไม่ได้เลือกสินค้าใด ๆ ใส่ตะกร้า กรุณากลับไปเลือกชมสินค้าจากหน้าแรก
+                </p>
+                <Link
+                  href="/"
+                  className="bg-primary text-on-primary font-label-md px-6 py-2.5 rounded-full hover:bg-surface-tint transition-all shadow-sm cursor-pointer mt-2"
+                >
+                  เลือกซื้อสินค้าต่อ
+                </Link>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {cartItems.map((item) => {
+                  const details = getProductDetails(item.product.name);
+                  const price = typeof item.product.price === 'number'
+                    ? item.product.price
+                    : parseFloat(item.product.price);
+                  const itemSubtotal = price * item.quantity;
+
+                  return (
+                    <div
+                      key={item.product.id}
+                      className="flex items-center gap-4 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 shadow-sm transition-all duration-300 hover:shadow-md"
+                    >
+                      {/* Checkbox Selector */}
+                      <label className="flex items-center justify-center cursor-pointer p-1">
+                        <input
+                          type="checkbox"
+                          checked={item.checked}
+                          onChange={() => toggleCheck(item.product.id)}
+                          className="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary accent-primary cursor-pointer transition-colors"
+                        />
+                      </label>
+
+                      {/* Product Image */}
+                      <div className="w-24 h-24 bg-surface-container-low rounded-xl p-2 flex items-center justify-center border border-outline-variant/10 overflow-hidden flex-shrink-0">
+                        <img
+                          src={item.product.image_url}
+                          alt={details.name}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+
+                      {/* Product Details */}
+                      <div className="flex-grow min-w-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="min-w-0">
+                          <h3 className="text-lg font-bold text-on-surface truncate font-body-lg">
+                            {details.name}
+                          </h3>
+                          <p className="text-body-md text-on-surface-variant font-light mt-0.5">
+                            {details.unit}
+                          </p>
+                          <p className="text-body-sm text-outline font-light mt-1">
+                            {price.toFixed(0)} บาท / ชิ้น
+                          </p>
+                        </div>
+
+                        {/* Quantity Adjuster & Total Price */}
+                        <div className="flex items-center justify-between md:justify-end gap-6 md:gap-8 flex-shrink-0">
+                          {/* Quantity Counter */}
+                          <div className="flex items-center bg-surface-container border border-outline-variant/30 rounded-full p-1 min-w-[100px] justify-between">
+                            <button
+                              onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                              disabled={item.quantity <= 1}
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all"
+                              aria-label="Decrease quantity"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">remove</span>
+                            </button>
+                            <span className="font-semibold text-on-surface w-6 text-center select-none font-body-lg text-body-md">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 transition-all"
+                              aria-label="Increase quantity"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">add</span>
+                            </button>
+                          </div>
+
+                          {/* Item Subtotal */}
+                          <div className="text-right min-w-[80px]">
+                            <span className="text-lg font-bold text-primary font-body-lg">
+                              {itemSubtotal.toFixed(0)} บาท
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Remove Button */}
+                      <button
+                        onClick={() => removeFromCart(item.product.id)}
+                        className="text-outline hover:text-error transition-colors p-2 rounded-full hover:bg-error-container/20 flex-shrink-0"
+                        aria-label="Remove item"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">close</span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Order Summary Card */}
+          <div className="w-full lg:w-1/3 bg-surface-container p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-6 lg:sticky lg:top-24">
+            <h2 className="text-2xl font-bold text-primary font-headline-lg border-b border-outline-variant/30 pb-4">
+              สรุปคำสั่งซื้อ
+            </h2>
+
+            <div className="flex flex-col gap-3 font-label-md text-label-md">
+              <div className="flex justify-between items-center text-on-surface-variant">
+                <span>ยอดรวมสินค้า ({checkedItemsCount} รายการ)</span>
+                <span className="font-semibold text-on-surface">{itemsSubtotal.toFixed(0)} บาท</span>
+              </div>
+              <div className="flex justify-between items-center text-on-surface-variant">
+                <span>ค่าจัดส่ง</span>
+                <span className="font-semibold text-on-surface">
+                  {shippingFee > 0 ? `${shippingFee.toFixed(0)} บาท` : '0 บาท'}
+                </span>
+              </div>
+            </div>
+
+            <hr className="border-outline-variant/30" />
+
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between items-end">
+                <span className="text-lg font-bold text-on-surface font-body-lg">ยอดรวมสุทธิ</span>
+                <div className="text-right">
+                  <span className="text-2xl font-extrabold text-primary font-headline-lg">
+                    {netTotal.toFixed(0)} บาท
+                  </span>
+                </div>
+              </div>
+              <p className="text-right text-[12px] text-outline mt-0.5">
+                รวมภาษีมูลค่าเพิ่มแล้ว
+              </p>
+            </div>
+
+            <button
+              onClick={handleCheckout}
+              disabled={checkedItemsCount === 0}
+              className="bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none font-label-lg"
+            >
+              สั่งซื้อสินค้า
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+
+            <Link
+              href="/"
+              className="text-on-surface-variant hover:text-primary transition-colors text-center text-label-lg font-semibold py-1 block cursor-pointer"
+            >
+              เลือกซื้อสินค้าต่อ
+            </Link>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}

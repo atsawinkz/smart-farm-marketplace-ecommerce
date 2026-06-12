@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useCart } from '@/lib/CartContext';
 
 interface Product {
   id: number;
@@ -91,7 +92,7 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [cartCount, setCartCount] = useState(0);
+  const { cartItems, addToCart } = useCart();
   const [hasScrolled, setHasScrolled] = useState(false);
   const [selectedMainType, setSelectedMainType] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -162,10 +163,8 @@ export default function HomePage() {
     startSlideShow();
   };
 
-  // Add to cart action with dynamic indicator
-  const handleAddToCart = (productName: string) => {
-    setCartCount((prev) => prev + 1);
-  };
+  // Calculate total item quantity in cart
+  const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   // Toggle favorite list
   const toggleFavorite = (productId: number) => {
@@ -300,16 +299,16 @@ export default function HomePage() {
             </div>
 
             {/* Shopping Cart button */}
-            <button className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
+            <Link href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
               <span className="material-symbols-outlined" data-icon="shopping_cart">
                 shopping_cart
               </span>
-              {cartCount > 0 && (
+              {totalCartQuantity > 0 && (
                 <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-bounce">
-                  {cartCount}
+                  {totalCartQuantity}
                 </span>
               )}
-            </button>
+            </Link>
 
             {/* Registration/User buttons */}
             <div className="hidden md:flex items-center gap-2">
@@ -530,7 +529,7 @@ export default function HomePage() {
                         ฿{typeof product.price === 'number' ? product.price.toFixed(0) : parseFloat(product.price).toFixed(0)}
                       </span>
                       <button
-                        onClick={() => handleAddToCart(product.name)}
+                        onClick={() => addToCart(product)}
                         aria-label="เพิ่มลงตะกร้า"
                         className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-95 hover:scale-105 transition-all shadow-sm focus:ring-2 focus:ring-primary focus:ring-offset-2"
                       >

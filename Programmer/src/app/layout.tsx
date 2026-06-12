@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "@/lib/CartContext";
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
@@ -33,7 +34,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-surface text-on-surface font-body-md text-body-md">
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
