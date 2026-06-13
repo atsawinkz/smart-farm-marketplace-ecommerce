@@ -179,9 +179,6 @@ export default function ProfilePage() {
             <div className="flex flex-col min-w-0">
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <span className="font-bold text-2xl truncate">{user.name}</span>
-                <span className="bg-white/15 px-3 py-1 rounded-full text-xs font-semibold text-white/90 border border-white/10 backdrop-blur-sm">
-                  Classic Member
-                </span>
               </div>
               <span className="text-white/70 text-sm mt-2 font-mono truncate">{user.email}</span>
             </div>
