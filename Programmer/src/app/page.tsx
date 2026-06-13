@@ -323,6 +323,19 @@ export default function HomePage() {
               <span className="material-symbols-outlined absolute right-3 top-2.5 text-outline">search</span>
             </div>
 
+            {user && (
+              <Link href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
+                <span className="material-symbols-outlined" data-icon="shopping_cart">
+                  shopping_cart
+                </span>
+                {totalCartQuantity > 0 && (
+                  <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-bounce">
+                    {totalCartQuantity}
+                  </span>
+                )}
+              </Link>
+            )}
+
             {/* User Profile / Registration Buttons */}
             {user ? (
               <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
