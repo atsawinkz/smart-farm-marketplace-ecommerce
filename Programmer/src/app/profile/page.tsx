@@ -39,17 +39,51 @@ export default function ProfilePage() {
     } else {
       try {
         const u = JSON.parse(storedUser);
-        setUser(u);
-        setForm({
-          name: u.name || '',
-          email: u.email || '',
-          phone: u.phone || '',
-          address: u.address || '',
-          subdistrict: u.subdistrict || '',
-          district: u.district || '',
-          province: u.province || '',
-          postal_code: u.postal_code || '',
-        });
+        
+        fetch(`/api/auth/profile?id=${u.id}`)
+          .then(res => res.json())
+          .then(result => {
+            if (result.success && result.data) {
+              const latestUser = result.data;
+              localStorage.setItem("user", JSON.stringify(latestUser));
+              setUser(latestUser);
+              setForm({
+                name: latestUser.name || '',
+                email: latestUser.email || '',
+                phone: latestUser.phone || '',
+                address: latestUser.address || '',
+                subdistrict: latestUser.subdistrict || '',
+                district: latestUser.district || '',
+                province: latestUser.province || '',
+                postal_code: latestUser.postal_code || '',
+              });
+            } else {
+              setUser(u);
+              setForm({
+                name: u.name || '',
+                email: u.email || '',
+                phone: u.phone || '',
+                address: u.address || '',
+                subdistrict: u.subdistrict || '',
+                district: u.district || '',
+                province: u.province || '',
+                postal_code: u.postal_code || '',
+              });
+            }
+          })
+          .catch(() => {
+            setUser(u);
+            setForm({
+              name: u.name || '',
+              email: u.email || '',
+              phone: u.phone || '',
+              address: u.address || '',
+              subdistrict: u.subdistrict || '',
+              district: u.district || '',
+              province: u.province || '',
+              postal_code: u.postal_code || '',
+            });
+          });
       } catch (err) {
         console.error("Failed to parse user session:", err);
         router.push("/login");

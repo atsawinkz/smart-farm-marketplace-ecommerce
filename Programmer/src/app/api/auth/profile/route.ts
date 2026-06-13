@@ -34,3 +34,28 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'ไม่พบรหัสผู้ใช้' }, { status: 400 });
+    }
+
+    const users = await query<any[]>(
+      'SELECT id, username, name, email, phone, role, address, subdistrict, district, province, postal_code FROM users WHERE id = ?',
+      [id]
+    );
+
+    if (!users || users.length === 0) {
+      return NextResponse.json({ success: false, error: 'ไม่พบผู้ใช้' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, data: users[0] });
+  } catch (error: any) {
+    console.error('Get profile error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
