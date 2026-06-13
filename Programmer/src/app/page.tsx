@@ -483,7 +483,7 @@ export default function HomePage() {
               {filteredProducts.map((product) => (
                 <article key={product.id} className="flex flex-col group relative">
                   {/* Card Container */}
-                  <div className="bg-surface-container-low rounded-xl aspect-square p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
+                  <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
                     {/* Tags */}
                     {product.is_best_seller && (
                       <span className="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
@@ -494,7 +494,7 @@ export default function HomePage() {
                     {/* Product Image */}
                     <img
                       alt={product.name}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-lg"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 drop-shadow-lg"
                       src={product.image_url}
                     />
                   </div>
