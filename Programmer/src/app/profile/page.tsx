@@ -139,16 +139,25 @@ export default function ProfilePage() {
               )}
             </Link>
             {user ? (
-              <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
-                <div className="w-[1px] h-6 bg-white/20"></div>
-                <div className="flex flex-col text-right">
-                  <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
-                  <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]">
-                  <span className="material-symbols-outlined text-[24px]">person</span>
-                </div>
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
+                  <div className="w-[1px] h-6 bg-white/20"></div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
+                    <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]">
+                    <span className="material-symbols-outlined text-[24px]">person</span>
+                  </div>
+                </Link>
+                <button 
+                  onClick={handleLogout} 
+                  className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
+                  title="ออกจากระบบ"
+                >
+                  <span className="material-symbols-outlined text-[24px]">logout</span>
+                </button>
+              </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">เข้าสู่ระบบ</Link>
@@ -334,10 +343,6 @@ export default function ProfilePage() {
           </>
         )}
 
-        <button onClick={handleLogout} className="self-end border border-red-200 hover:border-red-300 text-red-500 hover:bg-red-50 font-medium py-2.5 px-6 rounded-full flex items-center gap-2 transition-colors cursor-pointer text-sm shadow-sm">
-          <span className="material-symbols-outlined text-[18px]">logout</span>
-          <span>ออกจากระบบ</span>
-        </button>
       </main>
     </div>
   );
