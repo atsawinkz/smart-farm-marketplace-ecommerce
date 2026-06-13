@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
 export async function POST(request: Request) {
+  let body: any;
   try {
-    const body = await request.json();
+    body = await request.json();
     const { user_id, items, total_price, payment_method, shipping_address, shipping_phone } = body;
 
     if (!user_id || !items || !items.length || !total_price) {
@@ -38,16 +39,15 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.warn('Database error, simulating order creation. Error:', error.message);
 
-    const body = await request.clone().json();
     const simulatedId = Math.floor(Math.random() * 90000) + 10000;
 
     return NextResponse.json({
       success: true,
       data: {
         id: simulatedId,
-        total_price: body.total_price,
+        total_price: body?.total_price || 0,
         status: 'pending',
-        payment_method: body.payment_method,
+        payment_method: body?.payment_method || 'promptpay',
         payment_status: 'pending',
         simulated: true
       },
