@@ -45,6 +45,8 @@ interface Address {
   id: number;
   user_id: number;
   title: string;
+  name: string;
+  email: string;
   address: string;
   subdistrict: string;
   district: string;
@@ -68,12 +70,6 @@ export default function ProfilePage() {
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
 
-  // Personal Info State
-  const [editingPersonalInfo, setEditingPersonalInfo] = useState(false);
-  const [savingPersonal, setSavingPersonal] = useState(false);
-  const [personalError, setPersonalError] = useState('');
-  const [personalForm, setPersonalForm] = useState({ name: '', email: '', phone: '' });
-
   // Addresses State
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [addressesLoading, setAddressesLoading] = useState(true);
@@ -83,6 +79,8 @@ export default function ProfilePage() {
   const [savingAddress, setSavingAddress] = useState(false);
   const [addressForm, setAddressForm] = useState({
     title: '',
+    name: '',
+    email: '',
     address: '',
     subdistrict: '',
     district: '',
@@ -123,11 +121,6 @@ export default function ProfilePage() {
       try {
         const u = JSON.parse(storedUser);
         setUser(u);
-        setPersonalForm({
-          name: u.name || '',
-          email: u.email || '',
-          phone: u.phone || '',
-        });
         fetchOrders(u.id);
         fetchAddresses(u.id);
         
@@ -138,11 +131,6 @@ export default function ProfilePage() {
               const latestUser = result.data;
               localStorage.setItem("user", JSON.stringify(latestUser));
               setUser(latestUser);
-              setPersonalForm({
-                name: latestUser.name || '',
-                email: latestUser.email || '',
-                phone: latestUser.phone || '',
-              });
             }
           })
           .catch(() => { /* ignore */ });
@@ -164,69 +152,13 @@ export default function ProfilePage() {
     router.push("/");
   };
 
-  // Personal Info handlers
-  const startEditPersonal = () => {
-    if (!user) return;
-    setPersonalForm({
-      name: user.name || '',
-      email: user.email || '',
-      phone: user.phone || '',
-    });
-    setEditingPersonalInfo(true);
-    setPersonalError('');
-  };
-
-  const savePersonalInfo = async () => {
-    if (!personalForm.name || !personalForm.email) {
-      setPersonalError('กรุณากรอกชื่อและอีเมล');
-      return;
-    }
-    setSavingPersonal(true);
-    setPersonalError('');
-
-    try {
-      const res = await fetch('/api/auth/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: user.id,
-          name: personalForm.name,
-          email: personalForm.email,
-          phone: personalForm.phone,
-          // keep other fields intact from existing user
-          address: user.address,
-          subdistrict: user.subdistrict,
-          district: user.district,
-          province: user.province,
-          postal_code: user.postal_code,
-        }),
-      });
-      const result = await res.json();
-
-      if (!result.success) {
-        setPersonalError(result.error || 'เกิดข้อผิดพลาด');
-        setSavingPersonal(false);
-        return;
-      }
-
-      const updatedUser = result.data;
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      setEditingPersonalInfo(false);
-      
-      // Reload addresses
-      fetchAddresses(user.id);
-    } catch {
-      setPersonalError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์');
-    }
-    setSavingPersonal(false);
-  };
-
   // Addresses handlers
   const handleOpenAddAddress = () => {
     setEditingAddressItem(null);
     setAddressForm({
       title: '',
+      name: user?.name || '',
+      email: user?.email || '',
       address: '',
       subdistrict: '',
       district: '',
@@ -243,6 +175,8 @@ export default function ProfilePage() {
     setEditingAddressItem(addr);
     setAddressForm({
       title: addr.title,
+      name: addr.name || '',
+      email: addr.email || '',
       address: addr.address,
       subdistrict: addr.subdistrict,
       district: addr.district,
@@ -337,7 +271,7 @@ export default function ProfilePage() {
   };
 
   const handleSaveAddress = async () => {
-    if (!addressForm.title || !addressForm.address || !addressForm.district || !addressForm.province || !addressForm.phone) {
+    if (!addressForm.title || !addressForm.name || !addressForm.email || !addressForm.address || !addressForm.district || !addressForm.province || !addressForm.phone) {
       setAddressError('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
       return;
     }
@@ -399,9 +333,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  // Get matching avatar based on gender/look in image
-  const defaultAvatar = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=256&h=256&fit=crop";
 
   return (
     <div className="bg-[#f8faf6] text-[#1b3322] min-h-screen flex flex-col font-body-md">
@@ -471,7 +402,7 @@ export default function ProfilePage() {
 
           {editing ? (
             <button 
-              onClick={() => { setEditing(false); setEditingPersonalInfo(false); }}
+              onClick={() => setEditing(false)}
               className="bg-white text-[#1b3322] px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-white/90 transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer flex items-center gap-1.5"
             >
               <span className="material-symbols-outlined text-[18px]">close</span>
@@ -491,78 +422,6 @@ export default function ProfilePage() {
         {/* Edit View */}
         {editing ? (
           <>
-            {/* ข้อมูลส่วนตัว Card */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm flex flex-col gap-6 relative">
-              <div className="flex justify-between items-center">
-                <h2 className="font-bold text-lg md:text-xl text-[#1b3322] font-headline-md">ข้อมูลส่วนตัว</h2>
-                {!editingPersonalInfo ? (
-                  <button 
-                    onClick={startEditPersonal}
-                    className="flex items-center gap-1 text-sm font-semibold text-[#1b3322] hover:text-[#1b3322]/80 transition-all cursor-pointer border border-gray-200 px-3 py-1.5 rounded-full hover:bg-gray-50"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">edit</span>
-                    แก้ไข
-                  </button>
-                ) : null}
-              </div>
-
-              {!editingPersonalInfo ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <p className="text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</p>
-                    <p className="text-sm font-bold text-[#1b3322]">{user.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-gray-400 mb-1">อีเมล</p>
-                    <p className="text-sm font-semibold text-[#1b3322] font-mono">{user.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</p>
-                    <p className="text-sm font-semibold text-[#1b3322]">{user.phone || '-'}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {personalError && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{personalError}</p>}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</label>
-                      <input type="text" value={personalForm.name}
-                        onChange={e => setPersonalForm(p => ({ ...p, name: e.target.value }))}
-                        className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล</label>
-                      <input type="email" value={personalForm.email}
-                        onChange={e => setPersonalForm(p => ({ ...p, email: e.target.value }))}
-                        className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</label>
-                      <input type="text" value={personalForm.phone}
-                        onChange={e => setPersonalForm(p => ({ ...p, phone: e.target.value }))}
-                        className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-3 mt-2">
-                    <button 
-                      onClick={() => setEditingPersonalInfo(false)} 
-                      className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-xs transition-all cursor-pointer"
-                    >
-                      ยกเลิก
-                    </button>
-                    <button 
-                      onClick={savePersonalInfo} 
-                      disabled={savingPersonal}
-                      className="px-5 py-2 rounded-full bg-[#1b3322] text-white hover:bg-[#1b3322]/90 disabled:opacity-50 font-semibold text-xs transition-all shadow-sm cursor-pointer"
-                    >
-                      {savingPersonal ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* ที่อยู่จัดส่ง Section */}
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-center">
@@ -585,21 +444,42 @@ export default function ProfilePage() {
                         addr.is_default ? 'border-[#1b3322]' : 'border-gray-200'
                       }`}
                     >
-                      <div className="flex justify-between items-center">
-                        {addr.is_default ? (
-                          <span className="bg-[#1b3322] text-white px-3 py-1 rounded-full text-[11px] font-bold">
-                            ค่าเริ่มต้น
-                          </span>
-                        ) : (
-                          <button 
-                            onClick={() => handleSetDefaultAddress(addr.id)}
-                            className="bg-[#f4f7f3] text-gray-500 hover:bg-[#e2efe0] hover:text-[#1b3322] px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer"
-                          >
-                            ตั้งเป็นค่าเริ่มต้น
-                          </button>
-                        )}
+                      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                        {/* Left side: Badge & Title */}
+                        <div className="flex flex-col gap-2 shrink-0 w-full sm:w-[110px]">
+                          {addr.is_default ? (
+                            <span className="bg-[#1b3322] text-white px-3 py-1 rounded-full text-[11px] font-bold text-center w-fit">
+                              ค่าเริ่มต้น
+                            </span>
+                          ) : (
+                            <button 
+                              onClick={() => handleSetDefaultAddress(addr.id)}
+                              className="bg-[#f4f7f3] text-gray-500 hover:bg-[#e2efe0] hover:text-[#1b3322] px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer text-center w-fit"
+                            >
+                              ตั้งเป็นค่าเริ่มต้น
+                            </button>
+                          )}
+                          <p className="font-bold text-xs text-[#1b3322] mt-1">{addr.title}</p>
+                        </div>
 
-                        <div className="flex items-center gap-1">
+                        {/* Middle side: User contact & Address */}
+                        <div className="flex-grow flex flex-col gap-1.5 text-xs text-gray-500 min-w-0">
+                          <p className="font-bold text-sm text-[#1b3322]">{addr.name}</p>
+                          <p className="leading-relaxed">
+                            {addr.address} ต.{addr.subdistrict} อ.{addr.district} จ.{addr.province} {addr.postal_code}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <span className="material-symbols-outlined text-[16px] text-gray-400">mail</span>
+                            <span className="font-mono">{addr.email}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="material-symbols-outlined text-[16px] text-gray-400">call</span>
+                            <span>{addr.phone}</span>
+                          </div>
+                        </div>
+
+                        {/* Right side: Action buttons */}
+                        <div className="flex items-center gap-1 shrink-0 self-center sm:self-start">
                           <button 
                             onClick={() => handleOpenEditAddress(addr)}
                             className="text-gray-400 hover:text-[#1b3322] p-1.5 rounded-full hover:bg-gray-50 flex items-center justify-center cursor-pointer"
@@ -616,21 +496,13 @@ export default function ProfilePage() {
                           </button>
                         </div>
                       </div>
-
-                      <div className="flex flex-col min-w-0">
-                        <p className="font-bold text-sm text-[#1b3322] mb-1">{addr.title}</p>
-                        <p className="text-xs text-gray-500 leading-relaxed min-h-[40px] flex items-center">
-                          {addr.address} ต.{addr.subdistrict} อ.{addr.district} จ.{addr.province} {addr.postal_code}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-2 font-semibold">โทร: {addr.phone}</p>
-                      </div>
                     </div>
                   ))}
 
                   {addresses.length < 5 && (
                     <button 
                       onClick={handleOpenAddAddress}
-                      className="bg-transparent hover:bg-white rounded-2xl p-6 border-2 border-dashed border-gray-300 hover:border-[#1b3322] transition-all flex flex-col items-center justify-center gap-2 min-h-[160px] cursor-pointer text-gray-400 hover:text-[#1b3322] group"
+                      className="bg-transparent hover:bg-white rounded-2xl p-6 border-2 border-dashed border-gray-300 hover:border-[#1b3322] transition-all flex flex-col items-center justify-center gap-2 min-h-[140px] cursor-pointer text-gray-400 hover:text-[#1b3322] group"
                     >
                       <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-[#e2efe0] flex items-center justify-center transition-colors">
                         <span className="material-symbols-outlined text-[24px]">add_location_alt</span>
@@ -761,11 +633,27 @@ export default function ProfilePage() {
             {addressError && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{addressError}</p>}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อเรียกที่อยู่ (เช่น บ้านพักอาศัย, ที่ทำงาน) *</label>
                 <input type="text" value={addressForm.title}
                   onChange={e => setAddressForm(p => ({ ...p, title: e.target.value }))}
                   placeholder="เช่น บ้านพักอาศัย, ที่ทำงาน"
+                  className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล *</label>
+                <input type="text" value={addressForm.name}
+                  onChange={e => setAddressForm(p => ({ ...p, name: e.target.value }))}
+                  placeholder="ชื่อ-นามสกุล ผู้รับ"
+                  className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล *</label>
+                <input type="email" value={addressForm.email}
+                  onChange={e => setAddressForm(p => ({ ...p, email: e.target.value }))}
+                  placeholder="อีเมลผู้รับ"
                   className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
               </div>
 

@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     }
 
     const addresses = await query<any[]>(
-      'SELECT id, user_id, title, address, subdistrict, district, province, postal_code, phone, is_default FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC, id DESC',
+      'SELECT id, user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC, id DESC',
       [parseInt(userId)]
     );
 
@@ -25,9 +25,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { user_id, title, address, subdistrict, district, province, postal_code, phone, is_default } = body;
+    const { user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default } = body;
 
-    if (!user_id || !title || !address || !district || !province || !phone) {
+    if (!user_id || !title || !name || !email || !address || !district || !province || !phone) {
       return NextResponse.json({ success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' }, { status: 400 });
     }
 
@@ -49,16 +49,16 @@ export async function POST(request: Request) {
     }
 
     const result = await query<any>(
-      `INSERT INTO user_addresses (user_id, title, address, subdistrict, district, province, postal_code, phone, is_default)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [user_id, title, address, subdistrict || '', district, province, postal_code || '', phone, setAsDefault]
+      `INSERT INTO user_addresses (user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [user_id, title, name, email, address, subdistrict || '', district, province, postal_code || '', phone, setAsDefault]
     );
 
     // If this is default, also update the main users table for compatibility with any legacy code
     if (setAsDefault) {
       await query(
-        `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-        [address, subdistrict || '', district, province, postal_code || '', phone, user_id]
+        `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
+        [name, email, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
       );
     }
 
@@ -66,6 +66,8 @@ export async function POST(request: Request) {
       id: result.insertId,
       user_id,
       title,
+      name,
+      email,
       address,
       subdistrict,
       district,
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, user_id, title, address, subdistrict, district, province, postal_code, phone, is_default, action } = body;
+    const { id, user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default, action } = body;
 
     if (!id || !user_id) {
       return NextResponse.json({ success: false, error: 'ข้อมูลไม่ครบถ้วน' }, { status: 400 });
@@ -99,14 +101,14 @@ export async function PUT(request: Request) {
 
       // Get this address to update users table
       const addrRes = await query<any[]>(
-        'SELECT address, subdistrict, district, province, postal_code, phone FROM user_addresses WHERE id = ?',
+        'SELECT name, email, address, subdistrict, district, province, postal_code, phone FROM user_addresses WHERE id = ?',
         [id]
       );
       if (addrRes.length > 0) {
         const a = addrRes[0];
         await query(
-          `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-          [a.address, a.subdistrict, a.district, a.province, a.postal_code, a.phone, user_id]
+          `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
+          [a.name, a.email, a.address, a.subdistrict, a.district, a.province, a.postal_code, a.phone, user_id]
         );
       }
 
@@ -114,15 +116,15 @@ export async function PUT(request: Request) {
     }
 
     // Normal update
-    if (!title || !address || !district || !province || !phone) {
+    if (!title || !name || !email || !address || !district || !province || !phone) {
       return NextResponse.json({ success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' }, { status: 400 });
     }
 
     await query(
       `UPDATE user_addresses 
-       SET title = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ?
+       SET title = ?, name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ?
        WHERE id = ? AND user_id = ?`,
-      [title, address, subdistrict || '', district, province, postal_code || '', phone, id, user_id]
+      [title, name, email, address, subdistrict || '', district, province, postal_code || '', phone, id, user_id]
     );
 
     // If this address is default, also update the users table
@@ -132,8 +134,8 @@ export async function PUT(request: Request) {
     );
     if (checkDefault[0]?.is_default) {
       await query(
-        `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-        [address, subdistrict || '', district, province, postal_code || '', phone, user_id]
+        `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
+        [name, email, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
       );
     }
 
@@ -167,7 +169,7 @@ export async function DELETE(request: Request) {
     if (wasDefault) {
       // Set another address as default
       const remaining = await query<any[]>(
-        'SELECT id, address, subdistrict, district, province, postal_code, phone FROM user_addresses WHERE user_id = ? ORDER BY id DESC LIMIT 1',
+        'SELECT id, name, email, address, subdistrict, district, province, postal_code, phone FROM user_addresses WHERE user_id = ? ORDER BY id DESC LIMIT 1',
         [parseInt(userId)]
       );
 
@@ -177,8 +179,8 @@ export async function DELETE(request: Request) {
 
         const r = remaining[0];
         await query(
-          `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-          [r.address, r.subdistrict, r.district, r.province, r.postal_code, r.phone, parseInt(userId)]
+          `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
+          [r.name, r.email, r.address, r.subdistrict, r.district, r.province, r.postal_code, r.phone, parseInt(userId)]
         );
       } else {
         // Clear address in users table
