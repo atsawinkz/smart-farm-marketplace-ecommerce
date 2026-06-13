@@ -283,7 +283,7 @@ export default function ProfilePage() {
 
   const handleSaveAddress = async () => {
     const titleToSave = addressForm.title || 'ที่อยู่จัดส่ง';
-    if (!titleToSave || !addressForm.name || !addressForm.email || !addressForm.address || !addressForm.district || !addressForm.province || !addressForm.phone) {
+    if (!titleToSave || !addressForm.name || !addressForm.address || !addressForm.district || !addressForm.province || !addressForm.phone) {
       setAddressError('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
       return;
     }
@@ -461,16 +461,16 @@ export default function ProfilePage() {
                       <span className="material-symbols-outlined text-2xl font-bold">arrow_back</span>
                     </button>
                     <h2 className="text-2xl font-bold text-[#1b3322]">
-                      แก้ไขข้อมูลส่วนตัว
+                      แก้ไขที่อยู่จัดส่ง
                     </h2>
                   </div>
 
                   {addressError && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{addressError}</p>}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* ชื่อ-นามสกุล */}
+                    {/* ชื่อผู้รับ */}
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-2">ชื่อ-นามสกุล</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-2">ชื่อผู้รับ (Recipient Name)</label>
                       <input type="text" value={addressForm.name}
                         onChange={e => setAddressForm(p => ({ ...p, name: e.target.value }))}
                         placeholder="นายสมชาย ใจดี"
@@ -479,25 +479,11 @@ export default function ProfilePage() {
 
                     {/* เบอร์โทรศัพท์ */}
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-2">เบอร์โทรศัพท์</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-2">เบอร์โทรศัพท์ (Phone Number)</label>
                       <input type="text" value={addressForm.phone}
                         onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value }))}
                         placeholder="081-234-5678"
                         className="w-full border border-[#e2e5e0] bg-[#f0f2ed] rounded-xl py-3 px-4 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors" />
-                    </div>
-
-                    {/* อีเมล */}
-                    <div className="md:col-span-2">
-                      <label className="block text-xs font-semibold text-gray-700 mb-2">อีเมล</label>
-                      <input type="email" value={addressForm.email}
-                        onChange={e => setAddressForm(p => ({ ...p, email: e.target.value }))}
-                        placeholder="somchai.farm@email.com"
-                        className="w-full border border-[#e2e5e0] bg-[#f0f2ed] rounded-xl py-3 px-4 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors" />
-                    </div>
-
-                    {/* Section Header: ที่อยู่จัดส่ง */}
-                    <div className="md:col-span-2 mt-2">
-                      <h3 className="font-bold text-[#1b3322] text-xl">ที่อยู่จัดส่ง</h3>
                     </div>
 
                     {/* จังหวัด */}
