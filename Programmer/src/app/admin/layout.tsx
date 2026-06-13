@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </h1>
           <div className="flex items-center gap-3 text-sm text-on-surface-variant">
             <span className="material-symbols-outlined text-[18px]">person</span>
-            <span>{user?.name} (ผู้ดูแลระบบ)</span>
+            <span>{user?.name} ({user?.role})</span>
             <button
               onClick={() => { localStorage.removeItem('user'); router.push('/login'); }}
               className="ml-2 text-error hover:text-error/80 transition-colors text-xs font-semibold cursor-pointer"
