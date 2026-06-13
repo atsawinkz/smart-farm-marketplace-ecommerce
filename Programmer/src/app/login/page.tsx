@@ -151,18 +151,20 @@ export default function LoginPage() {
             </div>
 
 
-            <button
-              className="mx-auto bg-primary text-on-primary py-2.5 px-10 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2 group disabled:opacity-50"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
-              {!loading && (
-                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
-                  arrow_forward
-                </span>
-              )}
-            </button>
+            <div className="flex justify-center">
+              <button
+                className="bg-primary text-on-primary py-2.5 px-10 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2 group disabled:opacity-50"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+                {!loading && (
+                  <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+                    arrow_forward
+                  </span>
+                )}
+              </button>
+            </div>
 
             <div className="text-center pt-stack-md border-t border-surface-variant mt-stack-md">
               <p className="font-body-md text-body-md text-on-surface-variant">
