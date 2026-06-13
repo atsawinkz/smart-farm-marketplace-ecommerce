@@ -23,24 +23,28 @@ interface Product {
 const BANNERS = [
   {
     id: 1,
-    title: 'Organic Vegetables',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdEyFvY50vwZScc2ZUCyhwxU9gzZgcKJnSglEqWk3CSLKtLjkVzv6D9Gq2uyUqAEvIjfJ9vGfW0-Ht2Gh82V1tKXiunYJfUgEyPDxY7KyDFENqwo6kjX8zLkNF5Va4i_QJWVeU5EZcuYR45mJCw5QDVXuedp2fYeUYr-Rwbvg373vLd_vXDwE-y7VJyy6j0y9E5ratEnCSBjLueaIMlXmC9xUnl02HycAaOkbC1fH-h0LeOmI0SSGo_pP-e05Ehi0Jn4OgtdqowkCp',
-    headline: 'สดใหม่จากสวนออร์แกนิคเลิศรส',
-    subheadline: 'ปลูกด้วยรัก ดูแลด้วยวิถีธรรมชาติ 100%',
+    title: 'Smartket Platform',
+    image: '/banners/banner1.png',
   },
   {
     id: 2,
-    title: 'Seasonal Fruits',
-    image: 'https://lh3.googleusercontent.com/aida/AP1WRLtPj2-aCOiaTCWwL25YIX8XeMk8m1V5FPr54JCWgxj8Dc99SIvWX7c87M_RyAJIIpJ_QFiy699FNPJS9r4nW_dd8UeEB8kL40lOnqKIqhw_7oJ60mSS_Y-SmKVe2ct5lsv-TdMnaG5DmREcLk0TNEbNEYFg1JwqGZ6AG5nOVtd2ZWjkcF1YN26zlgqMw_DWHk64uxR_WfUchcv8sLyEL3q00RVypNDUcJqCN-rZQT52W33AWJjP320Y4uPX',
-    headline: 'ผลไม้ตามฤดูกาลรสหวานฉ่ำ',
-    subheadline: 'ส่งตรงถึงบ้านรักษาความเย็นและสดใหม่',
+    title: 'Smartket Contact Center',
+    image: '/banners/banner2.png',
   },
   {
-    id: 3,
-    title: 'Farmer with Harvest',
-    image: 'https://lh3.googleusercontent.com/aida/AP1WRLux-qgrv3qb4wxhBrlNjAX4BGWyuGlcgZTw-Gw_UNXA4KkDCLdm-oawjYwMidrWjuV2zmGSKpd8Hoq-h86EpdYlTcv2WwQVbPc0a6U8TUm_JecTCBa1CsgmUQCF4mYZWSWEs6GGcA3jg-l0ha2RmW_c-3e58tamn9kJbQoLFMOuLi1JhrAPLkz7aI7wPWbDwd0bptTJFkAOC2Dl-W9CD70ckFxXc9RHiYL-xnZTOrSsmZ_5dh7yCpC-RqTN',
-    headline: 'จากมือเกษตรกรถึงโต๊ะอาหารคุณ',
-    subheadline: 'สนับสนุนเกษตรกรไทยโดยตรง ได้สินค้าคุณภาพดีราคายุติธรรม',
+    id: 4,
+    title: 'Smartket Kitchen Sourcing',
+    image: '/banners/banner4.png',
+  },
+  {
+    id: 5,
+    title: 'Smartket New Customer Promo',
+    image: '/banners/banner5.png',
+  },
+  {
+    id: 6,
+    title: 'Smartket Delivery Schedule',
+    image: '/banners/banner6.png',
   },
 ];
 
@@ -242,6 +246,68 @@ export default function HomePage() {
     return matchesSearch && matchesCategory;
   });
 
+  // Separate lists for Best Sellers and Discounted Products (for Homepage main state)
+  const bestSellerProducts = filteredProducts.filter(p => !!p.is_best_seller);
+  const promoProducts = filteredProducts.filter(p => p.promo_price !== null);
+
+  const renderProductCard = (product: Product) => (
+    <article key={product.id} className="flex flex-col group relative">
+      {/* Card Container */}
+      <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
+        {/* Tags */}
+        {!!product.is_best_seller && (
+          <span className="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
+            ขายดี
+          </span>
+        )}
+        {product.promo_price != null && (
+          <span className="absolute top-3 right-3 bg-error text-on-error text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
+            ลดราคา
+          </span>
+        )}
+
+        {/* Product Image */}
+        <img
+          alt={product.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 drop-shadow-lg"
+          src={product.image_url}
+        />
+      </div>
+
+      {/* Product Details */}
+      <div className="flex flex-col gap-1 px-1">
+        <span className="text-label-md text-outline font-label-md uppercase tracking-wider">
+          {product.category_name || (product.main_type === 'vegetable' ? 'ผักสด' : 'ผลไม้')}
+        </span>
+        <h3 className="text-body-lg font-body-lg text-on-surface font-medium line-clamp-1 group-hover:text-primary transition-colors">
+          {product.name}
+        </h3>
+        <p className="text-body-sm text-on-surface-variant line-clamp-1 font-light" title={product.description}>
+          {product.description || 'สดสะอาด คุณภาพออร์แกนิคแท้ 100%'}
+        </p>
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-2">
+            <span className="text-headline-md font-headline-md text-primary font-bold">
+              ฿{typeof product.price === 'number' ? product.price.toFixed(0) : parseFloat(String(product.price)).toFixed(0)}
+            </span>
+            {product.promo_price != null && (
+              <span className="text-body-sm text-outline line-through">
+                ฿{product.original_price}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => addToCart(product)}
+            aria-label="เพิ่มลงตะกร้า"
+            className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-95 hover:scale-105 transition-all shadow-sm focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          >
+            <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+
   return (
     <div className="min-h-screen flex flex-col font-body-md text-body-md bg-surface text-on-surface">
       {/* TopNavBar */}
@@ -265,49 +331,31 @@ export default function HomePage() {
             >
               eco
             </span>
-            Smart Farm Marketplace
+            Smartket
           </a>
 
           {/* Navigation Links (Desktop) */}
           <nav className="hidden md:flex items-center gap-gutter">
-            <button
-              className={`font-label-lg text-label-lg pb-1 transition-all duration-200 ${
-                !selectedMainType
-                  ? 'text-white border-b-2 border-inverse-primary font-semibold'
-                  : 'text-white/70 hover:text-white'
-              }`}
-              onClick={() => setSelectedMainType(null)}
+            <Link
+              href="/"
+              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white border-b-2 border-inverse-primary font-semibold"
             >
               หน้าหลัก
-            </button>
+            </Link>
 
-            <button
-              className={`font-label-lg text-label-lg pb-1 transition-all duration-200 ${
-                selectedMainType === 'vegetable'
-                  ? 'text-white border-b-2 border-inverse-primary font-semibold'
-                  : 'text-white/70 hover:text-white'
-              }`}
-              onClick={() => {
-                setSelectedMainType('vegetable');
-                setSearchQuery('');
-              }}
+            <Link
+              href="/vegetables"
+              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
             >
               ผักสด
-            </button>
+            </Link>
 
-            <button
-              className={`font-label-lg text-label-lg pb-1 transition-all duration-200 ${
-                selectedMainType === 'fruit'
-                  ? 'text-white border-b-2 border-inverse-primary font-semibold'
-                  : 'text-white/70 hover:text-white'
-              }`}
-              onClick={() => {
-                setSelectedMainType('fruit');
-                setSearchQuery('');
-              }}
+            <Link
+              href="/fruits"
+              className="font-label-lg text-label-lg pb-1 transition-all duration-200 text-white/70 hover:text-white"
             >
               ผลไม้
-            </button>
+            </Link>
           </nav>
           {/* Actions (Cart, Profile) */}
           <div className="flex items-center gap-stack-md">
@@ -366,7 +414,7 @@ export default function HomePage() {
 
       <main className="flex-grow">
         {/* Hero Section Slider */}
-        <section className="relative w-full h-[70vh] min-h-[500px] overflow-hidden bg-primary-container">
+        <section className="relative w-full h-[35vh] min-h-[220px] md:h-auto md:aspect-[3584/1120] overflow-hidden bg-primary-container">
           <div className="relative h-full w-full">
             {BANNERS.map((banner, index) => (
               <div
@@ -378,12 +426,9 @@ export default function HomePage() {
                 {/* Image */}
                 <img
                   alt={banner.title}
-                  className="absolute inset-0 w-full h-full object-cover brightness-[0.85] contrast-[1.05]"
+                  className="absolute inset-0 w-full h-full object-cover"
                   src={banner.image}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
-
-
               </div>
             ))}
           </div>
@@ -421,117 +466,140 @@ export default function HomePage() {
 
         {/* Main Content Area */}
         <div id="products-section" className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap flex flex-col gap-stack-lg">
-          {/* Section Headers */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-outline-variant/30 pb-4">
-            <div>
-              <span className="text-label-lg text-outline uppercase tracking-wider font-semibold">
-                {selectedMainType === 'vegetable' ? 'ผักสดอินทรีย์' : selectedMainType === 'fruit' ? 'ผลไม้พรีเมียม' : 'สินค้าเกษตรคุณภาพ'}
-              </span>
-              <h2 className="text-3xl font-headline-lg text-primary mt-1">
-                {selectedMainType === 'vegetable' ? 'ผักสดจากสวนออร์แกนิค' : selectedMainType === 'fruit' ? 'ผลไม้สดหวานฉ่ำตามฤดูกาล' : 'สินค้าแนะนำสัปดาห์นี้'}
-              </h2>
-              <p className="text-body-lg text-on-surface-variant mt-1">คัดสรรความสดใหม่ คุณภาพระดับพรีเมียม ส่งตรงถึงมือคุณ</p>
-            </div>
-
-
-          </div>
-
-          {/* Search info text if filter active */}
-          {searchQuery && (
-            <div className="flex items-center justify-between bg-surface-container-low p-3 px-4 rounded-xl border border-outline-variant/30">
-              <span className="text-body-md text-on-surface-variant">
-                ผลการค้นหาสำหรับ: <strong className="text-primary">"{searchQuery}"</strong> ({filteredProducts.length} รายการ)
-              </span>
-              <button
-                onClick={() => setSearchQuery('')}
-                className="text-primary hover:text-error transition-colors text-label-md font-semibold"
-              >
-                ล้างตัวค้นหา
-              </button>
-            </div>
-          )}
-
-          {/* Dynamic Products Grid */}
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg animate-pulse">
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="flex flex-col">
-                  <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md" />
-                  <div className="h-4 bg-surface-container-low rounded w-1/3 mb-2" />
-                  <div className="h-6 bg-surface-container-low rounded w-3/4 mb-2" />
-                  <div className="h-8 bg-surface-container-low rounded w-1/2" />
+          {/* If there is active search or category filter */}
+          {(selectedMainType || searchQuery) ? (
+            <>
+              {/* Section Headers */}
+              <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-outline-variant/30 pb-4">
+                <div>
+                  <span className="text-label-lg text-outline uppercase tracking-wider font-semibold">
+                    {selectedMainType === 'vegetable' ? 'ผักสดอินทรีย์' : selectedMainType === 'fruit' ? 'ผลไม้พรีเมียม' : 'สินค้าเกษตรคุณภาพ'}
+                  </span>
+                  <h2 className="text-3xl font-headline-lg text-primary mt-1">
+                    {selectedMainType === 'vegetable' ? 'ผักสดจากสวนออร์แกนิค' : selectedMainType === 'fruit' ? 'ผลไม้สดหวานฉ่ำตามฤดูกาล' : 'สินค้าแนะนำสัปดาห์นี้'}
+                  </h2>
+                  <p className="text-body-lg text-on-surface-variant mt-1">คัดสรรความสดใหม่ คุณภาพระดับพรีเมียม ส่งตรงถึงมือคุณ</p>
                 </div>
-              ))}
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-16 bg-surface-container-low rounded-3xl border border-outline-variant/20">
-              <span className="material-symbols-outlined text-outline text-5xl mb-4">search_off</span>
-              <h3 className="text-xl font-headline-md text-on-surface-variant">ไม่พบสินค้าเกษตรที่ระบุ</h3>
-              <p className="text-body-md text-outline mt-1">กรุณาลองเปลี่ยนคำค้นหาหรือตัวกรองหมวดหมู่อื่น</p>
-              <button
-                onClick={() => {
-                  setSelectedMainType(null);
-                  setSearchQuery('');
-                }}
-                className="bg-primary text-on-primary font-label-md px-6 py-2 rounded-full hover:bg-surface-tint transition-all mt-4"
-              >
-                แสดงสินค้าทั้งหมด
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg">
-              {filteredProducts.map((product) => (
-                <article key={product.id} className="flex flex-col group relative">
-                  {/* Card Container */}
-                  <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
-                    {/* Tags */}
-                    {!!product.is_best_seller && (
-                      <span className="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
-                        ขายดี
-                      </span>
-                    )}
+              </div>
 
-                    {/* Product Image */}
-                    <img
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 drop-shadow-lg"
-                      src={product.image_url}
-                    />
-                  </div>
+              {/* Search info text if filter active */}
+              {searchQuery && (
+                <div className="flex items-center justify-between bg-surface-container-low p-3 px-4 rounded-xl border border-outline-variant/30">
+                  <span className="text-body-md text-on-surface-variant">
+                    ผลการค้นหาสำหรับ: <strong className="text-primary">"{searchQuery}"</strong> ({filteredProducts.length} รายการ)
+                  </span>
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="text-primary hover:text-error transition-colors text-label-md font-semibold"
+                  >
+                    ล้างตัวค้นหา
+                  </button>
+                </div>
+              )}
 
-                  {/* Product Details */}
-                  <div className="flex flex-col gap-1 px-1">
-                    <span className="text-label-md text-outline font-label-md uppercase tracking-wider">
-                      {product.category_name || (product.main_type === 'vegetable' ? 'ผักสด' : 'ผลไม้')}
-                    </span>
-                    <h3 className="text-body-lg font-body-lg text-on-surface font-medium line-clamp-1 group-hover:text-primary transition-colors">
-                      {product.name}
-                    </h3>
-                    <p className="text-body-sm text-on-surface-variant line-clamp-1 font-light" title={product.description}>
-                      {product.description || 'สดสะอาด คุณภาพออร์แกนิคแท้ 100%'}
-                    </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-headline-md font-headline-md text-primary font-bold">
-                          ฿{typeof product.price === 'number' ? product.price.toFixed(0) : parseFloat(String(product.price)).toFixed(0)}
-                        </span>
-                        {product.promo_price != null && (
-                          <span className="text-body-sm text-outline line-through">
-                            ฿{product.original_price}
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => addToCart(product)}
-                        aria-label="เพิ่มลงตะกร้า"
-                        className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-95 hover:scale-105 transition-all shadow-sm focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                      >
-                        <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
-                      </button>
+              {/* Grid */}
+              {loading ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg animate-pulse">
+                  {[1, 2, 3, 4].map((n) => (
+                    <div key={n} className="flex flex-col">
+                      <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md" />
+                      <div className="h-4 bg-surface-container-low rounded w-1/3 mb-2" />
+                      <div className="h-6 bg-surface-container-low rounded w-3/4 mb-2" />
+                      <div className="h-8 bg-surface-container-low rounded w-1/2" />
                     </div>
+                  ))}
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="text-center py-16 bg-surface-container-low rounded-3xl border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-outline text-5xl mb-4">search_off</span>
+                  <h3 className="text-xl font-headline-md text-on-surface-variant">ไม่พบสินค้าเกษตรที่ระบุ</h3>
+                  <p className="text-body-md text-outline mt-1">กรุณาลองเปลี่ยนคำค้นหาหรือตัวกรองหมวดหมู่อื่น</p>
+                  <button
+                    onClick={() => {
+                      setSelectedMainType(null);
+                      setSearchQuery('');
+                    }}
+                    className="bg-primary text-on-primary font-label-md px-6 py-2 rounded-full hover:bg-surface-tint transition-all mt-4"
+                  >
+                    แสดงสินค้าทั้งหมด
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg">
+                  {filteredProducts.map((product) => renderProductCard(product))}
+                </div>
+              )}
+            </>
+          ) : (
+            /* Default Homepage (split Best Seller and Promotion) */
+            <div className="flex flex-col gap-12">
+              {/* Best Seller Section */}
+              <div className="flex flex-col gap-6">
+                <div className="border-b border-outline-variant/30 pb-4">
+                  <span className="text-label-lg text-outline uppercase tracking-wider font-semibold">
+                    สินค้าแนะนำยอดนิยม
+                  </span>
+                  <h2 className="text-3xl font-headline-lg text-primary mt-1">
+                    สินค้าขายดียอดนิยม
+                  </h2>
+                  <p className="text-body-lg text-on-surface-variant mt-1">
+                    คัดสรรสินค้าที่ลูกค้าชื่นชอบและมียอดสั่งซื้อสูงสุดเป็นพิเศษ
+                  </p>
+                </div>
+
+                {loading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg animate-pulse">
+                    {[1, 2, 3, 4].map((n) => (
+                      <div key={n} className="flex flex-col">
+                        <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md" />
+                        <div className="h-4 bg-surface-container-low rounded w-1/3 mb-2" />
+                        <div className="h-6 bg-surface-container-low rounded w-3/4 mb-2" />
+                        <div className="h-8 bg-surface-container-low rounded w-1/2" />
+                      </div>
+                    ))}
                   </div>
-                </article>
-              ))}
+                ) : bestSellerProducts.length === 0 ? (
+                  <p className="text-center text-on-surface-variant py-8">ไม่มีสินค้าขายดีในขณะนี้</p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg">
+                    {bestSellerProducts.map((product) => renderProductCard(product))}
+                  </div>
+                )}
+              </div>
+
+              {/* On Sale Section */}
+              <div className="flex flex-col gap-6">
+                <div className="border-b border-outline-variant/30 pb-4">
+                  <span className="text-label-lg text-outline uppercase tracking-wider font-semibold">
+                    คุ้มค่าราคาประหยัด
+                  </span>
+                  <h2 className="text-3xl font-headline-lg text-primary mt-1">
+                    โปรโมชั่นลดราคาพิเศษ
+                  </h2>
+                  <p className="text-body-lg text-on-surface-variant mt-1">
+                    พบกับผักและผลไม้สดลดราคา คุ้มค่า สดใหม่ส่งตรงจากเกษตรกรทุกวัน
+                  </p>
+                </div>
+
+                {loading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg animate-pulse">
+                    {[1, 2, 3, 4].map((n) => (
+                      <div key={n} className="flex flex-col">
+                        <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md" />
+                        <div className="h-4 bg-surface-container-low rounded w-1/3 mb-2" />
+                        <div className="h-6 bg-surface-container-low rounded w-3/4 mb-2" />
+                        <div className="h-8 bg-surface-container-low rounded w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                ) : promoProducts.length === 0 ? (
+                  <p className="text-center text-on-surface-variant py-8">ไม่มีสินค้าลดราคาในขณะนี้</p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg">
+                    {promoProducts.map((product) => renderProductCard(product))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -594,13 +662,13 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-3xl" data-weight="fill">
                 eco
               </span>
-              Smart Farm Marketplace
+              Smartket
             </a>
             <p className="text-body-md text-on-primary/80 max-w-xs">
               ตลาดออนไลน์สำหรับคนรักสุขภาพ รวบรวมสินค้าเกษตรอินทรีย์คุณภาพสูงจากเกษตรกรไทย
             </p>
             <p className="text-label-md text-on-primary/60 mt-4">
-              © 2024 Smart Farm Marketplace. All rights reserved. Cultivating transparency.
+              © 2024 Smartket. All rights reserved. Cultivating transparency.
             </p>
           </div>
           {/* Quick Links */}

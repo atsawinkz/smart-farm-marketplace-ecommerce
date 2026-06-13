@@ -82,7 +82,7 @@ export default function OrderDetailPage() {
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
           <Link href="/" className="text-white font-headline-md font-bold flex items-center gap-2 group">
             <span className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform" data-weight="fill">eco</span>
-            Smart Farm Marketplace
+            Smartket
           </Link>
           <Link href="/profile" className="flex items-center gap-2 cursor-pointer group">
             <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors hidden md:inline">{user.name}</span>
