@@ -481,7 +481,8 @@ export default function ProfilePage() {
                     <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-2">เบอร์โทรศัพท์ (Phone Number)</label>
                       <input type="text" value={addressForm.phone}
-                        onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value }))}
+                        onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value.replace(/\D/g, '') }))}
+                        maxLength={10}
                         placeholder="081-234-5678"
                         className="w-full border border-[#e2e5e0] bg-[#f0f2ed] rounded-xl py-3 px-4 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors" />
                     </div>
@@ -607,7 +608,8 @@ export default function ProfilePage() {
                       <div className="md:col-span-2">
                         <label className="block text-xs font-semibold text-gray-700 mb-2">เบอร์โทรศัพท์ (Phone Number)</label>
                         <input type="text" value={addressForm.phone}
-                          onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value }))}
+                          onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value.replace(/\D/g, '') }))}
+                          maxLength={10}
                           placeholder="กรอกเบอร์โทรศัพท์"
                           className="w-full border border-gray-200 bg-[#f8faf6] rounded-xl py-3 px-4 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors" />
                       </div>
