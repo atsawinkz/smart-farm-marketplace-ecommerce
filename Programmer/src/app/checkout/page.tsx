@@ -124,7 +124,9 @@ export default function CheckoutPage() {
   const handleConfirmOrder = async () => {
     if (!user) { router.push('/login'); return; }
 
-    const addr = editingAddress ? addressForm : user;
+    // Use addressForm when form is visible (editing mode OR user has no saved address yet)
+    const hasStoredAddress = !editingAddress && user?.address;
+    const addr = hasStoredAddress ? user : addressForm;
     if (!addr.address || !addr.district || !addr.province || !addr.phone) {
       setSubmitError('กรุณากรอกที่อยู่จัดส่งและเบอร์โทรศัพท์ให้ครบถ้วน');
       return;
