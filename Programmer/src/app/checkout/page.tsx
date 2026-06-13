@@ -25,24 +25,23 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cartItems, clearCheckedItems } = useCart();
 
+  // QR timer state
   const PAYMENT_TIMEOUT = 3600;
   const [timeLeft, setTimeLeft] = React.useState(PAYMENT_TIMEOUT);
   const [isExpired, setIsExpired] = React.useState(false);
+  const [showQR, setShowQR] = React.useState(false);
+  const [pendingOrderParams, setPendingOrderParams] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (isExpired) return;
+    if (!showQR || isExpired) return;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsExpired(true);
-          return 0;
-        }
+        if (prev <= 1) { clearInterval(timer); setIsExpired(true); return 0; }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isExpired]);
+  }, [showQR, isExpired]);
 
   const refreshQR = () => {
     setTimeLeft(PAYMENT_TIMEOUT);
@@ -56,6 +55,7 @@ export default function CheckoutPage() {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
+  // User & address state
   const [user, setUser] = React.useState<any>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState('');
@@ -67,10 +67,7 @@ export default function CheckoutPage() {
 
   React.useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      router.push('/login');
-      return;
-    }
+    if (!storedUser) { router.push('/login'); return; }
     try {
       const u = JSON.parse(storedUser);
       setUser(u);
@@ -82,25 +79,16 @@ export default function CheckoutPage() {
         postal_code: u.postal_code || '',
         phone: u.phone || '',
       });
-    } catch {
-      router.push('/login');
-    }
+    } catch { router.push('/login'); }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/");
-  };
-
-  const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const handleLogout = () => { localStorage.removeItem('user'); router.push('/'); };
 
   const checkedItems = cartItems.filter(item => item.checked);
-
   const itemsSubtotal = checkedItems.reduce((sum, item) => {
     const price = typeof item.product.price === 'number' ? item.product.price : parseFloat(item.product.price);
     return sum + price * item.quantity;
   }, 0);
-
   const shippingFee = itemsSubtotal > 0 ? 40 : 0;
   const netTotal = itemsSubtotal + shippingFee;
 
@@ -118,28 +106,22 @@ export default function CheckoutPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: user.id,
-          name: user.name,
-          email: user.email,
+          id: user.id, name: user.name, email: user.email,
           phone: addressForm.phone || user.phone,
-          address: addressForm.address,
-          subdistrict: addressForm.subdistrict,
-          district: addressForm.district,
-          province: addressForm.province,
+          address: addressForm.address, subdistrict: addressForm.subdistrict,
+          district: addressForm.district, province: addressForm.province,
           postal_code: addressForm.postal_code,
         }),
       });
       const result = await res.json();
-      if (result.success) {
-        localStorage.setItem('user', JSON.stringify(result.data));
-        setUser(result.data);
-      }
+      if (result.success) { localStorage.setItem('user', JSON.stringify(result.data)); setUser(result.data); }
     } catch { /* ignore */ }
     setSavingAddress(false);
     setEditingAddress(false);
   };
 
-  const handleSubmitOrder = async () => {
+  // Step 1: Validate address & create order → show QR
+  const handleConfirmOrder = async () => {
     if (!user) { router.push('/login'); return; }
 
     const addr = editingAddress ? addressForm : user;
@@ -148,15 +130,12 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (editingAddress) {
-      await handleSaveAddress();
-    }
+    if (editingAddress) await handleSaveAddress();
 
     setSubmitError('');
     setIsSubmitting(true);
 
     const fullAddress = `${addr.address}, ต.${addr.subdistrict} อ.${addr.district} จ.${addr.province} ${addr.postal_code}`;
-
     const items = checkedItems.map(item => ({
       product_id: item.product.id,
       quantity: item.quantity,
@@ -168,36 +147,38 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: user.id,
-          items,
-          total_price: netTotal,
-          payment_method: 'promptpay',
-          shipping_address: fullAddress,
+          user_id: user.id, items, total_price: netTotal,
+          payment_method: 'promptpay', shipping_address: fullAddress,
           shipping_phone: addr.phone,
         }),
       });
 
       const result = await res.json();
-
       if (!result.success) {
         setSubmitError(result.error || 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
         setIsSubmitting(false);
         return;
       }
 
-      clearCheckedItems();
-
+      // Store params then show QR
       const orderData = result.data;
       const params = new URLSearchParams({
         id: orderData.id.toString(),
         total: netTotal.toString(),
         payment: 'promptpay',
       });
-      router.push(`/order/success?${params.toString()}`);
+      setPendingOrderParams(params.toString());
+      setShowQR(true);
     } catch {
       setSubmitError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองอีกครั้ง');
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
+  };
+
+  // Step 2: User confirms payment → go to success page
+  const handleConfirmPayment = () => {
+    clearCheckedItems();
+    router.push(`/order/success?${pendingOrderParams}`);
   };
 
   if (!checkedItems.length) {
@@ -216,28 +197,14 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen flex flex-col font-body-md text-body-md bg-surface text-on-surface">
       {/* TopNavBar */}
-      <header
-        className="sticky top-0 z-50 w-full bg-primary/95 dark:bg-primary-container/95 backdrop-blur-md transition-all duration-300 border-b border-primary-container/20"
-      >
+      <header className="sticky top-0 z-50 w-full bg-primary/95 backdrop-blur-md transition-all duration-300 border-b border-primary-container/20">
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
-          {/* Brand Logo */}
-          <Link
-            href="/"
-            className="text-white font-headline-md font-bold flex items-center gap-2 group cursor-pointer"
-          >
-            <span
-              className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform duration-300"
-              data-weight="fill"
-            >
-              eco
-            </span>
+          <Link href="/" className="text-white font-headline-md font-bold flex items-center gap-2 group cursor-pointer">
+            <span className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform duration-300" data-weight="fill">eco</span>
             Smartket
           </Link>
 
-          {/* Actions (Cart, Profile) */}
           <div className="flex items-center gap-stack-md">
-
-            {/* User Profile / Registration Buttons */}
             {user ? (
               <div className="flex items-center gap-3">
                 <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
@@ -246,28 +213,18 @@ export default function CheckoutPage() {
                     <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
                     <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
                   </div>
-                  <div
-                    className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]"
-                  >
+                  <div className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]">
                     <span className="material-symbols-outlined text-[24px]">person</span>
                   </div>
                 </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
-                  title="ออกจากระบบ"
-                >
+                <button onClick={handleLogout} className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer" title="ออกจากระบบ">
                   <span className="material-symbols-outlined text-[24px]">logout</span>
                 </button>
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">
-                  เข้าสู่ระบบ
-                </Link>
-                <Link href="/register" className="bg-on-primary text-primary font-label-lg px-4 py-2 rounded-full hover:bg-inverse-primary transition-all shadow-sm cursor-pointer">
-                  สมัครสมาชิก
-                </Link>
+                <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">เข้าสู่ระบบ</Link>
+                <Link href="/register" className="bg-on-primary text-primary font-label-lg px-4 py-2 rounded-full hover:bg-inverse-primary transition-all shadow-sm cursor-pointer">สมัครสมาชิก</Link>
               </div>
             )}
           </div>
@@ -280,92 +237,156 @@ export default function CheckoutPage() {
           <span>กลับไปยังตะกร้าสินค้า</span>
         </Link>
 
-        <div className="flex flex-col lg:flex-row gap-10 items-start">
-          <div className="w-full lg:w-3/5 flex flex-col gap-8">
-            {/* Shipping Address */}
-            <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">1</span>
-                  <h2 className="text-xl font-bold text-primary font-headline-lg">ที่อยู่จัดส่ง</h2>
-                </div>
-                {!editingAddress ? (
+        {/* Single column layout */}
+        <div className="max-w-2xl mx-auto flex flex-col gap-8">
+
+          {/* Step 1: Shipping Address */}
+          <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">1</span>
+                <h2 className="text-xl font-bold text-primary font-headline-lg">ที่อยู่จัดส่ง</h2>
+              </div>
+              {!showQR && (
+                !editingAddress ? (
                   <button onClick={() => setEditingAddress(true)} className="text-sm font-semibold text-primary hover:text-surface-tint transition-colors cursor-pointer">แก้ไข</button>
                 ) : (
                   <button onClick={() => { setEditingAddress(false); if (user) setAddressForm({ address: user.address||'', subdistrict: user.subdistrict||'', district: user.district||'', province: user.province||'', postal_code: user.postal_code||'', phone: user.phone||'' }); }} className="text-sm font-semibold text-outline hover:text-primary transition-colors cursor-pointer">ยกเลิก</button>
-                )}
-              </div>
-
-              {!editingAddress && user?.address ? (
-                <div className="bg-surface-container rounded-2xl p-5 border border-outline-variant/20">
-                  <p className="text-sm text-on-surface font-medium leading-relaxed">
-                    {user.address}
-                    {user.subdistrict && ` ต.${user.subdistrict}`}
-                    {user.district && ` อ.${user.district}`}
-                    {user.province && ` จ.${user.province}`}
-                    {user.postal_code && ` ${user.postal_code}`}
-                  </p>
-                  {user.phone && <p className="text-sm text-outline mt-2">โทร: {user.phone}</p>}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ที่อยู่ *</label>
-                    <textarea value={addr.address} onChange={e => setAddressForm(p => ({ ...p, address: e.target.value }))}
-                      placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none" rows={2} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ตำบล / แขวง</label>
-                    <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
-                      placeholder="ตำบล"
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">อำเภอ / เขต *</label>
-                    <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
-                      placeholder="อำเภอ"
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">จังหวัด *</label>
-                    <select value={addr.province} onChange={e => setAddressForm(p => ({ ...p, province: e.target.value }))}
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
-                      <option value="">เลือกจังหวัด</option>
-                      {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">รหัสไปรษณีย์</label>
-                    <input value={addr.postal_code} onChange={e => setAddressForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
-                      placeholder="รหัสไปรษณีย์" maxLength={5}
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">เบอร์โทรศัพท์ *</label>
-                    <input value={addr.phone} onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value }))}
-                      placeholder="เบอร์โทรศัพท์สำหรับติดต่อจัดส่ง"
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                  </div>
-                  {editingAddress && (
-                    <div className="md:col-span-2 flex gap-3">
-                      <button onClick={() => { setEditingAddress(false); if (user) setAddressForm({ address: user.address||'', subdistrict: user.subdistrict||'', district: user.district||'', province: user.province||'', postal_code: user.postal_code||'', phone: user.phone||'' }); }}
-                        className="flex-1 border border-outline-variant/40 text-on-surface-variant py-3 rounded-full font-semibold hover:bg-surface-container-low transition-all cursor-pointer">ยกเลิก</button>
-                      <button onClick={handleSaveAddress} disabled={savingAddress || !addr.address || !addr.district || !addr.province}
-                        className="flex-1 bg-primary text-on-primary py-3 rounded-full font-semibold hover:bg-surface-tint transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer">
-                        {savingAddress ? 'กำลังบันทึก...' : 'บันทึกที่อยู่'}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                )
               )}
             </div>
 
-            {/* Payment Method - PromptPay Only */}
-            <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm">
+            {!editingAddress && user?.address ? (
+              <div className="bg-surface-container rounded-2xl p-5 border border-outline-variant/20">
+                <p className="text-sm text-on-surface font-medium leading-relaxed">
+                  {user.address}
+                  {user.subdistrict && ` ต.${user.subdistrict}`}
+                  {user.district && ` อ.${user.district}`}
+                  {user.province && ` จ.${user.province}`}
+                  {user.postal_code && ` ${user.postal_code}`}
+                </p>
+                {user.phone && <p className="text-sm text-outline mt-2">โทร: {user.phone}</p>}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ที่อยู่ *</label>
+                  <textarea value={addr.address} onChange={e => setAddressForm(p => ({ ...p, address: e.target.value }))}
+                    placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
+                    className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none" rows={2} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ตำบล / แขวง</label>
+                  <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
+                    placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">อำเภอ / เขต *</label>
+                  <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
+                    placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">จังหวัด *</label>
+                  <select value={addr.province} onChange={e => setAddressForm(p => ({ ...p, province: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                    <option value="">เลือกจังหวัด</option>
+                    {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">รหัสไปรษณีย์</label>
+                  <input value={addr.postal_code} onChange={e => setAddressForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
+                    placeholder="รหัสไปรษณีย์" maxLength={5} className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">เบอร์โทรศัพท์ *</label>
+                  <input value={addr.phone} onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value }))}
+                    placeholder="เบอร์โทรศัพท์สำหรับติดต่อจัดส่ง" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                </div>
+                {editingAddress && (
+                  <div className="md:col-span-2 flex gap-3">
+                    <button onClick={() => { setEditingAddress(false); if (user) setAddressForm({ address: user.address||'', subdistrict: user.subdistrict||'', district: user.district||'', province: user.province||'', postal_code: user.postal_code||'', phone: user.phone||'' }); }}
+                      className="flex-1 border border-outline-variant/40 text-on-surface-variant py-3 rounded-full font-semibold hover:bg-surface-container-low transition-all cursor-pointer">ยกเลิก</button>
+                    <button onClick={handleSaveAddress} disabled={savingAddress || !addr.address || !addr.district || !addr.province}
+                      className="flex-1 bg-primary text-on-primary py-3 rounded-full font-semibold hover:bg-surface-tint transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer">
+                      {savingAddress ? 'กำลังบันทึก...' : 'บันทึกที่อยู่'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Order Summary */}
+          <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm flex flex-col gap-5">
+            <h2 className="text-xl font-bold text-primary font-headline-lg border-b border-outline-variant/30 pb-4">สรุปคำสั่งซื้อ</h2>
+
+            <div className="flex flex-col gap-4 max-h-80 overflow-y-auto pr-1">
+              {checkedItems.map(item => {
+                const details = getProductDetails(item.product.name);
+                const price = typeof item.product.price === 'number' ? item.product.price : parseFloat(item.product.price);
+                return (
+                  <div key={item.product.id} className="flex items-center gap-3">
+                    <img src={item.product.image_url} alt={details.name} className="w-14 h-14 rounded-xl object-contain bg-surface-container border border-outline-variant/10" />
+                    <div className="flex-grow min-w-0">
+                      <p className="text-sm font-bold text-on-surface truncate">{details.name}</p>
+                      <p className="text-xs text-outline">x{item.quantity}</p>
+                    </div>
+                    <p className="text-sm font-bold text-primary">{Math.round(price * item.quantity)} บาท</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <hr className="border-outline-variant/30" />
+
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="flex justify-between text-on-surface-variant">
+                <span>ยอดรวมสินค้า</span>
+                <span className="font-semibold text-on-surface">{Math.round(itemsSubtotal)} บาท</span>
+              </div>
+              <div className="flex justify-between text-on-surface-variant">
+                <span>ค่าจัดส่ง</span>
+                <span className="font-semibold text-on-surface">{shippingFee > 0 ? `${Math.round(shippingFee)} บาท` : 'ฟรี'}</span>
+              </div>
+            </div>
+
+            <hr className="border-outline-variant/30" />
+
+            <div className="flex justify-between items-end">
+              <span className="text-lg font-bold text-on-surface font-body-lg">ยอดรวมสุทธิ</span>
+              <div className="text-right">
+                <span className="text-2xl font-extrabold text-primary font-headline-lg">{Math.round(netTotal)}</span>
+                <span className="text-sm font-bold text-primary ml-1">บาท</span>
+              </div>
+            </div>
+
+            {submitError && <p className="text-error text-sm font-semibold bg-error-container/30 px-4 py-2 rounded-xl">{submitError}</p>}
+
+            {/* Confirm Order button — only shown before QR */}
+            {!showQR && (
+              <button
+                onClick={handleConfirmOrder}
+                disabled={isSubmitting}
+                className="bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none font-label-lg cursor-pointer"
+              >
+                {isSubmitting ? (
+                  <><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> ดำเนินการ...</>
+                ) : (
+                  <>ยืนยันคำสั่งซื้อ <span className="material-symbols-outlined text-[18px]">lock</span></>
+                )}
+              </button>
+            )}
+
+            <p className="text-[12px] text-outline text-center">การชำระเงินของคุณปลอดภัยด้วยการเข้ารหัส SSL</p>
+          </div>
+
+          {/* Step 2: Payment QR — shown only after confirming order */}
+          {showQR && (
+            <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm animate-fade-in">
               <div className="flex items-center gap-3 mb-6">
                 <span className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">2</span>
-                <h2 className="text-xl font-bold text-primary font-headline-lg">วิธีการชำระเงิน</h2>
+                <h2 className="text-xl font-bold text-primary font-headline-lg">ชำระเงินผ่าน QR Code</h2>
               </div>
 
               <div className="bg-primary/5 border-2 border-primary rounded-2xl p-5">
@@ -378,15 +399,19 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="text-center">
-                  <div className="w-48 h-48 mx-auto bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
-                    <img src={`https://promptpay.io/0948713358/${netTotal}.png`} alt="PromptPay QR Code" className="w-full h-full object-contain" />
-                  </div>
+                  {!isExpired ? (
+                    <div className="w-48 h-48 mx-auto bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+                      <img src={`https://promptpay.io/0948713358/${netTotal}.png`} alt="PromptPay QR Code" className="w-full h-full object-contain" />
+                    </div>
+                  ) : (
+                    <div className="w-48 h-48 mx-auto bg-surface-container rounded-2xl flex flex-col items-center justify-center gap-3 border border-outline-variant/20">
+                      <span className="material-symbols-outlined text-4xl text-outline">qr_code_2_add</span>
+                      <p className="text-error font-semibold text-sm">QR Code หมดอายุแล้ว</p>
+                    </div>
+                  )}
 
                   {isExpired ? (
-                    <div className="mt-4">
-                      <p className="text-error font-semibold">QR Code หมดอายุแล้ว</p>
-                      <button onClick={refreshQR} className="mt-2 text-sm font-semibold text-primary hover:text-surface-tint underline cursor-pointer">สร้าง QR ใหม่</button>
-                    </div>
+                    <button onClick={refreshQR} className="mt-4 text-sm font-semibold text-primary hover:text-surface-tint underline cursor-pointer">สร้าง QR ใหม่</button>
                   ) : (
                     <div className="mt-4 flex items-center justify-center gap-2">
                       <span className="material-symbols-outlined text-outline text-[18px]">timer</span>
@@ -397,71 +422,19 @@ export default function CheckoutPage() {
 
                   <p className="mt-2 font-semibold text-on-surface">ยอดชำระ {Math.round(netTotal)} บาท</p>
                   <p className="text-sm text-outline mt-1">โอนเข้าหมายเลขโทรศัพท์ 094-871-3358</p>
-                  <p className="text-sm text-outline mt-1">หลังจากชำระเงินแล้ว กด "ยืนยันคำสั่งซื้อ" เพื่อดำเนินการ</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Order Summary */}
-          <div className="w-full lg:w-2/5 lg:sticky lg:top-24">
-            <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm flex flex-col gap-5">
-              <h2 className="text-xl font-bold text-primary font-headline-lg border-b border-outline-variant/30 pb-4">สรุปคำสั่งซื้อ</h2>
-
-              <div className="flex flex-col gap-4 max-h-80 overflow-y-auto pr-1">
-                {checkedItems.map(item => {
-                  const details = getProductDetails(item.product.name);
-                  const price = typeof item.product.price === 'number' ? item.product.price : parseFloat(item.product.price);
-                  return (
-                    <div key={item.product.id} className="flex items-center gap-3">
-                      <img src={item.product.image_url} alt={details.name} className="w-14 h-14 rounded-xl object-contain bg-surface-container border border-outline-variant/10" />
-                      <div className="flex-grow min-w-0">
-                        <p className="text-sm font-bold text-on-surface truncate">{details.name}</p>
-                        <p className="text-xs text-outline">x{item.quantity}</p>
-                      </div>
-                      <p className="text-sm font-bold text-primary">{Math.round(price * item.quantity)} บาท</p>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <hr className="border-outline-variant/30" />
-
-              <div className="flex flex-col gap-2 text-sm">
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>ยอดรวมสินค้า</span>
-                  <span className="font-semibold text-on-surface">{Math.round(itemsSubtotal)} บาท</span>
-                </div>
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>ค่าจัดส่ง</span>
-                  <span className="font-semibold text-on-surface">{shippingFee > 0 ? `${Math.round(shippingFee)} บาท` : 'ฟรี'}</span>
                 </div>
               </div>
 
-              <hr className="border-outline-variant/30" />
-
-              <div className="flex justify-between items-end">
-                <span className="text-lg font-bold text-on-surface font-body-lg">ยอดรวมสุทธิ</span>
-                <div className="text-right">
-                  <span className="text-2xl font-extrabold text-primary font-headline-lg">{Math.round(netTotal)}</span>
-                  <span className="text-sm font-bold text-primary ml-1">บาท</span>
-                </div>
-              </div>
-
-              {submitError && <p className="text-error text-sm font-semibold bg-error-container/30 px-4 py-2 rounded-xl">{submitError}</p>}
-
-              <button onClick={handleSubmitOrder} disabled={isSubmitting || isExpired}
-                className="bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none font-label-lg">
-                {isSubmitting ? (
-                  <><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> ดำเนินการ...</>
-                ) : (
-                  <>ยืนยันคำสั่งซื้อ <span className="material-symbols-outlined text-[18px]">lock</span></>
-                )}
+              <button
+                onClick={handleConfirmPayment}
+                disabled={isExpired}
+                className="mt-6 bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none font-label-lg cursor-pointer"
+              >
+                ฉันชำระเงินแล้ว <span className="material-symbols-outlined text-[18px]">check_circle</span>
               </button>
-
-              <p className="text-[12px] text-outline text-center">การชำระเงินของคุณปลอดภัยด้วยการเข้ารหัส SSL</p>
             </div>
-          </div>
+          )}
+
         </div>
       </main>
     </div>
