@@ -56,6 +56,14 @@ export default function RegisterPage() {
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container opacity-5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-secondary-container opacity-10 rounded-tr-full -ml-20 -mb-20 pointer-events-none"></div>
 
+        <Link 
+          href="/" 
+          className="absolute top-6 right-6 text-outline hover:text-primary hover:bg-surface-container-low transition-colors w-8 h-8 flex items-center justify-center rounded-full z-20 cursor-pointer"
+          title="ย้อนกลับ"
+        >
+          <span className="material-symbols-outlined text-[22px]">close</span>
+        </Link>
+
         <div className="text-center mb-stack-lg relative z-10">
           <h1 className="font-headline-xl-mobile md:font-headline-xl text-primary mb-2">
             Smartket
