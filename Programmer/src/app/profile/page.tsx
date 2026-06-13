@@ -198,45 +198,47 @@ export default function ProfilePage() {
         </div>
 
         {/* การซื้อของฉัน Card */}
-        <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm flex flex-col gap-6">
-          <div className="flex justify-between items-center">
-            <h2 className="font-bold text-lg md:text-xl text-[#1b3322]">การซื้อของฉัน</h2>
-            <Link href="/orders" className="text-xs md:text-sm font-medium text-gray-400 hover:text-primary transition-colors flex items-center gap-1">
-              <span>ดูประวัติการสั่งซื้อ</span>
-              <span className="material-symbols-outlined text-xs">chevron_right</span>
-            </Link>
+        {!editing && (
+          <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm flex flex-col gap-6">
+            <div className="flex justify-between items-center">
+              <h2 className="font-bold text-lg md:text-xl text-[#1b3322]">การซื้อของฉัน</h2>
+              <Link href="/orders" className="text-xs md:text-sm font-medium text-gray-400 hover:text-primary transition-colors flex items-center gap-1">
+                <span>ดูประวัติการสั่งซื้อ</span>
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-4 gap-4 py-4 border-t border-gray-50 mt-2">
+              <Link href="/orders?tab=pending" className="flex flex-col items-center text-center group cursor-pointer">
+                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
+                  <span className="material-symbols-outlined text-[26px]">pending_actions</span>
+                </div>
+                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">รอการชำระเงิน</span>
+              </Link>
+
+              <Link href="/orders?tab=paid" className="flex flex-col items-center text-center group cursor-pointer">
+                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
+                  <span className="material-symbols-outlined text-[26px]">local_shipping</span>
+                </div>
+                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">ที่ต้องจัดส่ง</span>
+              </Link>
+
+              <Link href="/orders?tab=shipped" className="flex flex-col items-center text-center group cursor-pointer">
+                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
+                  <span className="material-symbols-outlined text-[26px]">check_circle</span>
+                </div>
+                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">สำเร็จแล้ว</span>
+              </Link>
+
+              <Link href="/orders?tab=cancelled" className="flex flex-col items-center text-center group cursor-pointer">
+                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
+                  <span className="material-symbols-outlined text-[26px]">cancel</span>
+                </div>
+                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">สินค้าที่ยกเลิก</span>
+              </Link>
+            </div>
           </div>
-
-          <div className="grid grid-cols-4 gap-4 py-4 border-t border-gray-50 mt-2">
-            <Link href="/orders?tab=pending" className="flex flex-col items-center text-center group cursor-pointer">
-              <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                <span className="material-symbols-outlined text-[26px]">pending_actions</span>
-              </div>
-              <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">รอการชำระเงิน</span>
-            </Link>
-
-            <Link href="/orders?tab=paid" className="flex flex-col items-center text-center group cursor-pointer">
-              <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                <span className="material-symbols-outlined text-[26px]">local_shipping</span>
-              </div>
-              <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">ที่ต้องจัดส่ง</span>
-            </Link>
-
-            <Link href="/orders?tab=shipped" className="flex flex-col items-center text-center group cursor-pointer">
-              <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                <span className="material-symbols-outlined text-[26px]">check_circle</span>
-              </div>
-              <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">สำเร็จแล้ว</span>
-            </Link>
-
-            <Link href="/orders?tab=cancelled" className="flex flex-col items-center text-center group cursor-pointer">
-              <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                <span className="material-symbols-outlined text-[26px]">cancel</span>
-              </div>
-              <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">สินค้าที่ยกเลิก</span>
-            </Link>
-          </div>
-        </div>
+        )}
 
         {editing && (
           <>
