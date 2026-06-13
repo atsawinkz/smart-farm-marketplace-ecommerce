@@ -95,7 +95,7 @@ export default function CartPage() {
             >
               eco
             </span>
-            Smart Farm Marketplace
+            Smartket
           </Link>
 
 
