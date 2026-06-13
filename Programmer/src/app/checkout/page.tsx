@@ -68,6 +68,9 @@ export default function CheckoutPage() {
         postal_code: u.postal_code || '',
         phone: u.phone || '',
       });
+      if (!u.address) {
+        setEditingAddress(true);
+      }
     } catch { router.push('/login'); }
   }, [router]);
 
@@ -299,7 +302,8 @@ export default function CheckoutPage() {
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">จังหวัด *</label>
                   <div className="relative">
                     <select value={addr.province} onChange={e => handleProvinceChange(e.target.value)}
-                      className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                      disabled={!editingAddress}
+                      className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none disabled:opacity-70 disabled:bg-surface-container">
                       <option value="">เลือกจังหวัด</option>
                       {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
@@ -311,7 +315,8 @@ export default function CheckoutPage() {
                   {addr.province && THAI_LOCATION_DATA[addr.province] ? (
                     <div className="relative">
                       <select value={addr.district} onChange={e => handleDistrictChange(e.target.value)}
-                        className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                        disabled={!editingAddress}
+                        className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none disabled:opacity-70 disabled:bg-surface-container">
                         <option value="">เลือกอำเภอ</option>
                         {Object.keys(THAI_LOCATION_DATA[addr.province]).map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
@@ -319,7 +324,8 @@ export default function CheckoutPage() {
                     </div>
                   ) : (
                     <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
-                      placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                      disabled={!editingAddress}
+                      placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-70 disabled:bg-surface-container" />
                   )}
                 </div>
                 <div>
@@ -327,7 +333,8 @@ export default function CheckoutPage() {
                   {addr.province && addr.district && THAI_LOCATION_DATA[addr.province]?.[addr.district] ? (
                     <div className="relative">
                       <select value={addr.subdistrict} onChange={e => handleSubdistrictChange(e.target.value)}
-                        className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                        disabled={!editingAddress}
+                        className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none disabled:opacity-70 disabled:bg-surface-container">
                         <option value="">เลือกตำบล</option>
                         {Object.keys(THAI_LOCATION_DATA[addr.province][addr.district]).map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
@@ -335,25 +342,28 @@ export default function CheckoutPage() {
                     </div>
                   ) : (
                     <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
-                      placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                      disabled={!editingAddress}
+                      placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-70 disabled:bg-surface-container" />
                   )}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">รหัสไปรษณีย์</label>
                   <input value={addr.postal_code} onChange={e => setAddressForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
                     placeholder="รหัสไปรษณีย์" maxLength={5} className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-70 disabled:bg-surface-container"
-                    disabled={!!(addr.province && addr.district && addr.subdistrict && THAI_LOCATION_DATA[addr.province]?.[addr.district]?.[addr.subdistrict])} />
+                    disabled={!editingAddress || !!(addr.province && addr.district && addr.subdistrict && THAI_LOCATION_DATA[addr.province]?.[addr.district]?.[addr.subdistrict])} />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ที่อยู่ *</label>
                   <textarea value={addr.address} onChange={e => setAddressForm(p => ({ ...p, address: e.target.value }))}
+                    disabled={!editingAddress}
                     placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
-                    className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none" rows={2} />
+                    className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none disabled:opacity-70 disabled:bg-surface-container" rows={2} />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">เบอร์โทรศัพท์ *</label>
                   <input value={addr.phone} onChange={e => setAddressForm(p => ({ ...p, phone: e.target.value }))}
-                    placeholder="เบอร์โทรศัพท์สำหรับติดต่อจัดส่ง" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                    disabled={!editingAddress}
+                    placeholder="เบอร์โทรศัพท์สำหรับติดต่อจัดส่ง" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-70 disabled:bg-surface-container" />
                 </div>
                 {editingAddress && (
                   <div className="md:col-span-2 flex gap-3">
