@@ -90,6 +90,10 @@ export default function ProfilePage() {
     is_default: false
   });
 
+  // Delete Confirmation State
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<number | null>(null);
+
   const fetchOrders = async (userId: number) => {
     try {
       const res = await fetch(`/api/orders?user_id=${userId}`);
@@ -246,10 +250,15 @@ export default function ProfilePage() {
     }
   };
 
-  const handleDeleteAddress = async (id: number) => {
-    if (!confirm('คุณต้องการลบที่อยู่นี้ใช่หรือไม่?')) return;
+  const handleDeleteAddress = (id: number) => {
+    setAddressToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!addressToDelete) return;
     try {
-      const res = await fetch(`/api/auth/addresses?id=${id}&user_id=${user.id}`, {
+      const res = await fetch(`/api/auth/addresses?id=${addressToDelete}&user_id=${user.id}`, {
         method: 'DELETE'
       });
       const result = await res.json();
@@ -268,6 +277,8 @@ export default function ProfilePage() {
     } catch (err) {
       console.error(err);
     }
+    setDeleteConfirmOpen(false);
+    setAddressToDelete(null);
   };
 
   const handleSaveAddress = async () => {
@@ -767,6 +778,32 @@ export default function ProfilePage() {
                 className="px-6 py-2.5 rounded-full bg-[#1b3322] text-white hover:bg-[#1b3322]/90 disabled:opacity-50 font-semibold text-sm transition-all shadow-sm cursor-pointer"
               >
                 {savingAddress ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white w-full max-w-sm p-6 rounded-3xl border border-gray-100 shadow-2xl relative animate-scale-up flex flex-col items-center text-center gap-4">
+            <h3 className="text-lg font-bold text-[#1b3322]">ยืนยันการลบที่อยู่</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              คุณแน่ใจหรือไม่ว่าต้องการลบที่อยู่นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้
+            </p>
+            <div className="flex gap-3 w-full mt-2">
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-full font-bold text-xs transition-all shadow-sm cursor-pointer"
+              >
+                ใช่, ลบที่อยู่นี้
+              </button>
+              <button
+                onClick={() => { setDeleteConfirmOpen(false); setAddressToDelete(null); }}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-full font-bold text-xs transition-all cursor-pointer"
+              >
+                ยกเลิก
               </button>
             </div>
           </div>
