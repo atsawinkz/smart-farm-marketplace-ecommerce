@@ -172,10 +172,6 @@ export default function OrderDetailPage() {
               {order.payment_status && <p>สถานะการชำระ: {order.payment_status === 'paid' ? <span className="text-green-600 font-semibold">ชำระแล้ว</span> : <span className="text-amber-600 font-semibold">รอชำระ</span>}</p>}
             </div>
           </div>
-
-          <Link href="/orders" className="text-center text-sm font-semibold text-primary hover:text-surface-tint transition-colors py-4">
-            ← กลับไปรายการคำสั่งซื้อ
-          </Link>
         </div>
       </main>
     </div>
