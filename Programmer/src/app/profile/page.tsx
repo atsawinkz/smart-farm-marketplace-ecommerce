@@ -161,14 +161,14 @@ export default function ProfilePage() {
     setEditingAddressItem(null);
     setAddressForm({
       title: '',
-      name: user?.name || '',
-      email: user?.email || '',
+      name: '',
+      email: '',
       address: '',
       subdistrict: '',
       district: '',
       province: '',
       postal_code: '',
-      phone: user?.phone || '',
+      phone: '',
       is_default: addresses.length === 0
     });
     setAddressError('');
