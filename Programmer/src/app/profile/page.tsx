@@ -193,14 +193,14 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <button 
-            onClick={editing ? cancelEdit : startEdit}
-            className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer ${
-              editing ? 'bg-white/20 text-white hover:bg-white/30 border border-white/30' : 'bg-white text-primary hover:bg-white/90'
-            }`}
-          >
-            {editing ? 'Cancel' : 'Edit Profile'}
-          </button>
+          {!editing && (
+            <button 
+              onClick={startEdit}
+              className="bg-white text-primary px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-white/90 transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer"
+            >
+              Edit Profile
+            </button>
+          )}
         </div>
 
         {/* การซื้อของฉัน Card */}
