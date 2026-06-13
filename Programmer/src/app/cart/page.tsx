@@ -87,7 +87,7 @@ export default function CartPage() {
             >
               eco
             </span>
-            Smartket
+            Smart Farm Marketplace
           </Link>
 
           {/* Actions */}
@@ -217,7 +217,7 @@ export default function CartPage() {
                             {details.unit}
                           </p>
                           <p className="text-body-sm text-outline font-light mt-1">
-                            {price.toFixed(0)} บาท / ชิ้น
+                            {Math.round(price)} บาท / ชิ้น
                           </p>
                         </div>
 
@@ -248,7 +248,7 @@ export default function CartPage() {
                           {/* Item Subtotal */}
                           <div className="text-right min-w-[80px]">
                             <span className="text-lg font-bold text-primary font-body-lg">
-                              {itemSubtotal.toFixed(0)} บาท
+                              {Math.round(itemSubtotal)} บาท
                             </span>
                           </div>
                         </div>
@@ -278,12 +278,12 @@ export default function CartPage() {
             <div className="flex flex-col gap-3 font-label-md text-label-md">
               <div className="flex justify-between items-center text-on-surface-variant">
                 <span>ยอดรวมสินค้า ({checkedItemsCount} รายการ)</span>
-                <span className="font-semibold text-on-surface">{itemsSubtotal.toFixed(0)} บาท</span>
+                <span className="font-semibold text-on-surface">{Math.round(itemsSubtotal)} บาท</span>
               </div>
               <div className="flex justify-between items-center text-on-surface-variant">
                 <span>ค่าจัดส่ง</span>
                 <span className="font-semibold text-on-surface">
-                  {shippingFee > 0 ? `${shippingFee.toFixed(0)} บาท` : '0 บาท'}
+                  {shippingFee > 0 ? `${Math.round(shippingFee)} บาท` : 'ฟรี'}
                 </span>
               </div>
             </div>
@@ -295,7 +295,7 @@ export default function CartPage() {
                 <span className="text-lg font-bold text-on-surface font-body-lg">ยอดรวมสุทธิ</span>
                 <div className="text-right">
                   <span className="text-2xl font-extrabold text-primary font-headline-lg">
-                    {netTotal.toFixed(0)} บาท
+                    {Math.round(netTotal)} บาท
                   </span>
                 </div>
               </div>

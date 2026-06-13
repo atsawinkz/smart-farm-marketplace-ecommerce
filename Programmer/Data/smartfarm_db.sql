@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 13, 2026 at 04:19 AM
+-- Generation Time: Jun 13, 2026 at 08:48 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -11,16 +11,15 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- สร้างและเลือกใช้ Database: `smartfarm_db`
+-- Database: `smartfarm_db`
 --
-CREATE DATABASE IF NOT EXISTS `smartfarm_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `smartfarm_db`;
 
 -- --------------------------------------------------------
 
@@ -74,7 +73,8 @@ CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `total_price` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `status` enum('pending','paid','shipped','cancelled') NOT NULL DEFAULT 'pending',
+  `status` enum('pending','shipped','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `payment_status` enum('unpaid','paid') NOT NULL DEFAULT 'unpaid',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -107,7 +107,7 @@ CREATE TABLE `products` (
   `promo_price` int(11) DEFAULT NULL COMMENT 'ราคาโปรโมชั่น (บาทต่อหน่วยจำหน่าย, จำนวนเต็ม) ถ้าไม่มีโปรเป็น NULL',
   `stock_quantity` int(11) NOT NULL DEFAULT 0,
   `image_url` varchar(255) DEFAULT NULL,
-  `is_best_seller` tinyint(1) NOT NULL DEFAULT 0,
+  `total_sales` int(11) NOT NULL DEFAULT 0 COMMENT 'จำนวนยอดขายสะสม (ชิ้น)',
   `lot_in_date` date DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -117,7 +117,7 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `original_price`, `promo_price`, `stock_quantity`, `image_url`, `is_best_seller`, `lot_in_date`, `expiry_date`, `created_at`) VALUES
+INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `original_price`, `promo_price`, `stock_quantity`, `image_url`, `total_sales`, `lot_in_date`, `expiry_date`, `created_at`) VALUES
 (101, 1, 'ผักคะน้า (Chinese Broccoli)', '1 กิโลกรัม/ถุง', 25, NULL, 48, '/images/products/คะน้า.jpeg', 0, '2026-06-12', '2026-06-16', '2026-06-12 13:38:18'),
 (102, 1, 'ผักบุ้งจีน (Water Spinach)', '1 กิโลกรัม/ถุง', 15, 14, 26, '/images/products/ผักบุ้งจีน.jpeg', 0, '2026-06-12', '2026-06-16', '2026-06-12 13:38:18'),
 (103, 1, 'ผักกวางตุ้ง (Choy Sum)', '1 กิโลกรัม/ถุง', 20, NULL, 90, '/images/products/ผักกวางตุ้ง .jpeg', 0, '2026-06-12', '2026-06-16', '2026-06-12 13:38:18'),
@@ -288,7 +288,7 @@ ALTER TABLE `order_details`
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_products_category_id` (`category_id`),
-  ADD KEY `idx_products_is_best_seller` (`is_best_seller`),
+  ADD KEY `idx_products_is_best_seller` (`total_sales`),
   ADD KEY `idx_products_expiry_date` (`expiry_date`);
 
 --

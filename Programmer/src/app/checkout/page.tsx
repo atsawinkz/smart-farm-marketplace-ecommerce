@@ -208,7 +208,7 @@ export default function CheckoutPage() {
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
           <Link href="/" className="text-white font-headline-md font-bold flex items-center gap-2 group">
             <span className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform" data-weight="fill">eco</span>
-            Smartket
+            Smart Farm Marketplace
           </Link>
           <span className="text-white/80 font-label-lg">ชำระเงิน</span>
         </div>
@@ -335,7 +335,7 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  <p className="mt-2 font-semibold text-on-surface">ยอดชำระ {netTotal.toFixed(2)} บาท</p>
+                  <p className="mt-2 font-semibold text-on-surface">ยอดชำระ {Math.round(netTotal)} บาท</p>
                   <p className="text-sm text-outline mt-1">โอนเข้าหมายเลขโทรศัพท์ 094-871-3358</p>
                   <p className="text-sm text-outline mt-1">หลังจากชำระเงินแล้ว กด "ยืนยันคำสั่งซื้อ" เพื่อดำเนินการ</p>
                 </div>
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
                         <p className="text-sm font-bold text-on-surface truncate">{details.name}</p>
                         <p className="text-xs text-outline">x{item.quantity}</p>
                       </div>
-                      <p className="text-sm font-bold text-primary">{(price * item.quantity).toFixed(0)} บาท</p>
+                      <p className="text-sm font-bold text-primary">{Math.round(price * item.quantity)} บาท</p>
                     </div>
                   );
                 })}
@@ -370,11 +370,11 @@ export default function CheckoutPage() {
               <div className="flex flex-col gap-2 text-sm">
                 <div className="flex justify-between text-on-surface-variant">
                   <span>ยอดรวมสินค้า</span>
-                  <span className="font-semibold text-on-surface">{itemsSubtotal.toFixed(0)} บาท</span>
+                  <span className="font-semibold text-on-surface">{Math.round(itemsSubtotal)} บาท</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
                   <span>ค่าจัดส่ง</span>
-                  <span className="font-semibold text-on-surface">{shippingFee.toFixed(0)} บาท</span>
+                  <span className="font-semibold text-on-surface">{shippingFee > 0 ? `${Math.round(shippingFee)} บาท` : 'ฟรี'}</span>
                 </div>
               </div>
 
@@ -383,7 +383,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between items-end">
                 <span className="text-lg font-bold text-on-surface font-body-lg">ยอดรวมสุทธิ</span>
                 <div className="text-right">
-                  <span className="text-2xl font-extrabold text-primary font-headline-lg">{netTotal.toFixed(0)}</span>
+                  <span className="text-2xl font-extrabold text-primary font-headline-lg">{Math.round(netTotal)}</span>
                   <span className="text-sm font-bold text-primary ml-1">บาท</span>
                 </div>
               </div>

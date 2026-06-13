@@ -39,51 +39,17 @@ export default function ProfilePage() {
     } else {
       try {
         const u = JSON.parse(storedUser);
-        
-        fetch(`/api/auth/profile?id=${u.id}`)
-          .then(res => res.json())
-          .then(result => {
-            if (result.success && result.data) {
-              const latestUser = result.data;
-              localStorage.setItem("user", JSON.stringify(latestUser));
-              setUser(latestUser);
-              setForm({
-                name: latestUser.name || '',
-                email: latestUser.email || '',
-                phone: latestUser.phone || '',
-                address: latestUser.address || '',
-                subdistrict: latestUser.subdistrict || '',
-                district: latestUser.district || '',
-                province: latestUser.province || '',
-                postal_code: latestUser.postal_code || '',
-              });
-            } else {
-              setUser(u);
-              setForm({
-                name: u.name || '',
-                email: u.email || '',
-                phone: u.phone || '',
-                address: u.address || '',
-                subdistrict: u.subdistrict || '',
-                district: u.district || '',
-                province: u.province || '',
-                postal_code: u.postal_code || '',
-              });
-            }
-          })
-          .catch(() => {
-            setUser(u);
-            setForm({
-              name: u.name || '',
-              email: u.email || '',
-              phone: u.phone || '',
-              address: u.address || '',
-              subdistrict: u.subdistrict || '',
-              district: u.district || '',
-              province: u.province || '',
-              postal_code: u.postal_code || '',
-            });
-          });
+        setUser(u);
+        setForm({
+          name: u.name || '',
+          email: u.email || '',
+          phone: u.phone || '',
+          address: u.address || '',
+          subdistrict: u.subdistrict || '',
+          district: u.district || '',
+          province: u.province || '',
+          postal_code: u.postal_code || '',
+        });
       } catch (err) {
         console.error("Failed to parse user session:", err);
         router.push("/login");
@@ -163,7 +129,7 @@ export default function ProfilePage() {
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
           <Link href="/" className="text-white font-headline-md font-bold flex items-center gap-2 group cursor-pointer">
             <span className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform duration-300" data-weight="fill">eco</span>
-            Smartket
+            Smart Farm Marketplace
           </Link>
           <div className="flex items-center gap-stack-md">
             <Link href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative bg-white/10">
@@ -173,25 +139,16 @@ export default function ProfilePage() {
               )}
             </Link>
             {user ? (
-              <div className="flex items-center gap-3">
-                <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
-                  <div className="w-[1px] h-6 bg-white/20"></div>
-                  <div className="flex flex-col text-right">
-                    <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
-                    <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]">
-                    <span className="material-symbols-outlined text-[24px]">person</span>
-                  </div>
-                </Link>
-                <button 
-                  onClick={handleLogout} 
-                  className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
-                  title="ออกจากระบบ"
-                >
-                  <span className="material-symbols-outlined text-[24px]">logout</span>
-                </button>
-              </div>
+              <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
+                <div className="w-[1px] h-6 bg-white/20"></div>
+                <div className="flex flex-col text-right">
+                  <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
+                  <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]">
+                  <span className="material-symbols-outlined text-[24px]">person</span>
+                </div>
+              </Link>
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">เข้าสู่ระบบ</Link>
@@ -202,179 +159,155 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      <main className="flex-grow max-w-[1000px] w-full mx-auto px-4 py-8 flex flex-col gap-6">
-        <Link href="/" className="flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-primary transition-colors self-start">
-          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-          <span>กลับสู่หน้าหลัก</span>
-        </Link>
-
-        {/* Profile Header Card */}
-        <div className="bg-primary rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row justify-between items-center gap-6 text-white relative overflow-hidden shadow-md">
-          {/* Background pattern */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-6 relative z-10 w-full sm:w-auto text-center sm:text-left">
-            {/* Avatar container */}
-            <div className="w-20 h-20 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
-              <span className="material-symbols-outlined text-[40px]" data-weight="fill">person</span>
+      <main className="flex-grow max-w-[1200px] w-full mx-auto px-6 py-8 flex flex-col md:flex-row gap-8">
+        <aside className="w-full md:w-[280px] flex flex-col gap-4 shrink-0">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-[#e2efe0] flex items-center justify-center text-[#1b3322] font-semibold shrink-0">
+              <span className="material-symbols-outlined text-[26px]">person</span>
             </div>
-            
             <div className="flex flex-col min-w-0">
-              <div className="flex flex-col sm:flex-row items-center gap-3">
-                <span className="font-bold text-2xl truncate">{user.name}</span>
-              </div>
-              <span className="text-white/70 text-sm mt-2 font-mono truncate">{user.email}</span>
+              <span className="font-bold text-sm text-[#1b3322] truncate">{user.name}</span>
+              <span className="text-xs text-gray-400 truncate">{user.email}</span>
             </div>
           </div>
-
-          {!editing && (
-            <button 
-              onClick={startEdit}
-              className="bg-white text-primary px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-white/90 transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer"
+          <div className="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex flex-col gap-1">
+            <Link href="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#e2efe0] text-[#1b3322] font-semibold text-sm transition-colors">
+              <span className="material-symbols-outlined text-[20px]">person</span>
+              <span>โปรไฟล์ของฉัน</span>
+            </Link>
+            <Link
+              href="/orders"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-gray-50 text-sm transition-colors"
             >
-              Edit Profile
-            </button>
-          )}
-        </div>
-
-        {/* การซื้อของฉัน Card */}
-        {!editing && (
-          <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm flex flex-col gap-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-bold text-lg md:text-xl text-[#1b3322]">การซื้อของฉัน</h2>
-              <Link href="/orders" className="text-xs md:text-sm font-medium text-gray-400 hover:text-primary transition-colors flex items-center gap-1">
-                <span>ดูประวัติการสั่งซื้อ</span>
-                <span className="material-symbols-outlined text-xs">chevron_right</span>
+              <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+              <span>คำสั่งซื้อ</span>
+            </Link>
+            {user?.role === 'admin' && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-600 hover:bg-amber-50 text-sm transition-colors font-medium"
+              >
+                <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                <span>จัดการสินค้า (Admin)</span>
               </Link>
+            )}
+          </div>
+        </aside>
+
+        <section className="flex-grow flex flex-col gap-6">
+          <Link href="/" className="flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-[#1b3322] transition-colors self-start">
+            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            <span>กลับสู่หน้าหลัก</span>
+          </Link>
+
+          <h1 className="text-3xl font-bold text-[#1b3322]">จัดการโปรไฟล์</h1>
+
+          {/* Personal Info Card */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <h2 className="font-bold text-lg text-[#1b3322]">ข้อมูลส่วนตัว</h2>
+              {!editing ? (
+                <button onClick={startEdit} className="text-sm font-semibold text-[#2e7d32] hover:underline cursor-pointer">แก้ไข</button>
+              ) : (
+                <div className="flex gap-2">
+                  <button onClick={cancelEdit} className="text-sm font-semibold text-gray-400 hover:text-gray-600 cursor-pointer">ยกเลิก</button>
+                  <button onClick={saveProfile} disabled={saving} className="text-sm font-semibold text-[#2e7d32] hover:underline disabled:opacity-50 cursor-pointer">
+                    {saving ? 'กำลังบันทึก...' : 'บันทึก'}
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-4 gap-4 py-4 border-t border-gray-50 mt-2">
-              <Link href="/orders?tab=pending" className="flex flex-col items-center text-center group cursor-pointer">
-                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                  <span className="material-symbols-outlined text-[26px]">pending_actions</span>
-                </div>
-                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">รอการชำระเงิน</span>
-              </Link>
+            {error && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
 
-              <Link href="/orders?tab=paid" className="flex flex-col items-center text-center group cursor-pointer">
-                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                  <span className="material-symbols-outlined text-[26px]">local_shipping</span>
-                </div>
-                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">ที่ต้องจัดส่ง</span>
-              </Link>
-
-              <Link href="/orders?tab=shipped" className="flex flex-col items-center text-center group cursor-pointer">
-                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                  <span className="material-symbols-outlined text-[26px]">check_circle</span>
-                </div>
-                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">สำเร็จแล้ว</span>
-              </Link>
-
-              <Link href="/orders?tab=cancelled" className="flex flex-col items-center text-center group cursor-pointer">
-                <div className="w-14 h-14 rounded-full bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105 transition-all flex items-center justify-center shadow-sm mb-3">
-                  <span className="material-symbols-outlined text-[26px]">cancel</span>
-                </div>
-                <span className="text-xs md:text-sm text-[#1b3322] font-semibold group-hover:text-primary transition-colors">สินค้าที่ยกเลิก</span>
-              </Link>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</label>
+                <input type="text" readOnly={!editing} value={editing ? form.name : user.name}
+                  onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                  className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล</label>
+                <input type="email" readOnly={!editing} value={editing ? form.email : user.email}
+                  onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                  className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</label>
+                <input type="text" readOnly={!editing} value={editing ? form.phone : (user.phone || '-')}
+                  onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                  className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+              </div>
             </div>
           </div>
-        )}
 
-        {editing && (
-          <>
-            {/* Personal Info & Address Card */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm flex flex-col gap-8 animate-fade-in">
-              {/* ข้อมูลส่วนตัว Section */}
-              <div className="flex flex-col gap-4">
-                <h2 className="font-bold text-lg md:text-xl text-[#1b3322] border-b border-gray-100 pb-2">ข้อมูลส่วนตัว</h2>
-                {error && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</label>
-                    <input type="text" value={form.name}
-                      onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล</label>
-                    <input type="email" value={form.email}
-                      onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</label>
-                    <input type="text" value={form.phone}
-                      onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
+          {/* Address Card */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <h2 className="font-bold text-lg text-[#1b3322]">ที่อยู่จัดส่ง</h2>
+              {!editing ? (
+                <button onClick={startEdit} className="text-sm font-semibold text-[#2e7d32] hover:underline cursor-pointer">แก้ไข</button>
+              ) : (
+                <div className="flex gap-2">
+                  <button onClick={cancelEdit} className="text-sm font-semibold text-gray-400 hover:text-gray-600 cursor-pointer">ยกเลิก</button>
+                  <button onClick={saveProfile} disabled={saving} className="text-sm font-semibold text-[#2e7d32] hover:underline disabled:opacity-50 cursor-pointer">
+                    {saving ? 'กำลังบันทึก...' : 'บันทึก'}
+                  </button>
                 </div>
-              </div>
-
-              {/* ที่อยู่จัดส่ง Section */}
-              <div className="flex flex-col gap-4">
-                <h2 className="font-bold text-lg md:text-xl text-[#1b3322] border-b border-gray-100 pb-2">ที่อยู่จัดส่ง</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
-                    <select value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))}
-                      className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
-                      <option value="">เลือกจังหวัด</option>
-                      {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
-                    <input type="text" value={form.district}
-                      onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
-                    <input type="text" value={form.subdistrict}
-                      onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">รหัสไปรษณีย์</label>
-                    <input type="text" value={form.postal_code}
-                      onChange={e => setForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
-                      maxLength={5}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
-                    <textarea
-                      rows={2}
-                      value={form.address}
-                      onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
-                      placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors resize-none" />
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Save / Cancel actions */}
-            <div className="flex justify-end gap-3 animate-fade-in">
-              <button 
-                onClick={cancelEdit} 
-                className="px-6 py-2.5 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm transition-all cursor-pointer"
-              >
-                ยกเลิก
-              </button>
-              <button 
-                onClick={saveProfile} 
-                disabled={saving}
-                className="px-6 py-2.5 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 font-semibold text-sm transition-all shadow-sm cursor-pointer"
-              >
-                {saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
-              </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
+                <textarea
+                  rows={2} readOnly={!editing}
+                  value={editing ? form.address : (user.address || '')}
+                  onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
+                  placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
+                  className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors resize-none ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
+                <input type="text" readOnly={!editing} value={editing ? form.subdistrict : (user.subdistrict || '')}
+                  onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
+                  className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
+                <input type="text" readOnly={!editing} value={editing ? form.district : (user.district || '')}
+                  onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
+                  className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
+                {editing ? (
+                  <select value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))}
+                    className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
+                    <option value="">เลือกจังหวัด</option>
+                    {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                ) : (
+                  <input type="text" readOnly value={user.province || ''}
+                    className="w-full bg-[#f8faf6] border border-gray-100 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none" />
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">รหัสไปรษณีย์</label>
+                <input type="text" readOnly={!editing} value={editing ? form.postal_code : (user.postal_code || '')}
+                  onChange={e => setForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
+                  maxLength={5}
+                  className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+              </div>
             </div>
-          </>
-        )}
+          </div>
 
+          <button onClick={handleLogout} className="self-end border border-red-200 hover:border-red-300 text-red-500 hover:bg-red-50 font-medium py-2.5 px-6 rounded-full flex items-center gap-2 transition-colors cursor-pointer text-sm shadow-sm">
+            <span className="material-symbols-outlined text-[18px]">logout</span>
+            <span>ออกจากระบบ</span>
+          </button>
+        </section>
       </main>
     </div>
   );

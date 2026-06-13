@@ -82,7 +82,7 @@ export default function OrderDetailPage() {
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
           <Link href="/" className="text-white font-headline-md font-bold flex items-center gap-2 group">
             <span className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform" data-weight="fill">eco</span>
-            Smartket
+            Smart Farm Marketplace
           </Link>
           <Link href="/profile" className="flex items-center gap-2 cursor-pointer group">
             <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors hidden md:inline">{user.name}</span>
@@ -132,7 +132,7 @@ export default function OrderDetailPage() {
                     <p className="font-bold text-on-surface text-sm truncate">{item.product_name}</p>
                     <p className="text-xs text-outline mt-0.5">x{item.quantity}</p>
                   </div>
-                  <p className="text-sm font-bold text-primary">{(parseFloat(item.price_per_unit) * item.quantity).toFixed(0)} บาท</p>
+                  <p className="text-sm font-bold text-primary">{Math.round(parseFloat(item.price_per_unit) * item.quantity)} บาท</p>
                 </div>
               ))}
             </div>
@@ -144,7 +144,7 @@ export default function OrderDetailPage() {
               </div>
               <div className="flex justify-between text-lg font-extrabold text-primary">
                 <span>ยอดรวมสุทธิ</span>
-                <span>{parseFloat(order.total_price).toFixed(0)} บาท</span>
+                <span>{Math.round(parseFloat(order.total_price))} บาท</span>
               </div>
             </div>
           </div>

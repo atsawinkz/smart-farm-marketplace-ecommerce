@@ -12,7 +12,7 @@ const FALLBACK_PRODUCTS = [
     promo_price: null,
     price: 30,
     stock_quantity: 91,
-    image_url: 'https://placehold.co/400x300?text=Carrot',
+    image_url: '/images/products/แครอต.jpg',
     is_best_seller: true,
     category_name: 'ผักกินหัวหรือราก',
     main_type: 'vegetable'
@@ -26,7 +26,7 @@ const FALLBACK_PRODUCTS = [
     promo_price: null,
     price: 30,
     stock_quantity: 79,
-    image_url: 'https://placehold.co/400x300?text=Tomato',
+    image_url: '/images/products/มะเขือเทศ.jpg',
     is_best_seller: true,
     category_name: 'ผักกินผล',
     main_type: 'vegetable'
@@ -40,7 +40,7 @@ const FALLBACK_PRODUCTS = [
     promo_price: null,
     price: 45,
     stock_quantity: 59,
-    image_url: 'https://placehold.co/400x300?text=Broccoli',
+    image_url: '/images/products/บรอกโคลี.jpg',
     is_best_seller: false,
     category_name: 'ผักกินดอก',
     main_type: 'vegetable'
@@ -54,7 +54,7 @@ const FALLBACK_PRODUCTS = [
     promo_price: null,
     price: 60,
     stock_quantity: 147,
-    image_url: 'https://placehold.co/400x300?text=Mango',
+    image_url: '/images/products/มะม่วง.jpg',
     is_best_seller: true,
     category_name: 'ผลไม้เมืองร้อน',
     main_type: 'fruit'

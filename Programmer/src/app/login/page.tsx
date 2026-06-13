@@ -67,20 +67,12 @@ export default function LoginPage() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container opacity-5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-secondary-container opacity-10 rounded-tr-full -ml-20 -mb-20 pointer-events-none"></div>
           
-          <Link 
-            href="/" 
-            className="absolute top-6 right-6 text-outline hover:text-primary hover:bg-surface-container-low transition-colors w-8 h-8 flex items-center justify-center rounded-full z-20 cursor-pointer"
-            title="ย้อนกลับ"
-          >
-            <span className="material-symbols-outlined text-[22px]">close</span>
-          </Link>
-
           <div className="text-center mb-stack-lg relative z-10">
             <h1 className="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-primary mb-stack-sm">
               Smartket
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              ยินดีต้อนรับ
+              ยินดีต้อนรับสู่โลกแห่งเกษตรขายส่ง
             </p>
           </div>
 
@@ -153,9 +145,27 @@ export default function LoginPage() {
               </div>
             </div>
 
+            <div className="flex justify-between items-center pb-stack-sm pt-stack-sm">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  className="rounded border-outline-variant text-primary focus:ring-primary bg-surface-container-lowest w-4 h-4 cursor-pointer"
+                  type="checkbox"
+                  disabled={loading}
+                />
+                <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">
+                  จดจำฉันไว้ในระบบ
+                </span>
+              </label>
+              <Link
+                className="font-label-md text-label-md text-primary hover:underline"
+                href="#"
+              >
+                ลืมรหัสผ่าน?
+              </Link>
+            </div>
 
             <button
-              className="w-full max-w-[220px] mx-auto bg-primary text-on-primary py-3 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group disabled:opacity-50 cursor-pointer"
+              className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group disabled:opacity-50"
               type="submit"
               disabled={loading}
             >

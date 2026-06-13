@@ -44,12 +44,6 @@ export default function OrdersPage() {
       const u = JSON.parse(storedUser);
       setUser(u);
       fetchOrders(u.id);
-      
-      const searchParams = new URLSearchParams(window.location.search);
-      const tabParam = searchParams.get('tab');
-      if (tabParam && TABS.some(t => t.id === tabParam)) {
-        setActiveTab(tabParam);
-      }
     } catch { router.push('/login'); }
   }, [router]);
 
@@ -67,7 +61,6 @@ export default function OrdersPage() {
     : orders.filter(o => o.status === activeTab);
 
   const formatDate = (d: string) => {
-    if (!d) return '-';
     const date = new Date(d);
     return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
@@ -80,17 +73,12 @@ export default function OrdersPage() {
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
           <Link href="/" className="text-white font-headline-md font-bold flex items-center gap-2 group">
             <span className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform" data-weight="fill">eco</span>
-            Smartket
+            Smart Farm Marketplace
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative bg-white/10">
               <span className="material-symbols-outlined">shopping_cart</span>
-              {/* 🎯 แก้ไข: บังคับเงื่อนไข Boolean เพื่อไม่ให้พ่นเลข 0 */}
-              {totalCartQuantity > 0 && (
-                <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1">
-                  {totalCartQuantity}
-                </span>
-              )}
+              {totalCartQuantity > 0 && <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1">{totalCartQuantity}</span>}
             </Link>
             <Link href="/profile" className="flex items-center gap-2 cursor-pointer group">
               <div className="w-[1px] h-6 bg-white/20"></div>
@@ -113,25 +101,22 @@ export default function OrdersPage() {
 
         <div className="border-b border-outline-variant/30 mb-6 overflow-x-auto">
           <div className="flex gap-6 min-w-max">
-            {TABS.map(tab => {
-              const tabCount = orders.filter(o => o.status === tab.id).length;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`pb-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${activeTab === tab.id
-                      ? 'border-primary text-primary font-bold'
-                      : 'border-transparent text-outline hover:text-on-surface-variant'
-                    }`}
-                >
-                  {tab.label}
-                  {/* 🎯 แก้ไข: ป้องกันปัญหาเลข 0 โผล่ตรงป้ายจำนวนของแท็บสถานะ */}
-                  {tab.id !== 'all' && tabCount > 0 && (
-                    <span className="ml-1.5 text-xs">({tabCount})</span>
-                  )}
-                </button>
-              );
-            })}
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`pb-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${
+                  activeTab === tab.id
+                    ? 'border-primary text-primary font-bold'
+                    : 'border-transparent text-outline hover:text-on-surface-variant'
+                }`}
+              >
+                {tab.label}
+                {tab.id !== 'all' && (
+                  <span className="ml-1.5 text-xs">({orders.filter(o => o.status === tab.id).length})</span>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -157,8 +142,6 @@ export default function OrdersPage() {
             {filteredOrders.map(order => {
               const statusInfo = STATUS_MAP[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-800' };
               const itemCount = order.items ? order.items.reduce((s: number, i: any) => s + i.quantity, 0) : 0;
-              const price = order.total_price ? parseFloat(order.total_price) : 0;
-
               return (
                 <Link
                   key={order.id}
@@ -183,7 +166,7 @@ export default function OrdersPage() {
                   </div>
                   <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
                     <span className={`text-xs font-bold px-3 py-1 rounded-full ${statusInfo.color}`}>{statusInfo.label}</span>
-                    <span className="text-lg font-extrabold text-primary font-headline-lg">{price.toFixed(0)} บาท</span>
+                    <span className="text-lg font-extrabold text-primary font-headline-lg">{Math.round(parseFloat(order.total_price))} บาท</span>
                     <span className="material-symbols-outlined text-outline text-[20px]">chevron_right</span>
                   </div>
                 </Link>

@@ -54,7 +54,7 @@ function OrderSuccessContent() {
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto">
           <Link href="/" className="text-white font-headline-md font-bold flex items-center gap-2 group">
             <span className="material-symbols-outlined text-inverse-primary text-3xl group-hover:-rotate-12 transition-transform" data-weight="fill">eco</span>
-            Smartket
+            Smart Farm Marketplace
           </Link>
         </div>
       </header>

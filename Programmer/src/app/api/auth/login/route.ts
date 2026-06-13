@@ -48,12 +48,7 @@ export async function POST(request: Request) {
         name: user.name,
         role: user.role,
         email: user.email,
-        phone: user.phone,
-        address: user.address,
-        subdistrict: user.subdistrict,
-        district: user.district,
-        province: user.province,
-        postal_code: user.postal_code
+        phone: user.phone
       }
     });
   } catch (error: any) {
