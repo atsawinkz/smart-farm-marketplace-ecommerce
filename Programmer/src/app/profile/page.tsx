@@ -380,6 +380,10 @@ export default function ProfilePage() {
       </header>
 
       <main className="flex-grow max-w-[1000px] w-full mx-auto px-4 py-8 flex flex-col gap-6">
+        <Link href="/" className="flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-primary transition-colors self-start">
+          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+          <span>กลับสู่หน้าหลัก</span>
+        </Link>
 
         {/* Green Profile Header Card */}
         <div className="bg-[#224229] rounded-[24px] p-6 md:p-8 flex flex-col sm:flex-row justify-between items-center gap-6 text-white relative overflow-hidden shadow-md">
