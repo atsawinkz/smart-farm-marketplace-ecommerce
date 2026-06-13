@@ -52,6 +52,14 @@ export default function RegisterPage() {
   return (
     <div className="bg-background text-on-background min-h-screen flex items-center justify-center font-body-md text-body-md bg-gradient-to-br from-[#eaf2e6] to-[#f8faf6] p-4 md:p-8">
       <div className="bg-surface-container-lowest w-full max-w-[600px] rounded-xl p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-surface-variant relative overflow-hidden">
+        {/* Close button */}
+        <Link
+          href="/"
+          className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+          title="กลับหน้าหลัก"
+        >
+          <span className="material-symbols-outlined text-[20px]">close</span>
+        </Link>
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container opacity-5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-secondary-container opacity-10 rounded-tr-full -ml-20 -mb-20 pointer-events-none"></div>
@@ -195,18 +203,20 @@ export default function RegisterPage() {
           </div>
 
           {/* Submit Button */}
-          <button
-            className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg hover:bg-surface-tint transition-all flex items-center justify-center gap-2 group mt-6 disabled:opacity-50"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
-            {!loading && (
-              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform text-[20px]">
-                arrow_forward
-              </span>
-            )}
-          </button>
+          <div className="flex justify-center mt-6">
+            <button
+              className="bg-primary text-on-primary py-2.5 px-10 rounded-lg font-label-lg hover:bg-surface-tint transition-all inline-flex items-center justify-center gap-2 group disabled:opacity-50"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
+              {!loading && (
+                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform text-[20px]">
+                  arrow_forward
+                </span>
+              )}
+            </button>
+          </div>
 
           {/* Footer Link */}
           <div className="text-center pt-6 mt-2">
