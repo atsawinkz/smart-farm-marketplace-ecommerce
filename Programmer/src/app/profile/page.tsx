@@ -456,9 +456,9 @@ export default function ProfilePage() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
           
           <div className="flex flex-col sm:flex-row items-center gap-6 relative z-10 w-full sm:w-auto text-center sm:text-left">
-            {/* Avatar container with green border */}
-            <div className="w-24 h-24 rounded-full border-4 border-[#335c3c] bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-              <img src={defaultAvatar} alt="Profile Avatar" className="w-full h-full object-cover" />
+            {/* Avatar container with green border and icon */}
+            <div className="w-24 h-24 rounded-full border-4 border-[#335c3c] bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
+              <span className="material-symbols-outlined text-[48px]" data-weight="fill">person</span>
             </div>
             
             <div className="flex flex-col min-w-0">
