@@ -109,7 +109,8 @@ const INITIAL_PRODUCTS: Product[] = [
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  // Start with empty array — products load from API only (prevents stock bypass via fake placeholder IDs)
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartItems, cartLoading, addToCart } = useCart();

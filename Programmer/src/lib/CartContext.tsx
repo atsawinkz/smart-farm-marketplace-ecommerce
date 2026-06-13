@@ -147,8 +147,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
+        // Use the existing item's stock_quantity (loaded from DB) as authoritative source
+        // Fall back to the product argument's stock_quantity if not available
+        const stockLimit =
+          Number.isFinite(existing.product.stock_quantity) && existing.product.stock_quantity > 0
+            ? existing.product.stock_quantity
+            : Number.isFinite(product.stock_quantity) && product.stock_quantity > 0
+            ? product.stock_quantity
+            : 0;
         // Already at stock limit — do not add more
-        if (existing.quantity >= product.stock_quantity) return prev;
+        if (stockLimit > 0 && existing.quantity >= stockLimit) return prev;
         const newItems = prev.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + 1 }

@@ -60,6 +60,8 @@ export default function CheckoutPage() {
     try {
       const u = JSON.parse(storedUser);
       setUser(u);
+      
+      // Populate from localStorage first
       setAddressForm({
         address: u.address || '',
         subdistrict: u.subdistrict || '',
@@ -71,6 +73,31 @@ export default function CheckoutPage() {
       if (!u.address) {
         setEditingAddress(true);
       }
+
+      // Fetch latest profile from database
+      fetch(`/api/auth/profile?id=${u.id}`)
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data) {
+            const latestUser = result.data;
+            localStorage.setItem('user', JSON.stringify(latestUser));
+            setUser(latestUser);
+            setAddressForm({
+              address: latestUser.address || '',
+              subdistrict: latestUser.subdistrict || '',
+              district: latestUser.district || '',
+              province: latestUser.province || '',
+              postal_code: latestUser.postal_code || '',
+              phone: latestUser.phone || '',
+            });
+            if (latestUser.address) {
+              setEditingAddress(false);
+            } else {
+              setEditingAddress(true);
+            }
+          }
+        })
+        .catch(err => console.error('Error fetching profile:', err));
     } catch { router.push('/login'); }
   }, [router]);
 
