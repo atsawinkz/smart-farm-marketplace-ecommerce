@@ -561,6 +561,20 @@ export default function ProfilePage() {
                         placeholder="ระบุรายละเอียดที่อยู่"
                         className="w-full border border-[#e2e5e0] bg-[#f0f2ed] rounded-xl py-3 px-4 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors resize-none" />
                     </div>
+
+                    {/* Checkbox: ตั้งเป็นที่อยู่เริ่มต้นสำหรับการจัดส่ง */}
+                    <div className="md:col-span-2 flex items-center gap-2 py-1">
+                      <input 
+                        type="checkbox" 
+                        id="is_default_checkbox_edit"
+                        checked={addressForm.is_default}
+                        onChange={e => setAddressForm(p => ({ ...p, is_default: e.target.checked }))}
+                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer" 
+                      />
+                      <label htmlFor="is_default_checkbox_edit" className="text-xs font-semibold text-gray-600 select-none cursor-pointer">
+                        ตั้งเป็นที่อยู่เริ่มต้นสำหรับการจัดส่ง
+                      </label>
+                    </div>
                   </div>
 
                   {/* Actions: ยกเลิก / บันทึกข้อมูล */}

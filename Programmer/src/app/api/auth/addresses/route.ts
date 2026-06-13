@@ -135,19 +135,20 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' }, { status: 400 });
     }
 
+    if (is_default) {
+      // Set all other addresses to false
+      await query('UPDATE addresses SET is_default = FALSE WHERE user_id = ?', [user_id]);
+    }
+
     await query(
       `UPDATE addresses 
-       SET recipient_name = ?, recipient_phone = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?
+       SET recipient_name = ?, recipient_phone = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, is_default = ?
        WHERE address_id = ? AND user_id = ?`,
-      [name, phone, address, subdistrict || '', district, province, postal_code || '', id, user_id]
+      [name, phone, address, subdistrict || '', district, province, postal_code || '', is_default ? 1 : 0, id, user_id]
     );
 
     // If this address is default, also update the users table
-    const checkDefault = await query<any[]>(
-      'SELECT is_default FROM addresses WHERE address_id = ?',
-      [id]
-    );
-    if (checkDefault[0]?.is_default) {
+    if (is_default) {
       await query(
         `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
         [name, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
