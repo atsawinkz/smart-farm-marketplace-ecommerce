@@ -169,7 +169,7 @@ export default function OrderDetailPage() {
             </div>
             <div className="text-sm text-on-surface-variant space-y-2">
               <p>วิธีการชำระ: <span className="font-semibold text-on-surface">{PAYMENT_LABELS[order.payment_method] || order.payment_method}</span></p>
-              {order.payment_status && <p>สถานะการชำระ: {order.payment_status === 'paid' ? <span className="text-green-600 font-semibold">ชำระแล้ว</span> : <span className="text-amber-600 font-semibold">รอชำระ</span>}</p>}
+              {order.payment_status && <p>สถานะการชำระ: {order.payment_status === 'paid' ? <span className="text-green-600 font-semibold">ชำระแล้ว</span> : <span className="text-amber-600 font-semibold">รอดำเนินการ</span>}</p>}
             </div>
           </div>
         </div>
