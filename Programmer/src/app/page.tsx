@@ -443,7 +443,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-gutter gap-y-stack-lg animate-pulse">
               {[1, 2, 3, 4].map((n) => (
                 <div key={n} className="flex flex-col">
-                  <div className="bg-surface-container-low rounded-xl aspect-[4/5] mb-stack-md" />
+                  <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md" />
                   <div className="h-4 bg-surface-container-low rounded w-1/3 mb-2" />
                   <div className="h-6 bg-surface-container-low rounded w-3/4 mb-2" />
                   <div className="h-8 bg-surface-container-low rounded w-1/2" />
@@ -470,33 +470,13 @@ export default function HomePage() {
               {filteredProducts.map((product) => (
                 <article key={product.id} className="flex flex-col group relative">
                   {/* Card Container */}
-                  <div className="bg-surface-container-low rounded-xl aspect-[4/5] p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
+                  <div className="bg-surface-container-low rounded-xl aspect-square p-6 mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
                     {/* Tags */}
                     {product.is_best_seller && (
                       <span className="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
                         ขายดี
                       </span>
                     )}
-                    {product.promo_price != null && (
-                      <span className="absolute top-3 left-3 bg-error text-on-error text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm" style={product.is_best_seller ? { left: '4.5rem' } : {}}>
-                        โปรโมชั่น
-                      </span>
-                    )}
-
-                    {/* Favorite Button */}
-                    <button
-                      onClick={() => toggleFavorite(product.id)}
-                      className="absolute top-3 right-3 text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-bright z-10 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-sm"
-                      aria-label="Add to favorites"
-                    >
-                      <span
-                        className="material-symbols-outlined text-[20px] transition-transform duration-200 active:scale-125"
-                        data-weight={favorites.includes(product.id) ? 'fill' : undefined}
-                        style={{ color: favorites.includes(product.id) ? 'var(--color-error)' : undefined }}
-                      >
-                        favorite
-                      </span>
-                    </button>
 
                     {/* Product Image */}
                     <img
