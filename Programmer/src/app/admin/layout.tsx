@@ -46,14 +46,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-surface text-on-surface">
       <aside className="fixed inset-y-0 left-0 w-64 bg-primary text-on-primary flex flex-col z-30">
-        <div className="p-5 flex items-center justify-between border-b border-white/10">
-          <Link href="/" className="flex items-center gap-2 font-headline-md font-bold text-lg">
-            <span className="material-symbols-outlined text-inverse-primary" data-weight="fill">eco</span>
-            Admin Panel
-          </Link>
-          <Link href="/profile" className="flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all" title="กลับไปจัดการโปรไฟล์">
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          </Link>
+        <div className="p-5 flex items-center gap-2 border-b border-white/10">
+          <span className="material-symbols-outlined text-inverse-primary" data-weight="fill">eco</span>
+          <span className="font-headline-md font-bold text-lg">Admin Panel</span>
         </div>
         <nav className="flex flex-col p-3 gap-1 flex-grow">
           {navItems.map((item) => {
@@ -87,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="material-symbols-outlined text-[18px]">person</span>
             <span>{user?.name} (ผู้ดูแลระบบ)</span>
             <button
-              onClick={() => { localStorage.removeItem('user'); router.push('/'); }}
+              onClick={() => { localStorage.removeItem('user'); router.push('/login'); }}
               className="ml-2 text-error hover:text-error/80 transition-colors text-xs font-semibold cursor-pointer"
             >
               ออกจากระบบ

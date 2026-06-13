@@ -44,10 +44,6 @@ export default function AdminDashboard() {
             <span className="material-symbols-outlined text-[18px]">list</span>
             ดูสินค้าทั้งหมด
           </Link>
-          <Link href="/" className="bg-surface-container text-on-surface-variant px-5 py-2.5 rounded-full font-label-md hover:bg-surface-container-high transition-all flex items-center gap-2 text-sm">
-            <span className="material-symbols-outlined text-[18px]">store</span>
-            หน้าร้านค้า
-          </Link>
         </div>
       </div>
     </div>
