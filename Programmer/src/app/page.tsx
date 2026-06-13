@@ -323,18 +323,6 @@ export default function HomePage() {
               <span className="material-symbols-outlined absolute right-3 top-2.5 text-outline">search</span>
             </div>
 
-            {/* Shopping Cart button */}
-            <Link href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
-              <span className="material-symbols-outlined" data-icon="shopping_cart">
-                shopping_cart
-              </span>
-              {totalCartQuantity > 0 && (
-                <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-bounce">
-                  {totalCartQuantity}
-                </span>
-              )}
-            </Link>
-
             {/* User Profile / Registration Buttons */}
             {user ? (
               <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
@@ -432,42 +420,7 @@ export default function HomePage() {
               <p className="text-body-lg text-on-surface-variant mt-1">คัดสรรความสดใหม่ คุณภาพระดับพรีเมียม ส่งตรงถึงมือคุณ</p>
             </div>
 
-            {/* Filtering Quick Tags */}
-            <div className="flex gap-2 mt-4 md:mt-0 flex-wrap">
-              <button
-                onClick={() => {
-                  setSelectedMainType(null);
-                  setSearchQuery('');
-                }}
-                className={`px-4 py-2 rounded-full font-label-md transition-all ${
-                  !selectedMainType && !searchQuery
-                    ? 'bg-primary text-on-primary shadow-sm'
-                    : 'bg-surface-container-low hover:bg-surface-container text-on-surface-variant'
-                }`}
-              >
-                ทั้งหมด
-              </button>
-              <button
-                onClick={() => setSelectedMainType('vegetable')}
-                className={`px-4 py-2 rounded-full font-label-md transition-all ${
-                  selectedMainType === 'vegetable'
-                    ? 'bg-primary text-on-primary shadow-sm'
-                    : 'bg-surface-container-low hover:bg-surface-container text-on-surface-variant'
-                }`}
-              >
-                ผักสวนครัว
-              </button>
-              <button
-                onClick={() => setSelectedMainType('fruit')}
-                className={`px-4 py-2 rounded-full font-label-md transition-all ${
-                  selectedMainType === 'fruit'
-                    ? 'bg-primary text-on-primary shadow-sm'
-                    : 'bg-surface-container-low hover:bg-surface-container text-on-surface-variant'
-                }`}
-              >
-                ผลไม้สด
-              </button>
-            </div>
+
           </div>
 
           {/* Search info text if filter active */}
