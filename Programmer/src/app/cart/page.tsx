@@ -51,14 +51,22 @@ export default function CartPage() {
   const [user, setUser] = React.useState<any>(null);
   React.useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Failed to parse user from localStorage:", err);
-      }
+    if (!storedUser) {
+      router.push("/login");
+      return;
     }
-  }, []);
+    try {
+      setUser(JSON.parse(storedUser));
+    } catch (err) {
+      console.error("Failed to parse user from localStorage:", err);
+      router.push("/login");
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    router.push("/");
+  };
 
   // Checkout action
   const handleCheckout = () => {
@@ -90,37 +98,33 @@ export default function CartPage() {
             Smart Farm Marketplace
           </Link>
 
-          {/* Actions */}
+
+          {/* Actions (Cart, Profile) */}
           <div className="flex items-center gap-stack-md">
-            {/* Shopping Cart button */}
-            <Link
-              href="/cart"
-              className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative bg-white/10"
-            >
-              <span className="material-symbols-outlined" data-icon="shopping_cart">
-                shopping_cart
-              </span>
-              {totalCartQuantity > 0 && (
-                <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-bounce">
-                  {totalCartQuantity}
-                </span>
-              )}
-            </Link>
 
             {/* User Profile / Registration Buttons */}
             {user ? (
-              <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
-                <div className="w-[1px] h-6 bg-white/20"></div>
-                <div className="flex flex-col text-right">
-                  <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
-                  <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
-                </div>
-                <div
-                  className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]"
+              <div className="flex items-center gap-3">
+                <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
+                  <div className="w-[1px] h-6 bg-white/20"></div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
+                    <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
+                  </div>
+                  <div
+                    className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]"
+                  >
+                    <span className="material-symbols-outlined text-[24px]">person</span>
+                  </div>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
+                  title="ออกจากระบบ"
                 >
-                  <span className="material-symbols-outlined text-[24px]">person</span>
-                </div>
-              </Link>
+                  <span className="material-symbols-outlined text-[24px]">logout</span>
+                </button>
+              </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">

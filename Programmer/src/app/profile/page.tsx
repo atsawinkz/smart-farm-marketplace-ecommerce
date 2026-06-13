@@ -21,16 +21,59 @@ const PROVINCES = [
   'อำนาจเจริญ', 'อุดรธานี', 'อุตรดิตถ์', 'อุทัยธานี', 'อุบลราชธานี'
 ];
 
+const STATUS_MAP: Record<string, { label: string; color: string }> = {
+  pending: { label: 'รอชำระเงิน', color: 'bg-amber-100 text-amber-800' },
+  paid: { label: 'ชำระเงินแล้ว', color: 'bg-blue-100 text-blue-800' },
+  shipped: { label: 'จัดส่งแล้ว', color: 'bg-green-100 text-green-800' },
+  cancelled: { label: 'ยกเลิก', color: 'bg-red-100 text-red-800' },
+};
+
+const PAYMENT_LABELS: Record<string, string> = {
+  promptpay: 'พร้อมเพย์',
+  bank_transfer: 'โอนเงิน',
+  cod: 'เก็บปลายทาง',
+  credit_card: 'บัตรเครดิต',
+};
+
+const TABS = [
+  { id: 'all', label: 'ทั้งหมด' },
+  { id: 'pending', label: 'รอชำระเงิน' },
+  { id: 'paid', label: 'ชำระแล้ว' },
+  { id: 'shipped', label: 'จัดส่งแล้ว' },
+  { id: 'cancelled', label: 'ยกเลิก' },
+];
+
+const TAB_ICONS: Record<string, string> = {
+  all: 'receipt_long',
+  pending: 'pending_actions',
+  paid: 'payments',
+  shipped: 'local_shipping',
+  cancelled: 'cancel',
+};
+
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const { cartItems } = useCart();
   const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
+
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', subdistrict: '', district: '', province: '', postal_code: '' });
+
+  const fetchOrders = async (userId: number) => {
+    try {
+      const res = await fetch(`/api/orders?user_id=${userId}`);
+      const result = await res.json();
+      if (result.success) setOrders(result.data);
+    } catch { /* ignore */ }
+    setOrdersLoading(false);
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -50,12 +93,19 @@ export default function ProfilePage() {
           province: u.province || '',
           postal_code: u.postal_code || '',
         });
+        fetchOrders(u.id);
       } catch (err) {
         console.error("Failed to parse user session:", err);
         router.push("/login");
       }
     }
   }, [router]);
+
+  const formatDate = (d: string) => {
+    if (!d) return '-';
+    const date = new Date(d);
+    return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -114,6 +164,10 @@ export default function ProfilePage() {
     }
     setSaving(false);
   };
+
+  const filteredOrders = activeTab === 'all'
+    ? orders
+    : orders.filter(o => o.status === activeTab);
 
   if (!user) {
     return (
@@ -302,6 +356,104 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+
+          {/* การซื้อของฉัน Card */}
+          {!editing && (
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm flex flex-col gap-6">
+              <div className="flex justify-between items-center">
+                <h2 className="font-bold text-lg md:text-xl text-[#1b3322]">การซื้อของฉัน</h2>
+              </div>
+
+              {/* Tabs Selector (Icons) */}
+              <div className="grid grid-cols-5 gap-2 md:gap-4 py-4 border-t border-b border-gray-50 mt-2">
+                {TABS.map(tab => {
+                  const tabCount = orders.filter(o => o.status === tab.id).length;
+                  const icon = TAB_ICONS[tab.id];
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className="flex flex-col items-center text-center group cursor-pointer outline-none"
+                    >
+                      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-sm mb-2 transition-all ${
+                        isActive 
+                          ? 'bg-primary text-white scale-105' 
+                          : 'bg-[#f4f7f3] text-primary group-hover:bg-[#e2efe0] group-hover:scale-105'
+                      }`}>
+                        <span className="material-symbols-outlined text-[24px] md:text-[26px]">
+                          {icon}
+                        </span>
+                      </div>
+                      <span className={`text-[11px] md:text-xs font-semibold transition-colors ${
+                        isActive ? 'text-primary font-bold' : 'text-[#1b3322] group-hover:text-primary'
+                      }`}>
+                        {tab.label}
+                        {tab.id !== 'all' && tabCount > 0 && (
+                          <span className="ml-1 text-[10px]">({tabCount})</span>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Orders List */}
+              {ordersLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                </div>
+              ) : filteredOrders.length === 0 ? (
+                <div className="text-center py-12 bg-[#f8faf6] rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-2">
+                  <span className="material-symbols-outlined text-5xl text-gray-300">shopping_bag</span>
+                  <h3 className="text-md font-semibold text-gray-500">
+                    {activeTab === 'all' ? 'ยังไม่มีคำสั่งซื้อ' : 'ไม่มีคำสั่งซื้อในหมวดนี้'}
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    {activeTab === 'all' ? 'คุณยังไม่มีประวัติการสั่งซื้อ' : 'ลองตรวจสอบหมวดหมู่อื่น'}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {filteredOrders.map(order => {
+                    const statusInfo = STATUS_MAP[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-800' };
+                    const itemCount = order.items ? order.items.reduce((s: number, i: any) => s + i.quantity, 0) : 0;
+                    const price = order.total_price ? parseFloat(order.total_price) : 0;
+
+                    return (
+                      <Link
+                        key={order.id}
+                        href={`/orders/${order.id}`}
+                        className="bg-[#f8faf6] rounded-2xl p-5 border border-gray-100 hover:border-primary/30 transition-all flex flex-col md:flex-row md:items-center gap-4 group"
+                      >
+                        <div className="flex-grow flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+                          <div className="flex items-center gap-3">
+                            <span className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <span className="material-symbols-outlined text-[#2e7d32]">receipt_long</span>
+                            </span>
+                            <div>
+                              <p className="font-bold text-[#1b3322] text-sm group-hover:text-primary transition-colors">#SF-{order.id}</p>
+                              <p className="text-xs text-gray-400">{formatDate(order.created_at)}</p>
+                            </div>
+                          </div>
+                          <div className="md:ml-4 flex items-center gap-4 text-xs text-gray-500">
+                            <span>{itemCount} รายการ</span>
+                            <span className="hidden md:inline text-gray-300">|</span>
+                            <span>{PAYMENT_LABELS[order.payment_method] || order.payment_method}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
+                          <span className={`text-xs font-bold px-3 py-1 rounded-full ${statusInfo.color}`}>{statusInfo.label}</span>
+                          <span className="text-md font-bold text-primary">{price.toFixed(0)} บาท</span>
+                          <span className="material-symbols-outlined text-gray-400 text-[20px] group-hover:translate-x-1 transition-transform">chevron_right</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
           <button onClick={handleLogout} className="self-end border border-red-200 hover:border-red-300 text-red-500 hover:bg-red-50 font-medium py-2.5 px-6 rounded-full flex items-center gap-2 transition-colors cursor-pointer text-sm shadow-sm">
             <span className="material-symbols-outlined text-[18px]">logout</span>

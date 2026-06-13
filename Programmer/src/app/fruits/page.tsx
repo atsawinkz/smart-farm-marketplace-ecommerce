@@ -33,14 +33,22 @@ export default function FruitsPage() {
   // Load user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Failed to parse user from localStorage:", err);
-      }
+    if (!storedUser) {
+      router.push("/login");
+      return;
     }
-  }, []);
+    try {
+      setUser(JSON.parse(storedUser));
+    } catch (err) {
+      console.error("Failed to parse user from localStorage:", err);
+      router.push("/login");
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    router.push("/");
+  };
 
   // Load products from API
   useEffect(() => {
@@ -197,9 +205,9 @@ export default function FruitsPage() {
             </Link>
           </nav>
 
-          {/* Actions (Search, Cart, Profile) */}
+          {/* Actions (Cart, Profile) */}
           <div className="flex items-center gap-stack-md">
-            {/* Search */}
+            {/* Search Input */}
             <div className="relative hidden sm:block">
               <input
                 className="bg-surface-container-low border border-outline-variant/50 text-on-surface rounded-full py-2 pl-4 pr-10 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all duration-300 w-48 lg:w-64"
@@ -211,51 +219,48 @@ export default function FruitsPage() {
               <span className="material-symbols-outlined absolute right-3 top-2.5 text-outline">search</span>
             </div>
 
-            {/* Cart Icon */}
             {user && (
-              <Link
-                href="/cart"
-                className="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-all flex items-center justify-center relative shadow-sm"
-              >
-                <span className="material-symbols-outlined text-[26px]">shopping_cart</span>
+              <Link href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
+                <span className="material-symbols-outlined" data-icon="shopping_cart">
+                  shopping_cart
+                </span>
                 {totalCartQuantity > 0 && (
-                  <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm animate-scaleIn">
+                  <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-bounce">
                     {totalCartQuantity}
                   </span>
                 )}
               </Link>
             )}
 
-            {/* Profile Menu or Login Buttons */}
+            {/* User Profile / Registration Buttons */}
             {user ? (
-              <div
-                onClick={() => router.push("/profile")}
-                className="flex items-center gap-3 pl-3 border-l border-white/20 hover:opacity-90 transition-opacity cursor-pointer group"
-              >
-                <div className="w-9 h-9 rounded-full bg-white/15 border border-white/10 flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
-                  {user.name ? user.name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()}
-                </div>
-                <div className="hidden lg:flex flex-col text-left">
-                  <span className="text-sm font-semibold text-white group-hover:text-inverse-primary transition-colors leading-tight">
-                    {user.name || user.username}
-                  </span>
-                  <span className="text-[11px] text-white/60 leading-none mt-0.5">
-                    {user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}
-                  </span>
-                </div>
+              <div className="flex items-center gap-3">
+                <Link href="/profile" className="flex items-center gap-3 cursor-pointer group">
+                  <div className="w-[1px] h-6 bg-white/20"></div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-white font-medium text-sm leading-tight group-hover:text-inverse-primary transition-colors">{user.name}</span>
+                    <span className="text-white/70 text-xs">{user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'สมาชิกทั่วไป'}</span>
+                  </div>
+                  <div
+                    className="w-10 h-10 rounded-full bg-[#e2efe0] group-hover:bg-[#d5e8d2] transition-colors flex items-center justify-center text-[#1b3322]"
+                  >
+                    <span className="material-symbols-outlined text-[24px]">person</span>
+                  </div>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
+                  title="ออกจากระบบ"
+                >
+                  <span className="material-symbols-outlined text-[24px]">logout</span>
+                </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/login"
-                  className="text-white hover:text-inverse-primary font-label-lg transition-colors px-4 py-2"
-                >
+              <div className="hidden md:flex items-center gap-2">
+                <Link href="/login" className="text-white hover:text-white/80 font-label-lg transition-colors px-4 py-2 cursor-pointer">
                   เข้าสู่ระบบ
                 </Link>
-                <Link
-                  href="/register"
-                  className="bg-white text-primary font-label-lg px-5 py-2.5 rounded-full hover:bg-inverse-primary hover:text-primary-container transition-all shadow-sm font-bold active:scale-95"
-                >
+                <Link href="/register" className="bg-on-primary text-primary font-label-lg px-4 py-2 rounded-full hover:bg-inverse-primary transition-all shadow-sm cursor-pointer">
                   สมัครสมาชิก
                 </Link>
               </div>
