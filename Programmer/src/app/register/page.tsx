@@ -196,7 +196,7 @@ export default function RegisterPage() {
 
           {/* Submit Button */}
           <button
-            className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg hover:bg-surface-tint transition-all flex items-center justify-center gap-2 group mt-6 disabled:opacity-50"
+            className="w-full max-w-[220px] mx-auto bg-primary text-on-primary py-3 rounded-lg font-label-lg hover:bg-surface-tint transition-all flex items-center justify-center gap-2 group mt-6 disabled:opacity-50 cursor-pointer"
             type="submit"
             disabled={loading}
           >
