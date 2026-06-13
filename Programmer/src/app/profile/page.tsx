@@ -576,20 +576,26 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
-                    <select value={form.province} onChange={e => handleProvinceChange(e.target.value)}
-                      className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
-                      <option value="">เลือกจังหวัด</option>
-                      {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-                    </select>
+                    <div className="relative">
+                      <select value={form.province} onChange={e => handleProvinceChange(e.target.value)}
+                        className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 pr-10 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
+                        <option value="">เลือกจังหวัด</option>
+                        {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-[20px]">arrow_drop_down</span>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
                     {form.province && THAI_LOCATION_DATA[form.province] ? (
-                      <select value={form.district} onChange={e => handleDistrictChange(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
-                        <option value="">เลือกอำเภอ</option>
-                        {Object.keys(THAI_LOCATION_DATA[form.province]).map(d => <option key={d} value={d}>{d}</option>)}
-                      </select>
+                      <div className="relative">
+                        <select value={form.district} onChange={e => handleDistrictChange(e.target.value)}
+                          className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 pr-10 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
+                          <option value="">เลือกอำเภอ</option>
+                          {Object.keys(THAI_LOCATION_DATA[form.province]).map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-[20px]">arrow_drop_down</span>
+                      </div>
                     ) : (
                       <input type="text" value={form.district}
                         onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
@@ -599,11 +605,14 @@ export default function ProfilePage() {
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
                     {form.province && form.district && THAI_LOCATION_DATA[form.province]?.[form.district] ? (
-                      <select value={form.subdistrict} onChange={e => handleSubdistrictChange(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
-                        <option value="">เลือกตำบล</option>
-                        {Object.keys(THAI_LOCATION_DATA[form.province][form.district]).map(s => <option key={s} value={s}>{s}</option>)}
-                      </select>
+                      <div className="relative">
+                        <select value={form.subdistrict} onChange={e => handleSubdistrictChange(e.target.value)}
+                          className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 pr-10 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
+                          <option value="">เลือกตำบล</option>
+                          {Object.keys(THAI_LOCATION_DATA[form.province][form.district]).map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-[20px]">arrow_drop_down</span>
+                      </div>
                     ) : (
                       <input type="text" value={form.subdistrict}
                         onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}

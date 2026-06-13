@@ -137,6 +137,28 @@ const THAI_LOCATION_DATA: {
       'คลองตันเหนือ': '10110',
       'พระโขนงเหนือ': '10110'
     }
+  },
+  'ฉะเชิงเทรา': {
+    'เมืองฉะเชิงเทรา': {
+      'หน้าเมือง': '24000',
+      'ท่าไข่': '24000',
+      'บ้านใหม่': '24000',
+      'คลองนครเนื่องเขต': '24000',
+      'บางพระ': '24000',
+      'บางแก้ว': '24000'
+    },
+    'บางคล้า': {
+      'บางคล้า': '24110',
+      'ท่าทองหลาง': '24110',
+      'เสม็ดเหนือ': '24110',
+      'เสม็ดใต้': '24110'
+    },
+    'พนมสารคาม': {
+      'พนมสารคาม': '24120',
+      'เกาะขนุน': '24120',
+      'ท่าถ่าน': '24120',
+      'บ้านซ่อง': '24120'
+    }
   }
 };
 
@@ -427,20 +449,26 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">จังหวัด *</label>
-                  <select value={addr.province} onChange={e => handleProvinceChange(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
-                    <option value="">เลือกจังหวัด</option>
-                    {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
+                  <div className="relative">
+                    <select value={addr.province} onChange={e => handleProvinceChange(e.target.value)}
+                      className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                      <option value="">เลือกจังหวัด</option>
+                      {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                    <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-[20px]">arrow_drop_down</span>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">อำเภอ / เขต *</label>
                   {addr.province && THAI_LOCATION_DATA[addr.province] ? (
-                    <select value={addr.district} onChange={e => handleDistrictChange(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
-                      <option value="">เลือกอำเภอ</option>
-                      {Object.keys(THAI_LOCATION_DATA[addr.province]).map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
+                    <div className="relative">
+                      <select value={addr.district} onChange={e => handleDistrictChange(e.target.value)}
+                        className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                        <option value="">เลือกอำเภอ</option>
+                        {Object.keys(THAI_LOCATION_DATA[addr.province]).map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-[20px]">arrow_drop_down</span>
+                    </div>
                   ) : (
                     <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
                       placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
@@ -449,11 +477,14 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ตำบล / แขวง</label>
                   {addr.province && addr.district && THAI_LOCATION_DATA[addr.province]?.[addr.district] ? (
-                    <select value={addr.subdistrict} onChange={e => handleSubdistrictChange(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
-                      <option value="">เลือกตำบล</option>
-                      {Object.keys(THAI_LOCATION_DATA[addr.province][addr.district]).map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
+                    <div className="relative">
+                      <select value={addr.subdistrict} onChange={e => handleSubdistrictChange(e.target.value)}
+                        className="w-full px-4 py-3 pr-10 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                        <option value="">เลือกตำบล</option>
+                        {Object.keys(THAI_LOCATION_DATA[addr.province][addr.district]).map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-[20px]">arrow_drop_down</span>
+                    </div>
                   ) : (
                     <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
                       placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
