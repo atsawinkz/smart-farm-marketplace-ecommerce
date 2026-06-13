@@ -188,10 +188,12 @@ export default function ProfilePage() {
           </div>
 
           <button 
-            onClick={startEdit}
-            className="bg-white text-primary px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-white/90 transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer"
+            onClick={editing ? cancelEdit : startEdit}
+            className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer ${
+              editing ? 'bg-white/20 text-white hover:bg-white/30 border border-white/30' : 'bg-white text-primary hover:bg-white/90'
+            }`}
           >
-            Edit Profile
+            {editing ? 'Cancel' : 'Edit Profile'}
           </button>
         </div>
 
@@ -236,106 +238,102 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Personal Info Card */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
-          <div className="flex justify-between items-center">
-            <h2 className="font-bold text-lg text-[#1b3322]">ข้อมูลส่วนตัว</h2>
-            {!editing ? (
-              <button onClick={startEdit} className="text-sm font-semibold text-[#2e7d32] hover:underline cursor-pointer">แก้ไข</button>
-            ) : (
-              <div className="flex gap-2">
-                <button onClick={cancelEdit} className="text-sm font-semibold text-gray-400 hover:text-gray-600 cursor-pointer">ยกเลิก</button>
-                <button onClick={saveProfile} disabled={saving} className="text-sm font-semibold text-[#2e7d32] hover:underline disabled:opacity-50 cursor-pointer">
-                  {saving ? 'กำลังบันทึก...' : 'บันทึก'}
-                </button>
+        {editing && (
+          <>
+            {/* Personal Info Card */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4 animate-fade-in">
+              <div className="flex justify-between items-center">
+                <h2 className="font-bold text-lg text-[#1b3322]">ข้อมูลส่วนตัว</h2>
               </div>
-            )}
-          </div>
 
-          {error && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
+              {error && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</label>
-              <input type="text" readOnly={!editing} value={editing ? form.name : user.name}
-                onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล</label>
-              <input type="email" readOnly={!editing} value={editing ? form.email : user.email}
-                onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</label>
-              <input type="text" readOnly={!editing} value={editing ? form.phone : (user.phone || '-')}
-                onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
-            </div>
-          </div>
-        </div>
-
-        {/* Address Card */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
-          <div className="flex justify-between items-center">
-            <h2 className="font-bold text-lg text-[#1b3322]">ที่อยู่จัดส่ง</h2>
-            {!editing ? (
-              <button onClick={startEdit} className="text-sm font-semibold text-[#2e7d32] hover:underline cursor-pointer">แก้ไข</button>
-            ) : (
-              <div className="flex gap-2">
-                <button onClick={cancelEdit} className="text-sm font-semibold text-gray-400 hover:text-gray-600 cursor-pointer">ยกเลิก</button>
-                <button onClick={saveProfile} disabled={saving} className="text-sm font-semibold text-[#2e7d32] hover:underline disabled:opacity-50 cursor-pointer">
-                  {saving ? 'กำลังบันทึก...' : 'บันทึก'}
-                </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</label>
+                  <input type="text" value={form.name}
+                    onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล</label>
+                  <input type="email" value={form.email}
+                    onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</label>
+                  <input type="text" value={form.phone}
+                    onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                </div>
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
-              <textarea
-                rows={2} readOnly={!editing}
-                value={editing ? form.address : (user.address || '')}
-                onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
-                placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
-                className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors resize-none ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+            {/* Address Card */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4 animate-fade-in">
+              <div className="flex justify-between items-center">
+                <h2 className="font-bold text-lg text-[#1b3322]">ที่อยู่จัดส่ง</h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
+                  <textarea
+                    rows={2}
+                    value={form.address}
+                    onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
+                    placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors resize-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
+                  <input type="text" value={form.subdistrict}
+                    onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
+                  <input type="text" value={form.district}
+                    onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
+                  <select value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))}
+                    className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
+                    <option value="">เลือกจังหวัด</option>
+                    {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1">รหัสไปรษณีย์</label>
+                  <input type="text" value={form.postal_code}
+                    onChange={e => setForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
+                    maxLength={5}
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
-              <input type="text" readOnly={!editing} value={editing ? form.subdistrict : (user.subdistrict || '')}
-                onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
-                className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
+
+            {/* Save / Cancel actions */}
+            <div className="flex justify-end gap-3 animate-fade-in">
+              <button 
+                onClick={cancelEdit} 
+                className="px-6 py-2.5 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm transition-all cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+              <button 
+                onClick={saveProfile} 
+                disabled={saving}
+                className="px-6 py-2.5 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 font-semibold text-sm transition-all shadow-sm cursor-pointer"
+              >
+                {saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
+              </button>
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
-              <input type="text" readOnly={!editing} value={editing ? form.district : (user.district || '')}
-                onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
-                className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
-              {editing ? (
-                <select value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))}
-                  className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
-                  <option value="">เลือกจังหวัด</option>
-                  {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-                </select>
-              ) : (
-                <input type="text" readOnly value={user.province || ''}
-                  className="w-full bg-[#f8faf6] border border-gray-100 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none" />
-              )}
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1">รหัสไปรษณีย์</label>
-              <input type="text" readOnly={!editing} value={editing ? form.postal_code : (user.postal_code || '')}
-                onChange={e => setForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
-                maxLength={5}
-                className={`w-full border rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none transition-colors ${editing ? 'bg-white border-gray-300 focus:border-[#2e7d32]' : 'bg-[#f8faf6] border-gray-100'}`} />
-            </div>
-          </div>
-        </div>
+          </>
+        )}
 
         <button onClick={handleLogout} className="self-end border border-red-200 hover:border-red-300 text-red-500 hover:bg-red-50 font-medium py-2.5 px-6 rounded-full flex items-center gap-2 transition-colors cursor-pointer text-sm shadow-sm">
           <span className="material-symbols-outlined text-[18px]">logout</span>
