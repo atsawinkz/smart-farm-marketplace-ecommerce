@@ -282,27 +282,6 @@ export default function ProfilePage() {
                 <h2 className="font-bold text-lg md:text-xl text-[#1b3322] border-b border-gray-100 pb-2">ที่อยู่จัดส่ง</h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
-                    <textarea
-                      rows={2}
-                      value={form.address}
-                      onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
-                      placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors resize-none" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
-                    <input type="text" value={form.subdistrict}
-                      onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
-                    <input type="text" value={form.district}
-                      onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                  </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
                     <select value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))}
@@ -312,11 +291,32 @@ export default function ProfilePage() {
                     </select>
                   </div>
                   <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
+                    <input type="text" value={form.district}
+                      onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
+                    <input type="text" value={form.subdistrict}
+                      onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                  <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1">รหัสไปรษณีย์</label>
                     <input type="text" value={form.postal_code}
                       onChange={e => setForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
                       maxLength={5}
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
+                    <textarea
+                      rows={2}
+                      value={form.address}
+                      onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
+                      placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors resize-none" />
                   </div>
                 </div>
               </div>
