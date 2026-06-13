@@ -69,6 +69,13 @@ export default function LoginPage() {
 
       <main className="flex-grow flex items-center justify-center py-section-gap px-margin-mobile md:px-margin-desktop">
         <div className="bg-surface-container-lowest w-full max-w-[480px] rounded-xl p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-surface-variant relative overflow-hidden">
+          <Link
+            href="/"
+            className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+            title="กลับหน้าหลัก"
+          >
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </Link>
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary-container opacity-5 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-secondary-container opacity-10 rounded-tr-full -ml-20 -mb-20 pointer-events-none"></div>
           
