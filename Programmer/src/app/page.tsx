@@ -302,7 +302,13 @@ export default function HomePage() {
             )}
           </div>
           <button
-            onClick={() => addToCart(product)}
+            onClick={() => {
+              if (!user) {
+                router.push('/login');
+                return;
+              }
+              addToCart(product);
+            }}
             aria-label="เพิ่มลงตะกร้า"
             className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-95 hover:scale-105 transition-all shadow-sm focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
