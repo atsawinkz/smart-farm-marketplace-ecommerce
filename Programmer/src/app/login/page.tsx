@@ -72,7 +72,7 @@ export default function LoginPage() {
               Smartket
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              ยินดีต้อนรับสู่โลกแห่งเกษตรขายส่ง
+              ยินดีต้อนรับ
             </p>
           </div>
 
