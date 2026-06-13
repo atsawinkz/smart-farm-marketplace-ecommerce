@@ -21,6 +21,125 @@ const PROVINCES = [
   'อำนาจเจริญ', 'อุดรธานี', 'อุตรดิตถ์', 'อุทัยธานี', 'อุบลราชธานี'
 ];
 
+const THAI_LOCATION_DATA: {
+  [province: string]: {
+    [district: string]: {
+      [subdistrict: string]: string;
+    };
+  };
+} = {
+  'นครพนม': {
+    'เมืองนครพนม': {
+      'ในเมือง': '48000',
+      'หนองแสง': '48000',
+      'อาจสามารถ': '48000',
+      'นาทราย': '48000',
+      'นาราชควาย': '48000',
+      'กุรุคุ': '48000',
+      'บ้านผึ้ง': '48000',
+      'ท่าค้อ': '48000',
+      'คำเตย': '48000',
+      'โพธิ์ตาก': '48000'
+    },
+    'ธาตุพนม': {
+      'ธาตุพนม': '48110',
+      'ธาตุพนมเหนือ': '48110',
+      'ฝั่งแดง': '48110',
+      'โพนแพง': '48110',
+      'พระกลางทุ่ง': '48110',
+      'นาหนาด': '48110',
+      'แสนพัน': '48110',
+      'ดอนนางหงส์': '48110',
+      'กุดฉิม': '48110'
+    },
+    'ท่าอุเทน': {
+      'ท่าอุเทน': '48120',
+      'โนนตาล': '48120',
+      'ท่าจำปา': '48120',
+      'ไชยบุรี': '48120',
+      'รามราช': '48120',
+      'พนอม': '48120'
+    },
+    'ศรีสงคราม': {
+      'ศรีสงคราม': '48150',
+      'หาดแพง': '48150',
+      'บ้านข่า': '48150',
+      'สามผง': '48150',
+      'ท่าบ่อสงคราม': '48150'
+    },
+    'บ้านแพง': {
+      'บ้านแพง': '48140',
+      'นางัว': '48140',
+      'นาเข': '48140',
+      'หนองแวง': '48140'
+    }
+  },
+  'ขอนแก่น': {
+    'เมืองขอนแก่น': {
+      'ในเมือง': '40000',
+      'เมืองเก่า': '40000',
+      'ศิลา': '40000',
+      'บ้านเป็ด': '40000',
+      'พระลับ': '40000',
+      'บึงเนียม': '40000',
+      'สำราญ': '40000',
+      'โนนท่อน': '40000'
+    },
+    'ชุมแพ': {
+      'ชุมแพ': '40130',
+      'โนนหัน': '40290',
+      'หนองไผ่': '40130',
+      'ขัวเรียง': '40130',
+      'วังหินลาด': '40130'
+    },
+    'กระนวน': {
+      'หนองโก': '40170',
+      'หนองกุงใหญ่': '40170',
+      'ห้วยยาง': '40170',
+      'ดูนสาด': '40170'
+    },
+    'บ้านไผ่': {
+      'ในเมือง': '40110',
+      'บ้านไผ่': '40110',
+      'แคนเหนือ': '40110',
+      'หัวหนอง': '40110'
+    }
+  },
+  'กรุงเทพมหานคร': {
+    'เขตพระนคร': {
+      'พระบรมมหาราชวัง': '10200',
+      'วังบูรพาภิรมย์': '10200',
+      'วัดราชบพิธ': '10200',
+      'สำราญราษฎร์': '10200',
+      'ศาลเจ้าพ่อเสือ': '10200',
+      'บวรนิเวศ': '10200',
+      'ตลาดยอด': '10200',
+      'ชนะสงคราม': '10200',
+      'บ้านพานถม': '10200',
+      'บางขุนพรหม': '10200',
+      'วัดสามพระยา': '10200'
+    },
+    'เขตปทุมวัน': {
+      'รองเมือง': '10330',
+      'วังใหม่': '10330',
+      'ปทุมวัน': '10330',
+      'ลุมพินี': '10330'
+    },
+    'เขตบางรัก': {
+      'มหาพฤฒาราม': '10500',
+      'สีลม': '10500',
+      'สุริยวงศ์': '10500',
+      'บางรัก': '10500',
+      'สี่พระยา': '10500'
+    },
+    'เขตวัฒนา': {
+      'คลองเตยเหนือ': '10110',
+      'คลองตันเหนือ': '10110',
+      'พระโขนงเหนือ': '10110'
+    }
+  }
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { cartItems, clearCheckedItems } = useCart();
@@ -96,6 +215,36 @@ export default function CheckoutPage() {
     const match = fullName.match(/^(.*?)\s*\((.*?)\)$/);
     if (match) return { name: match[1], unit: match[2] };
     return { name: fullName, unit: 'ชิ้น' };
+  };
+
+  const handleProvinceChange = (provinceVal: string) => {
+    setAddressForm(prev => ({
+      ...prev,
+      province: provinceVal,
+      district: '',
+      subdistrict: '',
+      postal_code: ''
+    }));
+  };
+
+  const handleDistrictChange = (districtVal: string) => {
+    setAddressForm(prev => ({
+      ...prev,
+      district: districtVal,
+      subdistrict: '',
+      postal_code: ''
+    }));
+  };
+
+  const handleSubdistrictChange = (subdistrictVal: string) => {
+    setAddressForm(prev => {
+      const pCode = THAI_LOCATION_DATA[prev.province]?.[prev.district]?.[subdistrictVal] || prev.postal_code;
+      return {
+        ...prev,
+        subdistrict: subdistrictVal,
+        postal_code: pCode
+      };
+    });
   };
 
   const handleSaveAddress = async () => {
@@ -278,7 +427,7 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">จังหวัด *</label>
-                  <select value={addr.province} onChange={e => setAddressForm(p => ({ ...p, province: e.target.value }))}
+                  <select value={addr.province} onChange={e => handleProvinceChange(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
                     <option value="">เลือกจังหวัด</option>
                     {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
@@ -286,18 +435,35 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">อำเภอ / เขต *</label>
-                  <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
-                    placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                  {addr.province && THAI_LOCATION_DATA[addr.province] ? (
+                    <select value={addr.district} onChange={e => handleDistrictChange(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                      <option value="">เลือกอำเภอ</option>
+                      {Object.keys(THAI_LOCATION_DATA[addr.province]).map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  ) : (
+                    <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
+                      placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ตำบล / แขวง</label>
-                  <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
-                    placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                  {addr.province && addr.district && THAI_LOCATION_DATA[addr.province]?.[addr.district] ? (
+                    <select value={addr.subdistrict} onChange={e => handleSubdistrictChange(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
+                      <option value="">เลือกตำบล</option>
+                      {Object.keys(THAI_LOCATION_DATA[addr.province][addr.district]).map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  ) : (
+                    <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
+                      placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">รหัสไปรษณีย์</label>
                   <input value={addr.postal_code} onChange={e => setAddressForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
-                    placeholder="รหัสไปรษณีย์" maxLength={5} className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                    placeholder="รหัสไปรษณีย์" maxLength={5} className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-70 disabled:bg-surface-container"
+                    disabled={!!(addr.province && addr.district && addr.subdistrict && THAI_LOCATION_DATA[addr.province]?.[addr.district]?.[addr.subdistrict])} />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ที่อยู่ *</label>
