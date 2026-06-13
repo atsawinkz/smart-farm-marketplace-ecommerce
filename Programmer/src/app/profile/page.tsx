@@ -449,21 +449,6 @@ export default function ProfilePage() {
       </header>
 
       <main className="flex-grow max-w-[1000px] w-full mx-auto px-4 py-8 flex flex-col gap-6">
-        <div className="flex justify-between items-center w-full">
-          <Link href="/" className="flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-            <span>กลับสู่หน้าหลัก</span>
-          </Link>
-          {editing && (
-            <button 
-              onClick={() => setEditing(false)}
-              className="flex items-center gap-2 text-xs font-semibold text-[#1b3322] hover:text-[#1b3322]/80 transition-colors"
-            >
-              <span className="material-symbols-outlined text-[16px]">done</span>
-              <span>เสร็จสิ้นการแก้ไข</span>
-            </button>
-          )}
-        </div>
 
         {/* Green Profile Header Card */}
         <div className="bg-[#224229] rounded-[24px] p-6 md:p-8 flex flex-col sm:flex-row justify-between items-center gap-6 text-white relative overflow-hidden shadow-md">
@@ -484,7 +469,15 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {!editing && (
+          {editing ? (
+            <button 
+              onClick={() => { setEditing(false); setEditingPersonalInfo(false); }}
+              className="bg-white text-[#1b3322] px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-white/90 transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-[18px]">close</span>
+              ยกเลิก
+            </button>
+          ) : (
             <button 
               onClick={() => setEditing(true)}
               className="bg-white text-[#1b3322] px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-white/90 transition-all shadow-md relative z-10 active:scale-95 shrink-0 cursor-pointer flex items-center gap-1.5"
