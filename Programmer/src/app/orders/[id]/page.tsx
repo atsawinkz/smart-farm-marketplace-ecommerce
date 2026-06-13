@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 
 const STATUS_MAP: Record<string, { label: string; color: string; icon: string }> = {
-  pending: { label: 'รอชำระเงิน', color: 'bg-amber-100 text-amber-800', icon: 'hourglass_empty' },
+  pending: { label: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800', icon: 'hourglass_empty' },
   paid: { label: 'ชำระเงินแล้ว', color: 'bg-blue-100 text-blue-800', icon: 'check_circle' },
   shipped: { label: 'จัดส่งแล้ว', color: 'bg-green-100 text-green-800', icon: 'local_shipping' },
   cancelled: { label: 'ยกเลิก', color: 'bg-red-100 text-red-800', icon: 'cancel' },

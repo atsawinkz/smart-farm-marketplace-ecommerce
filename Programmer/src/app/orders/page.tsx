@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  pending: { label: 'รอชำระเงิน', color: 'bg-amber-100 text-amber-800' },
+  pending: { label: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800' },
   paid: { label: 'ชำระเงินแล้ว', color: 'bg-blue-100 text-blue-800' },
   shipped: { label: 'จัดส่งแล้ว', color: 'bg-green-100 text-green-800' },
   cancelled: { label: 'ยกเลิก', color: 'bg-red-100 text-red-800' },
@@ -21,7 +21,7 @@ const PAYMENT_LABELS: Record<string, string> = {
 
 const TABS = [
   { id: 'all', label: 'ทั้งหมด' },
-  { id: 'pending', label: 'รอชำระเงิน' },
+  { id: 'pending', label: 'รอดำเนินการ' },
   { id: 'paid', label: 'ชำระแล้ว' },
   { id: 'shipped', label: 'จัดส่งแล้ว' },
   { id: 'cancelled', label: 'ยกเลิก' },
