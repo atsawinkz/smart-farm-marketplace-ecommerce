@@ -134,6 +134,11 @@ export default function CheckoutPage() {
 
     if (editingAddress) await handleSaveAddress();
 
+    if (pendingOrderParams) {
+      setShowQR(true);
+      return;
+    }
+
     setSubmitError('');
     setIsSubmitting(true);
 
@@ -374,6 +379,8 @@ export default function CheckoutPage() {
               >
                 {isSubmitting ? (
                   <><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> ดำเนินการ...</>
+                ) : pendingOrderParams ? (
+                  <>แสดง QR Code ชำระเงิน <span className="material-symbols-outlined text-[18px]">qr_code</span></>
                 ) : (
                   <>ยืนยันคำสั่งซื้อ <span className="material-symbols-outlined text-[18px]">lock</span></>
                 )}
@@ -383,57 +390,69 @@ export default function CheckoutPage() {
             <p className="text-[12px] text-outline text-center">การชำระเงินของคุณปลอดภัยด้วยการเข้ารหัส SSL</p>
           </div>
 
-          {/* Step 2: Payment QR — shown only after confirming order */}
+          {/* Step 2: Payment QR — shown only after confirming order, as a Pop-up Modal */}
           {showQR && (
-            <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm animate-fade-in">
-              <div className="flex items-center gap-3 mb-6">
-                <span className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">2</span>
-                <h2 className="text-xl font-bold text-primary font-headline-lg">ชำระเงินผ่าน QR Code</h2>
-              </div>
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+              <div className="bg-surface-container-lowest w-full max-w-md p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-2xl relative animate-scale-up flex flex-col gap-6">
+                
+                {/* Close Button */}
+                <button 
+                  onClick={() => setShowQR(false)} 
+                  className="absolute top-4 right-4 text-outline hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-container-high flex items-center justify-center cursor-pointer"
+                  title="ปิด"
+                >
+                  <span className="material-symbols-outlined text-[24px]">close</span>
+                </button>
 
-              <div className="bg-primary/5 border-2 border-primary rounded-2xl p-5">
-                <div className="flex items-center gap-4 mb-4">
-                  <span className="material-symbols-outlined text-3xl text-primary">qr_code_scanner</span>
-                  <div>
-                    <p className="font-bold text-on-surface text-lg">พร้อมเพย์ (PromptPay)</p>
-                    <p className="text-sm text-outline">สแกน QR Code เพื่อชำระเงิน</p>
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">2</span>
+                  <h2 className="text-xl font-bold text-primary font-headline-lg">ชำระเงินผ่าน QR Code</h2>
+                </div>
+
+                <div className="bg-primary/5 border-2 border-primary rounded-2xl p-5">
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="material-symbols-outlined text-3xl text-primary">qr_code_scanner</span>
+                    <div className="text-left">
+                      <p className="font-bold text-on-surface text-lg">พร้อมเพย์ (PromptPay)</p>
+                      <p className="text-sm text-outline">สแกน QR Code เพื่อชำระเงิน</p>
+                    </div>
+                  </div>
+
+                  <div className="text-center flex flex-col items-center">
+                    {!isExpired ? (
+                      <div className="w-48 h-48 bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+                        <img src={`https://promptpay.io/0948713358/${netTotal}.png`} alt="PromptPay QR Code" className="w-full h-full object-contain" />
+                      </div>
+                    ) : (
+                      <div className="w-48 h-48 bg-surface-container rounded-2xl flex flex-col items-center justify-center gap-3 border border-outline-variant/20">
+                        <span className="material-symbols-outlined text-4xl text-outline">qr_code_2_add</span>
+                        <p className="text-error font-semibold text-sm">QR Code หมดอายุแล้ว</p>
+                      </div>
+                    )}
+
+                    {isExpired ? (
+                      <button onClick={refreshQR} className="mt-4 text-sm font-semibold text-primary hover:text-surface-tint underline cursor-pointer">สร้าง QR ใหม่</button>
+                    ) : (
+                      <div className="mt-4 flex items-center justify-center gap-2">
+                        <span className="material-symbols-outlined text-outline text-[18px]">timer</span>
+                        <span className="font-mono font-bold text-on-surface text-lg tracking-wider">{formatTime(timeLeft)}</span>
+                        <span className="text-sm text-outline">น.</span>
+                      </div>
+                    )}
+
+                    <p className="mt-4 font-semibold text-on-surface">ยอดชำระ {Math.round(netTotal)} บาท</p>
+                    <p className="text-sm text-outline mt-1">โอนเข้าหมายเลขโทรศัพท์ 094-871-3358</p>
                   </div>
                 </div>
 
-                <div className="text-center">
-                  {!isExpired ? (
-                    <div className="w-48 h-48 mx-auto bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
-                      <img src={`https://promptpay.io/0948713358/${netTotal}.png`} alt="PromptPay QR Code" className="w-full h-full object-contain" />
-                    </div>
-                  ) : (
-                    <div className="w-48 h-48 mx-auto bg-surface-container rounded-2xl flex flex-col items-center justify-center gap-3 border border-outline-variant/20">
-                      <span className="material-symbols-outlined text-4xl text-outline">qr_code_2_add</span>
-                      <p className="text-error font-semibold text-sm">QR Code หมดอายุแล้ว</p>
-                    </div>
-                  )}
-
-                  {isExpired ? (
-                    <button onClick={refreshQR} className="mt-4 text-sm font-semibold text-primary hover:text-surface-tint underline cursor-pointer">สร้าง QR ใหม่</button>
-                  ) : (
-                    <div className="mt-4 flex items-center justify-center gap-2">
-                      <span className="material-symbols-outlined text-outline text-[18px]">timer</span>
-                      <span className="font-mono font-bold text-on-surface text-lg tracking-wider">{formatTime(timeLeft)}</span>
-                      <span className="text-sm text-outline">น.</span>
-                    </div>
-                  )}
-
-                  <p className="mt-2 font-semibold text-on-surface">ยอดชำระ {Math.round(netTotal)} บาท</p>
-                  <p className="text-sm text-outline mt-1">โอนเข้าหมายเลขโทรศัพท์ 094-871-3358</p>
-                </div>
+                <button
+                  onClick={handleConfirmPayment}
+                  disabled={isExpired}
+                  className="bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none font-label-lg cursor-pointer"
+                >
+                  ฉันชำระเงินแล้ว <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                </button>
               </div>
-
-              <button
-                onClick={handleConfirmPayment}
-                disabled={isExpired}
-                className="mt-6 bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none font-label-lg cursor-pointer"
-              >
-                ฉันชำระเงินแล้ว <span className="material-symbols-outlined text-[18px]">check_circle</span>
-              </button>
             </div>
           )}
 
