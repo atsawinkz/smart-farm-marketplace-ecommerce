@@ -19,24 +19,35 @@ export default function CheckoutPage() {
   const PAYMENT_TIMEOUT = 300;
   const [timeLeft, setTimeLeft] = React.useState(PAYMENT_TIMEOUT);
   const [isExpired, setIsExpired] = React.useState(false);
+  const [isCancelled, setIsCancelled] = React.useState(false);
   const [showQR, setShowQR] = React.useState(false);
   const [pendingOrderParams, setPendingOrderParams] = React.useState<string | null>(null);
+  const pendingOrderId = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     if (!showQR || isExpired) return;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) { clearInterval(timer); setIsExpired(true); return 0; }
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsExpired(true);
+          // Auto-cancel the order when QR expires
+          if (pendingOrderId.current) {
+            fetch('/api/orders', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: pendingOrderId.current, status: 'cancelled' }),
+            }).then(() => setIsCancelled(true)).catch(() => setIsCancelled(true));
+          } else {
+            setIsCancelled(true);
+          }
+          return 0;
+        }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
   }, [showQR, isExpired]);
-
-  const refreshQR = () => {
-    setTimeLeft(PAYMENT_TIMEOUT);
-    setIsExpired(false);
-  };
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -218,6 +229,7 @@ export default function CheckoutPage() {
 
       // Store params then show QR
       const orderData = result.data;
+      pendingOrderId.current = orderData.id;
       const params = new URLSearchParams({
         id: orderData.id.toString(),
         total: netTotal.toString(),
@@ -477,66 +489,99 @@ export default function CheckoutPage() {
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
               <div className="bg-surface-container-lowest w-full max-w-md p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-2xl relative animate-scale-up flex flex-col gap-6">
                 
-                {/* Close Button */}
-                <button 
-                  onClick={() => setShowQR(false)} 
-                  className="absolute top-4 right-4 text-outline hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-container-high flex items-center justify-center cursor-pointer"
-                  title="ปิด"
-                >
-                  <span className="material-symbols-outlined text-[24px]">close</span>
-                </button>
+                {/* Close Button — hidden when cancelled */}
+                {!isCancelled && (
+                  <button 
+                    onClick={() => setShowQR(false)} 
+                    className="absolute top-4 right-4 text-outline hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-container-high flex items-center justify-center cursor-pointer"
+                    title="ปิด"
+                  >
+                    <span className="material-symbols-outlined text-[24px]">close</span>
+                  </button>
+                )}
 
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">2</span>
+                  <span className={`w-8 h-8 rounded-full ${isCancelled ? 'bg-error' : 'bg-primary'} text-on-primary flex items-center justify-center text-sm font-bold`}>2</span>
                   <h2 className="text-xl font-bold text-primary font-headline-lg">ชำระเงินผ่าน QR Code</h2>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-primary rounded-2xl p-5">
-                  <div className="flex items-center gap-4 mb-4">
-                    <span className="material-symbols-outlined text-3xl text-primary">qr_code_scanner</span>
-                    <div className="text-left">
-                      <p className="font-bold text-on-surface text-lg">พร้อมเพย์ (PromptPay)</p>
-                      <p className="text-sm text-outline">สแกน QR Code เพื่อชำระเงิน</p>
+                {/* === CANCELLED STATE === */}
+                {isCancelled ? (
+                  <div className="flex flex-col items-center gap-5 py-4">
+                    <div className="w-24 h-24 rounded-full bg-error/10 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-5xl text-error">cancel</span>
                     </div>
+                    <div className="text-center">
+                      <p className="text-xl font-bold text-error mb-2">คำสั่งซื้อถูกยกเลิกแล้ว</p>
+                      <p className="text-sm text-outline leading-relaxed">
+                        QR Code หมดอายุ ระบบได้ยกเลิกคำสั่งซื้อนี้อัตโนมัติแล้ว<br />
+                        ไม่สามารถสร้าง QR Code ใหม่ได้
+                      </p>
+                    </div>
+                    <div className="w-full bg-error/5 border border-error/20 rounded-2xl p-4 text-center">
+                      <p className="text-sm text-on-surface-variant">หากต้องการสั่งซื้อใหม่ กรุณากลับไปที่ตะกร้าสินค้า</p>
+                    </div>
+                    <a
+                      href="/cart"
+                      className="w-full bg-primary hover:bg-surface-tint text-on-primary py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm font-label-lg text-center"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      กลับไปยังตะกร้าสินค้า
+                    </a>
                   </div>
-
-                  <div className="text-center flex flex-col items-center">
-                    {!isExpired ? (
-                      <div className="w-48 h-48 bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
-                        <img src={`https://promptpay.io/0948713358/${netTotal}.png`} alt="PromptPay QR Code" className="w-full h-full object-contain" />
+                ) : (
+                  /* === NORMAL / ACTIVE QR STATE === */
+                  <>
+                    <div className="bg-primary/5 border-2 border-primary rounded-2xl p-5">
+                      <div className="flex items-center gap-4 mb-4">
+                        <span className="material-symbols-outlined text-3xl text-primary">qr_code_scanner</span>
+                        <div className="text-left">
+                          <p className="font-bold text-on-surface text-lg">พร้อมเพย์ (PromptPay)</p>
+                          <p className="text-sm text-outline">สแกน QR Code เพื่อชำระเงิน</p>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="w-48 h-48 bg-surface-container rounded-2xl flex flex-col items-center justify-center gap-3 border border-outline-variant/20">
-                        <span className="material-symbols-outlined text-4xl text-outline">qr_code_2_add</span>
-                        <p className="text-error font-semibold text-sm">QR Code หมดอายุแล้ว</p>
+
+                      <div className="text-center flex flex-col items-center">
+                        {!isExpired ? (
+                          <div className="w-48 h-48 bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+                            <img src={`https://promptpay.io/0948713358/${netTotal}.png`} alt="PromptPay QR Code" className="w-full h-full object-contain" />
+                          </div>
+                        ) : (
+                          <div className="w-48 h-48 bg-surface-container rounded-2xl flex flex-col items-center justify-center gap-3 border border-error/30">
+                            <span className="material-symbols-outlined text-4xl text-error">timer_off</span>
+                            <p className="text-error font-semibold text-sm">QR Code หมดอายุแล้ว</p>
+                            <p className="text-xs text-outline">กำลังยกเลิกคำสั่งซื้อ...</p>
+                          </div>
+                        )}
+
+                        {!isExpired && (
+                          <div className="mt-4 flex items-center justify-center gap-2">
+                            <span className="material-symbols-outlined text-outline text-[18px]">timer</span>
+                            <span className={`font-mono font-bold text-lg tracking-wider ${timeLeft <= 60 ? 'text-error' : 'text-on-surface'}`}>
+                              {formatTime(timeLeft)}
+                            </span>
+                            <span className="text-sm text-outline">น.</span>
+                          </div>
+                        )}
+
+                        <p className="mt-4 font-semibold text-on-surface">ยอดชำระ {Math.round(netTotal)} บาท</p>
+                        <p className="text-sm text-outline mt-1">โอนเข้าหมายเลขโทรศัพท์ 094-871-3358</p>
                       </div>
-                    )}
+                    </div>
 
-                    {isExpired ? (
-                      <button onClick={refreshQR} className="mt-4 text-sm font-semibold text-primary hover:text-surface-tint underline cursor-pointer">สร้าง QR ใหม่</button>
-                    ) : (
-                      <div className="mt-4 flex items-center justify-center gap-2">
-                        <span className="material-symbols-outlined text-outline text-[18px]">timer</span>
-                        <span className="font-mono font-bold text-on-surface text-lg tracking-wider">{formatTime(timeLeft)}</span>
-                        <span className="text-sm text-outline">น.</span>
-                      </div>
-                    )}
-
-                    <p className="mt-4 font-semibold text-on-surface">ยอดชำระ {Math.round(netTotal)} บาท</p>
-                    <p className="text-sm text-outline mt-1">โอนเข้าหมายเลขโทรศัพท์ 094-871-3358</p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleConfirmPayment}
-                  disabled={isExpired}
-                  className="bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none font-label-lg cursor-pointer"
-                >
-                  ฉันชำระเงินแล้ว <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                </button>
+                    <button
+                      onClick={handleConfirmPayment}
+                      disabled={isExpired}
+                      className="bg-primary hover:bg-surface-tint text-on-primary w-full py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none font-label-lg cursor-pointer"
+                    >
+                      ฉันชำระเงินแล้ว <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
+
 
         </div>
       </main>

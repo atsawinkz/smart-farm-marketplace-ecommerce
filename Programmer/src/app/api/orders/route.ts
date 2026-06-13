@@ -98,11 +98,13 @@ export async function PUT(request: Request) {
     if (!id || !status) {
       return NextResponse.json({ success: false, error: 'กรุณาระบุ id และสถานะ' }, { status: 400 });
     }
-    if (status !== 'completed') {
+    const allowedStatuses = ['completed', 'cancelled'];
+    if (!allowedStatuses.includes(status)) {
       return NextResponse.json({ success: false, error: 'ไม่อนุญาตให้เปลี่ยนสถานะนี้' }, { status: 400 });
     }
     await query('UPDATE orders SET status = ? WHERE order_id = ?', [status, id]);
-    return NextResponse.json({ success: true, message: 'ยืนยันได้รับสินค้าเสร็จสิ้น' });
+    const message = status === 'completed' ? 'ยืนยันได้รับสินค้าเสร็จสิ้น' : 'ยกเลิกคำสั่งซื้อเรียบร้อย';
+    return NextResponse.json({ success: true, message });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: 'ไม่สามารถอัปเดตสถานะออเดอร์ได้', detail: error.message }, { status: 500 });
   }

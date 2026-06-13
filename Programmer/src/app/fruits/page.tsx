@@ -28,6 +28,7 @@ export default function FruitsPage() {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [addedToCartIds, setAddedToCartIds] = useState<Set<number>>(new Set());
   const router = useRouter();
 
   // Load user from localStorage
@@ -150,11 +151,33 @@ export default function FruitsPage() {
                 return;
               }
               addToCart(product);
+              setAddedToCartIds(prev => new Set(prev).add(product.id));
+              setTimeout(() => {
+                setAddedToCartIds(prev => {
+                  const next = new Set(prev);
+                  next.delete(product.id);
+                  return next;
+                });
+              }, 1200);
             }}
             aria-label="เพิ่มลงตะกร้า"
-            className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-95 hover:scale-105 transition-all shadow-sm focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className={`w-10 h-10 rounded-full text-on-primary flex items-center justify-center transition-all duration-300 shadow-sm focus:ring-2 focus:ring-primary focus:ring-offset-2 relative overflow-hidden ${
+              addedToCartIds.has(product.id)
+                ? 'bg-green-500 scale-110 shadow-green-300 shadow-md'
+                : 'bg-primary hover:bg-surface-tint hover:scale-110 active:scale-95'
+            }`}
           >
-            <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+            <span
+              className={`material-symbols-outlined text-[20px] transition-all duration-300 ${
+                addedToCartIds.has(product.id) ? 'scale-125' : ''
+              }`}
+              style={addedToCartIds.has(product.id) ? { animation: 'bounceIn 0.4s ease' } : {}}
+            >
+              {addedToCartIds.has(product.id) ? 'check' : 'add_shopping_cart'}
+            </span>
+            {addedToCartIds.has(product.id) && (
+              <span className="absolute inset-0 rounded-full bg-white/20 animate-ping" />
+            )}
           </button>
         </div>
       </div>
