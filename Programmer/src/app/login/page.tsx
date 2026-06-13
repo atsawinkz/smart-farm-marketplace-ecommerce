@@ -77,7 +77,7 @@ export default function LoginPage() {
               Smartket
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              ยินดีต้อนรับสู่โลกแห่งเกษตรขายส่ง
+              ยินดีต้อนรับ
             </p>
           </div>
 
@@ -150,24 +150,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center pb-stack-sm pt-stack-sm">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  className="rounded border-outline-variant text-primary focus:ring-primary bg-surface-container-lowest w-4 h-4 cursor-pointer"
-                  type="checkbox"
-                  disabled={loading}
-                />
-                <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">
-                  จดจำฉันไว้ในระบบ
-                </span>
-              </label>
-              <Link
-                className="font-label-md text-label-md text-primary hover:underline"
-                href="#"
-              >
-                ลืมรหัสผ่าน?
-              </Link>
-            </div>
 
             <button
               className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group disabled:opacity-50"
