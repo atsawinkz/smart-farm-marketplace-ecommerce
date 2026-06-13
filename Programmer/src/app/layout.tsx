@@ -16,7 +16,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Farm Marketplace - สดใหม่จากฟาร์มถึงโต๊ะคุณ",
+  title: "Smartket - สดใหม่จากฟาร์มถึงโต๊ะคุณ",
   description: "ตลาดออนไลน์สำหรับคนรักสุขภาพ รวบรวมสินค้าเกษตรอินทรีย์คุณภาพสูงจากเกษตรกรไทย จัดส่งรวดเร็วตรงถึงบ้านคุณ",
 };
 
