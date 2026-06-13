@@ -546,7 +546,7 @@ export default function ProfilePage() {
                         onChange={e => setAddressForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
                         maxLength={5}
                         disabled={!!(addressForm.province && addressForm.district && addressForm.subdistrict && THAI_LOCATION_DATA[addressForm.province]?.[addressForm.district]?.[addressForm.subdistrict])}
-                        placeholder="10xxx"
+                        placeholder="รหัสไปรษณีย์"
                         className="w-full border border-[#e2e5e0] bg-[#f0f2ed] rounded-xl py-3 px-4 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors disabled:opacity-70 disabled:bg-gray-100" />
                     </div>
 
@@ -672,7 +672,7 @@ export default function ProfilePage() {
                           onChange={e => setAddressForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
                           maxLength={5}
                           disabled={!!(addressForm.province && addressForm.district && addressForm.subdistrict && THAI_LOCATION_DATA[addressForm.province]?.[addressForm.district]?.[addressForm.subdistrict])}
-                          placeholder="10210"
+                          placeholder="รหัสไปรษณีย์"
                           className="w-full border border-gray-200 bg-[#f8faf6] rounded-xl py-3 px-4 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors disabled:opacity-70 disabled:bg-gray-100" />
                       </div>
 
