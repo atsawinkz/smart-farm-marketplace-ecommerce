@@ -69,7 +69,7 @@ export default function RegisterPage() {
             Smartket
           </h1>
           <p className="font-body-md text-on-surface-variant">
-            สมัครสมาชิกสำหรับผู้ซื้อส่ง
+            สมัครสมาชิก
           </p>
         </div>
 
