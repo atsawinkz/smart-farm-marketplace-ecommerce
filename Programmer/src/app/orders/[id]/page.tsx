@@ -96,7 +96,7 @@ export default function OrderDetailPage() {
       <main className="flex-grow max-w-3xl w-full mx-auto px-margin-mobile md:px-margin-desktop py-8">
         <Link href="/profile" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-surface-tint transition-colors mb-6 w-fit">
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          <span>กลับไปรายการคำสั่งซื้อ</span>
+          <span>กลับไปที่การสั่งซื้อ</span>
         </Link>
 
         <div className="flex flex-col gap-6">
