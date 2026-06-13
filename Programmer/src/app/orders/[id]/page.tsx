@@ -116,7 +116,7 @@ export default function OrderDetailPage() {
             {order.payment_status === 'pending' && order.status === 'pending' && (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
                 <span className="material-symbols-outlined text-amber-600">info</span>
-                <p className="text-sm text-amber-800">รอดำเนินการ หากชำระเงินแล้วโปรดรอระบบยืนยันอัตโนมัติ</p>
+                <p className="text-sm text-amber-800">รอดำเนินการ อยู่ระหว่างรอการชำระเงิน</p>
               </div>
             )}
           </div>
