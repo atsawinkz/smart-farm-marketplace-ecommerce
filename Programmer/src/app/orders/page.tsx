@@ -44,6 +44,12 @@ export default function OrdersPage() {
       const u = JSON.parse(storedUser);
       setUser(u);
       fetchOrders(u.id);
+      
+      const searchParams = new URLSearchParams(window.location.search);
+      const tabParam = searchParams.get('tab');
+      if (tabParam && TABS.some(t => t.id === tabParam)) {
+        setActiveTab(tabParam);
+      }
     } catch { router.push('/login'); }
   }, [router]);
 
