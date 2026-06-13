@@ -146,13 +146,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (!userId) return; // Guest — blocked
     setCartItems((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
-      const newItems = existing
-        ? prev.map((item) =>
-            item.product.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        : [...prev, { product, quantity: 1, checked: true }];
+      if (existing) {
+        // Already at stock limit — do not add more
+        if (existing.quantity >= product.stock_quantity) return prev;
+        const newItems = prev.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+        saveCartToDB(userId, newItems);
+        return newItems;
+      }
+      // New product in cart
+      const newItems = [...prev, { product, quantity: 1, checked: true }];
       saveCartToDB(userId, newItems);
       return newItems;
     });
@@ -172,8 +178,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const userId = currentUserIdRef.current;
     if (quantity < 1 || !userId) return;
     setCartItems((prev) => {
+      const target = prev.find((item) => item.product.id === productId);
+      // Cap at stock_quantity
+      const safeQty = target
+        ? Math.min(quantity, target.product.stock_quantity)
+        : quantity;
       const newItems = prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.product.id === productId ? { ...item, quantity: safeQty } : item
       );
       saveCartToDB(userId, newItems);
       return newItems;

@@ -262,12 +262,15 @@ export default function CartPage() {
                             </span>
                             <button
                               onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 transition-all"
+                              disabled={item.quantity >= item.product.stock_quantity}
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all"
                               aria-label="Increase quantity"
+                              title={item.quantity >= item.product.stock_quantity ? `สินค้าคงเหลือ ${item.product.stock_quantity} ชิ้น` : ''}
                             >
                               <span className="material-symbols-outlined text-[18px]">add</span>
                             </button>
                           </div>
+
 
                           {/* Item Subtotal */}
                           <div className="text-right min-w-[80px]">

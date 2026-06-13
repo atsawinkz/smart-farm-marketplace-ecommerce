@@ -561,7 +561,7 @@ export default function HomePage() {
                     สินค้าแนะนำยอดนิยม
                   </span>
                   <h2 className="text-3xl font-headline-lg text-primary mt-1">
-                    สินค้าขายดียอดนิยม
+                    สินค้ายอดนิยมประจำเดือน
                   </h2>
                   <p className="text-body-lg text-on-surface-variant mt-1">
                     คัดสรรสินค้าที่ลูกค้าชื่นชอบและมียอดสั่งซื้อสูงสุดเป็นพิเศษ
