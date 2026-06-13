@@ -248,78 +248,76 @@ export default function ProfilePage() {
 
         {editing && (
           <>
-            {/* Personal Info Card */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4 animate-fade-in">
-              <div className="flex justify-between items-center">
-                <h2 className="font-bold text-lg text-[#1b3322]">ข้อมูลส่วนตัว</h2>
+            {/* Personal Info & Address Card */}
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm flex flex-col gap-8 animate-fade-in">
+              {/* ข้อมูลส่วนตัว Section */}
+              <div className="flex flex-col gap-4">
+                <h2 className="font-bold text-lg md:text-xl text-[#1b3322] border-b border-gray-100 pb-2">ข้อมูลส่วนตัว</h2>
+                {error && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</label>
+                    <input type="text" value={form.name}
+                      onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล</label>
+                    <input type="email" value={form.email}
+                      onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</label>
+                    <input type="text" value={form.phone}
+                      onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                </div>
               </div>
 
-              {error && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">ชื่อ-นามสกุล</label>
-                  <input type="text" value={form.name}
-                    onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">อีเมล</label>
-                  <input type="email" value={form.email}
-                    onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">เบอร์โทรศัพท์</label>
-                  <input type="text" value={form.phone}
-                    onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                </div>
-              </div>
-            </div>
-
-            {/* Address Card */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4 animate-fade-in">
-              <div className="flex justify-between items-center">
-                <h2 className="font-bold text-lg text-[#1b3322]">ที่อยู่จัดส่ง</h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
-                  <textarea
-                    rows={2}
-                    value={form.address}
-                    onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
-                    placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
-                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors resize-none" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
-                  <input type="text" value={form.subdistrict}
-                    onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
-                  <input type="text" value={form.district}
-                    onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
-                  <select value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))}
-                    className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
-                    <option value="">เลือกจังหวัด</option>
-                    {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1">รหัสไปรษณีย์</label>
-                  <input type="text" value={form.postal_code}
-                    onChange={e => setForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
-                    maxLength={5}
-                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+              {/* ที่อยู่จัดส่ง Section */}
+              <div className="flex flex-col gap-4">
+                <h2 className="font-bold text-lg md:text-xl text-[#1b3322] border-b border-gray-100 pb-2">ที่อยู่จัดส่ง</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">ที่อยู่</label>
+                    <textarea
+                      rows={2}
+                      value={form.address}
+                      onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
+                      placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors resize-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">ตำบล / แขวง</label>
+                    <input type="text" value={form.subdistrict}
+                      onChange={e => setForm(p => ({ ...p, subdistrict: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">อำเภอ / เขต</label>
+                    <input type="text" value={form.district}
+                      onChange={e => setForm(p => ({ ...p, district: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">จังหวัด</label>
+                    <select value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))}
+                      className="w-full bg-white border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] transition-colors appearance-none">
+                      <option value="">เลือกจังหวัด</option>
+                      {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1">รหัสไปรษณีย์</label>
+                    <input type="text" value={form.postal_code}
+                      onChange={e => setForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
+                      maxLength={5}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm text-[#1b3322] outline-none focus:border-[#2e7d32] bg-white transition-colors" />
+                  </div>
                 </div>
               </div>
             </div>
