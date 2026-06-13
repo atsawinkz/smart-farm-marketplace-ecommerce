@@ -112,7 +112,7 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, cartLoading, addToCart } = useCart();
   const [hasScrolled, setHasScrolled] = useState(false);
   const [selectedMainType, setSelectedMainType] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -134,7 +134,8 @@ export default function HomePage() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.reload();
+    setUser(null);
+    router.push('/');
   };
 
   // Sync category filter from URL query parameter

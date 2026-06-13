@@ -11,7 +11,22 @@ export async function GET(request: Request) {
     }
 
     const addresses = await query<any[]>(
-      'SELECT id, user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC, id DESC',
+      `SELECT 
+        address_id AS id, 
+        user_id, 
+        'ที่อยู่จัดส่ง' AS title, 
+        recipient_name AS name, 
+        '' AS email, 
+        address, 
+        subdistrict, 
+        district, 
+        province, 
+        postal_code, 
+        recipient_phone AS phone, 
+        is_default 
+      FROM addresses 
+      WHERE user_id = ? 
+      ORDER BY is_default DESC, address_id DESC`,
       [parseInt(userId)]
     );
 
@@ -25,15 +40,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default } = body;
+    const { user_id, name, address, subdistrict, district, province, postal_code, phone, is_default } = body;
 
-    if (!user_id || !title || !name || !email || !address || !district || !province || !phone) {
+    if (!user_id || !name || !address || !district || !province || !phone) {
       return NextResponse.json({ success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' }, { status: 400 });
     }
 
     // Check limit of 5 addresses
     const countResult = await query<any[]>(
-      'SELECT COUNT(*) as count FROM user_addresses WHERE user_id = ?',
+      'SELECT COUNT(*) as count FROM addresses WHERE user_id = ?',
       [user_id]
     );
     const count = countResult[0]?.count || 0;
@@ -45,29 +60,29 @@ export async function POST(request: Request) {
 
     if (setAsDefault) {
       // Set all other addresses for this user to NOT default
-      await query('UPDATE user_addresses SET is_default = FALSE WHERE user_id = ?', [user_id]);
+      await query('UPDATE addresses SET is_default = FALSE WHERE user_id = ?', [user_id]);
     }
 
     const result = await query<any>(
-      `INSERT INTO user_addresses (user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [user_id, title, name, email, address, subdistrict || '', district, province, postal_code || '', phone, setAsDefault]
+      `INSERT INTO addresses (user_id, recipient_name, recipient_phone, address, subdistrict, district, province, postal_code, is_default)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [user_id, name, phone, address, subdistrict || '', district, province, postal_code || '', setAsDefault]
     );
 
-    // If this is default, also update the main users table for compatibility with any legacy code
+    // If this is default, also update the main users table for compatibility
     if (setAsDefault) {
       await query(
-        `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-        [name, email, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
+        `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+        [name, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
       );
     }
 
     const newAddress = {
       id: result.insertId,
       user_id,
-      title,
+      title: 'ที่อยู่จัดส่ง',
       name,
-      email,
+      email: '',
       address,
       subdistrict,
       district,
@@ -87,7 +102,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, user_id, title, name, email, address, subdistrict, district, province, postal_code, phone, is_default, action } = body;
+    const { id, user_id, name, address, subdistrict, district, province, postal_code, phone, is_default, action } = body;
 
     if (!id || !user_id) {
       return NextResponse.json({ success: false, error: 'ข้อมูลไม่ครบถ้วน' }, { status: 400 });
@@ -95,20 +110,20 @@ export async function PUT(request: Request) {
 
     if (action === 'set_default') {
       // Set all other addresses to false
-      await query('UPDATE user_addresses SET is_default = FALSE WHERE user_id = ?', [user_id]);
+      await query('UPDATE addresses SET is_default = FALSE WHERE user_id = ?', [user_id]);
       // Set this one to true
-      await query('UPDATE user_addresses SET is_default = TRUE WHERE id = ? AND user_id = ?', [id, user_id]);
+      await query('UPDATE addresses SET is_default = TRUE WHERE address_id = ? AND user_id = ?', [id, user_id]);
 
       // Get this address to update users table
       const addrRes = await query<any[]>(
-        'SELECT name, email, address, subdistrict, district, province, postal_code, phone FROM user_addresses WHERE id = ?',
+        'SELECT recipient_name, address, subdistrict, district, province, postal_code, recipient_phone FROM addresses WHERE address_id = ?',
         [id]
       );
       if (addrRes.length > 0) {
         const a = addrRes[0];
         await query(
-          `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-          [a.name, a.email, a.address, a.subdistrict, a.district, a.province, a.postal_code, a.phone, user_id]
+          `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+          [a.recipient_name, a.address, a.subdistrict, a.district, a.province, a.postal_code, a.recipient_phone, user_id]
         );
       }
 
@@ -116,26 +131,26 @@ export async function PUT(request: Request) {
     }
 
     // Normal update
-    if (!title || !name || !email || !address || !district || !province || !phone) {
+    if (!name || !address || !district || !province || !phone) {
       return NextResponse.json({ success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' }, { status: 400 });
     }
 
     await query(
-      `UPDATE user_addresses 
-       SET title = ?, name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ?
-       WHERE id = ? AND user_id = ?`,
-      [title, name, email, address, subdistrict || '', district, province, postal_code || '', phone, id, user_id]
+      `UPDATE addresses 
+       SET recipient_name = ?, recipient_phone = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?
+       WHERE address_id = ? AND user_id = ?`,
+      [name, phone, address, subdistrict || '', district, province, postal_code || '', id, user_id]
     );
 
     // If this address is default, also update the users table
     const checkDefault = await query<any[]>(
-      'SELECT is_default FROM user_addresses WHERE id = ?',
+      'SELECT is_default FROM addresses WHERE address_id = ?',
       [id]
     );
     if (checkDefault[0]?.is_default) {
       await query(
-        `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-        [name, email, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
+        `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+        [name, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
       );
     }
 
@@ -158,34 +173,34 @@ export async function DELETE(request: Request) {
 
     // Check if we are deleting the default address
     const checkDefault = await query<any[]>(
-      'SELECT is_default FROM user_addresses WHERE id = ? AND user_id = ?',
+      'SELECT is_default FROM addresses WHERE address_id = ? AND user_id = ?',
       [parseInt(id), parseInt(userId)]
     );
 
     const wasDefault = checkDefault[0]?.is_default;
 
-    await query('DELETE FROM user_addresses WHERE id = ? AND user_id = ?', [parseInt(id), parseInt(userId)]);
+    await query('DELETE FROM addresses WHERE address_id = ? AND user_id = ?', [parseInt(id), parseInt(userId)]);
 
     if (wasDefault) {
       // Set another address as default
       const remaining = await query<any[]>(
-        'SELECT id, name, email, address, subdistrict, district, province, postal_code, phone FROM user_addresses WHERE user_id = ? ORDER BY id DESC LIMIT 1',
+        'SELECT address_id AS id, recipient_name AS name, address, subdistrict, district, province, postal_code, recipient_phone AS phone FROM addresses WHERE user_id = ? ORDER BY address_id DESC LIMIT 1',
         [parseInt(userId)]
       );
 
       if (remaining.length > 0) {
         const nextDefaultId = remaining[0].id;
-        await query('UPDATE user_addresses SET is_default = TRUE WHERE id = ?', [nextDefaultId]);
+        await query('UPDATE addresses SET is_default = TRUE WHERE address_id = ?', [nextDefaultId]);
 
         const r = remaining[0];
         await query(
-          `UPDATE users SET name = ?, email = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE id = ?`,
-          [r.name, r.email, r.address, r.subdistrict, r.district, r.province, r.postal_code, r.phone, parseInt(userId)]
+          `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+          [r.name, r.address, r.subdistrict, r.district, r.province, r.postal_code, r.phone, parseInt(userId)]
         );
       } else {
         // Clear address in users table
         await query(
-          `UPDATE users SET address = NULL, subdistrict = NULL, district = NULL, province = NULL, postal_code = NULL WHERE id = ?`,
+          `UPDATE users SET address = NULL, subdistrict = NULL, district = NULL, province = NULL, postal_code = NULL WHERE user_id = ?`,
           [parseInt(userId)]
         );
       }

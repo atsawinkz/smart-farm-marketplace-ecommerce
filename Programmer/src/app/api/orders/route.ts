@@ -12,9 +12,9 @@ export async function POST(request: Request) {
     }
 
     const result = await query<any>(
-      `INSERT INTO orders (user_id, total_price, status, payment_method, shipping_address, shipping_phone, payment_status)
-       VALUES (?, ?, 'pending', ?, ?, ?, 'pending')`,
-      [user_id, total_price, payment_method || null, shipping_address || null, shipping_phone || null]
+      `INSERT INTO orders (user_id, total_price, status, shipping_address, shipping_recipient_phone)
+       VALUES (?, ?, 'pending', ?, ?)`,
+      [user_id, total_price, shipping_address || null, shipping_phone || null]
     );
 
     const orderId = result.insertId;
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         id: orderId,
         total_price,
         status: 'pending',
-        payment_method,
+        payment_method: payment_method || 'promptpay',
         payment_status: 'pending',
       }
     });
@@ -66,8 +66,8 @@ export async function GET(request: Request) {
 
   try {
     const orders = await query<any[]>(
-      `SELECT id, user_id, total_price, status, payment_method, payment_status,
-              shipping_address, shipping_phone, created_at
+      `SELECT order_id AS id, user_id, total_price, status, 'promptpay' AS payment_method, 'pending' AS payment_status,
+              shipping_address, shipping_recipient_phone AS shipping_phone, created_at
        FROM orders
        WHERE user_id = ?
        ORDER BY created_at DESC`,
@@ -76,10 +76,10 @@ export async function GET(request: Request) {
 
     for (const order of orders) {
       const details = await query<any[]>(
-        `SELECT od.id, od.product_id, od.quantity, od.price_per_unit, p.name AS product_name, p.image_url
-         FROM order_details od
-         LEFT JOIN products p ON od.product_id = p.id
-         WHERE od.order_id = ?`,
+        `SELECT od.order_detail_id AS id, od.product_id, od.quantity, od.price_per_unit, p.name AS product_name, p.image_url
+          FROM order_details od
+          LEFT JOIN products p ON od.product_id = p.product_id
+          WHERE od.order_id = ?`,
         [order.id]
       );
       order.items = details;

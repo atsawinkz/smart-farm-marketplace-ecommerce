@@ -65,23 +65,23 @@ export async function GET() {
   try {
     const products = await query<any[]>(`
       SELECT 
-        p.id,
+        p.product_id AS id,
         p.category_id,
         p.name,
         p.description,
         p.original_price,
-        p.promo_price,
-        COALESCE(p.promo_price, p.original_price) AS price,
+        NULL AS promo_price,
+        p.original_price AS price,
         p.stock_quantity,
         p.image_url,
-        p.is_best_seller,
+        (CASE WHEN p.total_sale > 5 THEN TRUE ELSE FALSE END) AS is_best_seller,
         p.lot_in_date,
         p.expiry_date,
         c.name AS category_name,
         c.main_type
       FROM products p
-      LEFT JOIN categories c ON p.category_id = c.id
-      ORDER BY p.is_best_seller DESC, p.id ASC
+      LEFT JOIN categories c ON p.category_id = c.category_id
+      ORDER BY p.total_sale DESC, p.product_id ASC
     `);
     
     if (products && products.length > 0) {
@@ -110,8 +110,8 @@ export async function POST(request: Request) {
     }
 
     const result = await query<any>(
-      'INSERT INTO products (name, category_id, description, original_price, promo_price, stock_quantity, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name, category_id, description || null, original_price, promo_price || null, stock_quantity || 0, image_url || null]
+      'INSERT INTO products (name, category_id, description, original_price, stock_quantity, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, category_id, description || null, original_price, stock_quantity || 0, image_url || null]
     );
 
     return NextResponse.json({ success: true, data: { id: result.insertId, ...body } });

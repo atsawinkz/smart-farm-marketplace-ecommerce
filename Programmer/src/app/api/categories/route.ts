@@ -16,7 +16,7 @@ const FALLBACK_CATEGORIES = [
 
 export async function GET() {
   try {
-    const categories = await query<any[]>('SELECT id, name, main_type FROM categories ORDER BY main_type, id');
+    const categories = await query<any[]>('SELECT category_id AS id, name, main_type FROM categories ORDER BY main_type, category_id');
     if (categories && categories.length > 0) {
       return NextResponse.json({ success: true, data: categories, source: 'database' });
     }

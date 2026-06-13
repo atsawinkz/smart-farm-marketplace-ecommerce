@@ -15,12 +15,12 @@ export async function PUT(request: Request) {
     }
 
     await query(
-      `UPDATE users SET name = ?, email = ?, phone = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ? WHERE id = ?`,
+      `UPDATE users SET name = ?, email = ?, phone = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ? WHERE user_id = ?`,
       [name, email, phone || null, address || null, subdistrict || null, district || null, province || null, postal_code || null, id]
     );
 
     const users = await query<any[]>(
-      'SELECT id, username, name, email, phone, role, address, subdistrict, district, province, postal_code FROM users WHERE id = ?',
+      'SELECT user_id AS id, username, name, email, phone, role, address, subdistrict, district, province, postal_code FROM users WHERE user_id = ?',
       [id]
     );
 
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     }
 
     const users = await query<any[]>(
-      'SELECT id, username, name, email, phone, role, address, subdistrict, district, province, postal_code FROM users WHERE id = ?',
+      'SELECT user_id AS id, username, name, email, phone, role, address, subdistrict, district, province, postal_code FROM users WHERE user_id = ?',
       [id]
     );
 

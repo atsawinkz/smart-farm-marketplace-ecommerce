@@ -16,13 +16,26 @@ export async function POST(request: Request) {
 
     // Check if username already exists
     const existingUsers = await query<any[]>(
-      'SELECT id FROM users WHERE username = ? LIMIT 1',
+      'SELECT user_id FROM users WHERE username = ? LIMIT 1',
       [username]
     );
 
     if (existingUsers && existingUsers.length > 0) {
       return NextResponse.json(
         { success: false, error: 'ชื่อผู้ใช้งานนี้มีในระบบแล้ว' },
+        { status: 400 }
+      );
+    }
+
+    // Check if email already exists
+    const existingEmails = await query<any[]>(
+      'SELECT user_id FROM users WHERE email = ? LIMIT 1',
+      [email]
+    );
+
+    if (existingEmails && existingEmails.length > 0) {
+      return NextResponse.json(
+        { success: false, error: 'อีเมลนี้ถูกใช้งานแล้วในระบบ' },
         { status: 400 }
       );
     }

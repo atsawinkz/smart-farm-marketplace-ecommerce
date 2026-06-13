@@ -8,6 +8,7 @@ import { useCart } from '@/lib/CartContext';
 export default function CartPage() {
   const {
     cartItems,
+    cartLoading,
     removeFromCart,
     updateQuantity,
     toggleCheck,
@@ -160,7 +161,26 @@ export default function CartPage() {
               </p>
             </div>
 
-            {cartItems.length === 0 ? (
+            {cartLoading ? (
+              /* Loading skeleton while fetching cart from DB */
+              <div className="flex flex-col gap-4">
+                {[1, 2, 3].map((n) => (
+                  <div
+                    key={n}
+                    className="flex items-center gap-4 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 animate-pulse"
+                  >
+                    <div className="w-5 h-5 rounded bg-surface-container-low flex-shrink-0" />
+                    <div className="w-24 h-24 bg-surface-container-low rounded-xl flex-shrink-0" />
+                    <div className="flex-grow flex flex-col gap-2">
+                      <div className="h-5 bg-surface-container-low rounded w-2/3" />
+                      <div className="h-4 bg-surface-container-low rounded w-1/3" />
+                      <div className="h-4 bg-surface-container-low rounded w-1/4" />
+                    </div>
+                    <div className="w-28 h-10 bg-surface-container-low rounded-full" />
+                  </div>
+                ))}
+              </div>
+            ) : cartItems.length === 0 ? (
               <div className="text-center py-16 bg-surface-container-lowest rounded-3xl border border-outline-variant/20 shadow-sm flex flex-col items-center gap-4">
                 <span className="material-symbols-outlined text-outline text-6xl">
                   shopping_cart_off

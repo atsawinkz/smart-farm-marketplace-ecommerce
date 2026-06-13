@@ -6,10 +6,25 @@ import { query } from '@/lib/db';
 export async function GET() {
   try {
     const products = await query<any[]>(`
-      SELECT p.*, c.name AS category_name, c.main_type
+      SELECT 
+        p.product_id AS id,
+        p.category_id,
+        p.name,
+        p.description,
+        p.original_price,
+        NULL AS promo_price,
+        p.original_price AS price,
+        p.stock_quantity,
+        p.image_url,
+        (CASE WHEN p.total_sale > 5 THEN TRUE ELSE FALSE END) AS is_best_seller,
+        p.total_sale,
+        p.lot_in_date,
+        p.expiry_date,
+        c.name AS category_name,
+        c.main_type
       FROM products p
-      LEFT JOIN categories c ON p.category_id = c.id
-      ORDER BY p.id DESC
+      LEFT JOIN categories c ON p.category_id = c.category_id
+      ORDER BY p.product_id DESC
     `);
     if (products && products.length > 0) {
       return NextResponse.json({ success: true, data: products });
@@ -33,8 +48,6 @@ export async function POST(request: Request) {
     const category_id = parseInt(formData.get('category_id') as string, 10);
     const description = (formData.get('description') as string) || '';
     const original_price = parseInt(formData.get('original_price') as string, 10);
-    const promo_price_str = formData.get('promo_price') as string;
-    const promo_price = promo_price_str ? parseInt(promo_price_str, 10) : null;
     const stock_quantity = parseInt(formData.get('stock_quantity') as string, 10);
     const is_best_seller = formData.get('is_best_seller') === 'on';
 
@@ -69,14 +82,14 @@ export async function POST(request: Request) {
 
     try {
       const result = await query<any>(
-        `INSERT INTO products (name, category_id, description, original_price, promo_price, stock_quantity, image_url, is_best_seller, lot_in_date, expiry_date)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY))`,
-        [name, category_id, description, original_price, promo_price, stock_quantity || 0, image_url || null, is_best_seller ? 1 : 0]
+        `INSERT INTO products (name, category_id, description, original_price, stock_quantity, image_url, total_sale, lot_in_date, expiry_date)
+         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY))`,
+        [name, category_id, description, original_price, stock_quantity || 0, image_url || null, is_best_seller ? 10 : 0]
       );
 
       return NextResponse.json({
         success: true,
-        data: { id: result.insertId, name, category_id, description, original_price, promo_price, stock_quantity, image_url, is_best_seller },
+        data: { id: result.insertId, name, category_id, description, original_price, stock_quantity, image_url, is_best_seller },
         message: 'เพิ่มสินค้าสำเร็จ'
       });
     } catch (dbError: any) {
@@ -98,8 +111,6 @@ export async function PUT(request: Request) {
     const category_id = parseInt(formData.get('category_id') as string, 10);
     const description = (formData.get('description') as string) || '';
     const original_price = parseInt(formData.get('original_price') as string, 10);
-    const promo_price_str = formData.get('promo_price') as string;
-    const promo_price = promo_price_str ? parseInt(promo_price_str, 10) : null;
     const stock_quantity = parseInt(formData.get('stock_quantity') as string, 10);
     const is_best_seller = formData.get('is_best_seller') === 'on';
 
@@ -131,15 +142,15 @@ export async function PUT(request: Request) {
     try {
       if (image_url) {
         await query(
-          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, promo_price=?, stock_quantity=?, image_url=?, is_best_seller=?
-           WHERE id=?`,
-          [name, category_id, description, original_price, promo_price, stock_quantity || 0, image_url, is_best_seller ? 1 : 0, id]
+          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, stock_quantity=?, image_url=?, total_sale=?
+           WHERE product_id=?`,
+          [name, category_id, description, original_price, stock_quantity || 0, image_url, is_best_seller ? 10 : 0, id]
         );
       } else {
         await query(
-          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, promo_price=?, stock_quantity=?, is_best_seller=?
-           WHERE id=?`,
-          [name, category_id, description, original_price, promo_price, stock_quantity || 0, is_best_seller ? 1 : 0, id]
+          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, stock_quantity=?, total_sale=?
+           WHERE product_id=?`,
+          [name, category_id, description, original_price, stock_quantity || 0, is_best_seller ? 10 : 0, id]
         );
       }
 
@@ -161,7 +172,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: 'ไม่พบรหัสสินค้า' }, { status: 400 });
     }
     await query('DELETE FROM order_details WHERE product_id = ?', [id]);
-    await query('DELETE FROM products WHERE id = ?', [id]);
+    await query('DELETE FROM products WHERE product_id = ?', [id]);
     return NextResponse.json({ success: true, message: 'ลบสินค้าสำเร็จ' });
   } catch (error: any) {
     console.error('Delete error:', error.message);

@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       success: true,
       message: 'เข้าสู่ระบบสำเร็จ',
       user: {
-        id: user.id,
+        id: user.user_id,
         username: user.username,
         name: user.name,
         role: user.role,
