@@ -137,7 +137,7 @@ export default function CheckoutPage() {
     setSubmitError('');
     setIsSubmitting(true);
 
-    const fullAddress = `${addr.address}, ต.${addr.subdistrict} อ.${addr.district} จ.${addr.province} ${addr.postal_code}`;
+    const fullAddress = `จ.${addr.province} อ.${addr.district} ต.${addr.subdistrict} ${addr.postal_code} ${addr.address}`;
     const items = checkedItems.map(item => ({
       product_id: item.product.id,
       quantity: item.quantity,
@@ -261,32 +261,16 @@ export default function CheckoutPage() {
             {!editingAddress && user?.address ? (
               <div className="bg-surface-container rounded-2xl p-5 border border-outline-variant/20">
                 <p className="text-sm text-on-surface font-medium leading-relaxed">
-                  {user.address}
-                  {user.subdistrict && ` ต.${user.subdistrict}`}
+                  {user.province && `จ.${user.province}`}
                   {user.district && ` อ.${user.district}`}
-                  {user.province && ` จ.${user.province}`}
+                  {user.subdistrict && ` ต.${user.subdistrict}`}
                   {user.postal_code && ` ${user.postal_code}`}
+                  {user.address && ` ${user.address}`}
                 </p>
                 {user.phone && <p className="text-sm text-outline mt-2">โทร: {user.phone}</p>}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ที่อยู่ *</label>
-                  <textarea value={addr.address} onChange={e => setAddressForm(p => ({ ...p, address: e.target.value }))}
-                    placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
-                    className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none" rows={2} />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ตำบล / แขวง</label>
-                  <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
-                    placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">อำเภอ / เขต *</label>
-                  <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
-                    placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-                </div>
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">จังหวัด *</label>
                   <select value={addr.province} onChange={e => setAddressForm(p => ({ ...p, province: e.target.value }))}
@@ -296,9 +280,25 @@ export default function CheckoutPage() {
                   </select>
                 </div>
                 <div>
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">อำเภอ / เขต *</label>
+                  <input value={addr.district} onChange={e => setAddressForm(p => ({ ...p, district: e.target.value }))}
+                    placeholder="อำเภอ" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ตำบล / แขวง</label>
+                  <input value={addr.subdistrict} onChange={e => setAddressForm(p => ({ ...p, subdistrict: e.target.value }))}
+                    placeholder="ตำบล" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                </div>
+                <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">รหัสไปรษณีย์</label>
                   <input value={addr.postal_code} onChange={e => setAddressForm(p => ({ ...p, postal_code: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
                     placeholder="รหัสไปรษณีย์" maxLength={5} className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ที่อยู่ *</label>
+                  <textarea value={addr.address} onChange={e => setAddressForm(p => ({ ...p, address: e.target.value }))}
+                    placeholder="บ้านเลขที่, หมู่บ้าน, ถนน"
+                    className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none" rows={2} />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">เบอร์โทรศัพท์ *</label>
