@@ -12,8 +12,14 @@ export async function GET() {
         p.name,
         p.description,
         p.original_price,
-        NULL AS promo_price,
-        p.original_price AS price,
+        CASE
+          WHEN DATEDIFF(p.expiry_date, CURDATE()) <= 3 THEN p.original_price
+          ELSE NULL
+        END AS promo_price,
+        CASE
+          WHEN DATEDIFF(p.expiry_date, CURDATE()) <= 3 THEN ROUND(p.original_price * 0.7)
+          ELSE p.original_price
+        END AS price,
         p.stock_quantity,
         p.image_url,
         (CASE WHEN p.total_sale > 5 THEN TRUE ELSE FALSE END) AS is_best_seller,
@@ -50,6 +56,7 @@ export async function POST(request: Request) {
     const original_price = parseInt(formData.get('original_price') as string, 10);
     const stock_quantity = parseInt(formData.get('stock_quantity') as string, 10);
     const is_best_seller = formData.get('is_best_seller') === 'on';
+    const expiry_date = formData.get('expiry_date') as string;
 
     if (!name || !category_id || !original_price) {
       return NextResponse.json({ success: false, error: 'กรุณากรอกชื่อสินค้า หมวดหมู่ และราคา' }, { status: 400 });
@@ -83,8 +90,8 @@ export async function POST(request: Request) {
     try {
       const result = await query<any>(
         `INSERT INTO products (name, category_id, description, original_price, stock_quantity, image_url, total_sale, lot_in_date, expiry_date)
-         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY))`,
-        [name, category_id, description, original_price, stock_quantity || 0, image_url || null, is_best_seller ? 10 : 0]
+         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), ?)`,
+        [name, category_id, description, original_price, stock_quantity || 0, image_url || null, is_best_seller ? 10 : 0, expiry_date || null]
       );
 
       return NextResponse.json({
@@ -113,6 +120,7 @@ export async function PUT(request: Request) {
     const original_price = parseInt(formData.get('original_price') as string, 10);
     const stock_quantity = parseInt(formData.get('stock_quantity') as string, 10);
     const is_best_seller = formData.get('is_best_seller') === 'on';
+    const expiry_date = formData.get('expiry_date') as string;
 
     if (!id || !name || !category_id || !original_price) {
       return NextResponse.json({ success: false, error: 'กรุณากรอกข้อมูลให้ครบถ้วน' }, { status: 400 });
@@ -142,15 +150,15 @@ export async function PUT(request: Request) {
     try {
       if (image_url) {
         await query(
-          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, stock_quantity=?, image_url=?, total_sale=?
+          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, stock_quantity=?, image_url=?, total_sale=?, lot_in_date=CURDATE(), expiry_date=?
            WHERE product_id=?`,
-          [name, category_id, description, original_price, stock_quantity || 0, image_url, is_best_seller ? 10 : 0, id]
+          [name, category_id, description, original_price, stock_quantity || 0, image_url, is_best_seller ? 10 : 0, expiry_date || null, id]
         );
       } else {
         await query(
-          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, stock_quantity=?, total_sale=?
+          `UPDATE products SET name=?, category_id=?, description=?, original_price=?, stock_quantity=?, total_sale=?, lot_in_date=CURDATE(), expiry_date=?
            WHERE product_id=?`,
-          [name, category_id, description, original_price, stock_quantity || 0, is_best_seller ? 10 : 0, id]
+          [name, category_id, description, original_price, stock_quantity || 0, is_best_seller ? 10 : 0, expiry_date || null, id]
         );
       }
 

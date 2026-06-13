@@ -91,3 +91,20 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, data: [] });
   }
 }
+
+export async function PUT(request: Request) {
+  try {
+    const { id, status } = await request.json();
+    if (!id || !status) {
+      return NextResponse.json({ success: false, error: 'กรุณาระบุ id และสถานะ' }, { status: 400 });
+    }
+    if (status !== 'completed') {
+      return NextResponse.json({ success: false, error: 'ไม่อนุญาตให้เปลี่ยนสถานะนี้' }, { status: 400 });
+    }
+    await query('UPDATE orders SET status = ? WHERE order_id = ?', [status, id]);
+    return NextResponse.json({ success: true, message: 'ยืนยันได้รับสินค้าเสร็จสิ้น' });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: 'ไม่สามารถอัปเดตสถานะออเดอร์ได้', detail: error.message }, { status: 500 });
+  }
+}
+

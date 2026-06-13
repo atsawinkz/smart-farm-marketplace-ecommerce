@@ -18,6 +18,7 @@ interface Product {
   is_best_seller?: boolean;
   category_name?: string;
   main_type?: string;
+  total_sale?: number;
 }
 
 const BANNERS = [
@@ -254,7 +255,10 @@ export default function HomePage() {
   });
 
   // Separate lists for Best Sellers and Discounted Products (for Homepage main state)
-  const bestSellerProducts = filteredProducts.filter(p => !!p.is_best_seller);
+  const bestSellerProducts = [...filteredProducts]
+    .filter(p => (p.total_sale || 0) > 0)
+    .sort((a, b) => (b.total_sale || 0) - (a.total_sale || 0))
+    .slice(0, 8);
   const promoProducts = filteredProducts.filter(p => p.promo_price !== null);
 
   const renderProductCard = (product: Product) => (
@@ -262,11 +266,7 @@ export default function HomePage() {
       {/* Card Container */}
       <div className="bg-surface-container-low rounded-xl aspect-square mb-stack-md relative overflow-hidden flex items-center justify-center border border-outline-variant/20 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
         {/* Tags */}
-        {!!product.is_best_seller && (
-          <span className="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
-            ขายดี
-          </span>
-        )}
+
         {product.promo_price != null && (
           <span className="absolute top-3 right-3 bg-error text-on-error text-xs px-2 py-1 rounded-full font-label-md z-10 shadow-sm">
             ลดราคา

@@ -15,6 +15,7 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
   pending: { label: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800' },
   paid: { label: 'ชำระเงินแล้ว', color: 'bg-blue-100 text-blue-800' },
   shipped: { label: 'จัดส่งแล้ว', color: 'bg-green-100 text-green-800' },
+  completed: { label: 'เสร็จสิ้น', color: 'bg-gray-100 text-gray-800' },
   cancelled: { label: 'ยกเลิก', color: 'bg-red-100 text-red-800' },
 };
 
@@ -28,7 +29,6 @@ const PAYMENT_LABELS: Record<string, string> = {
 const TABS = [
   { id: 'all', label: 'ทั้งหมด' },
   { id: 'pending', label: 'รอดำเนินการ' },
-  { id: 'paid', label: 'ชำระแล้ว' },
   { id: 'shipped', label: 'จัดส่งแล้ว' },
   { id: 'cancelled', label: 'ยกเลิก' },
 ];
@@ -94,6 +94,10 @@ export default function ProfilePage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState<number | null>(null);
 
+  // Receipt Confirmation State
+  const [receiptConfirmOpen, setReceiptConfirmOpen] = useState(false);
+  const [orderToConfirm, setOrderToConfirm] = useState<number | null>(null);
+
   const fetchOrders = async (userId: number) => {
     try {
       const res = await fetch(`/api/orders?user_id=${userId}`);
@@ -101,6 +105,36 @@ export default function ProfilePage() {
       if (result.success) setOrders(result.data);
     } catch { /* ignore */ }
     setOrdersLoading(false);
+  };
+
+  const handleConfirmReceipt = (orderId: number) => {
+    setOrderToConfirm(orderId);
+    setReceiptConfirmOpen(true);
+  };
+
+  const handleConfirmReceiptSubmit = async () => {
+    if (!orderToConfirm) return;
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: orderToConfirm, status: 'completed' })
+      });
+      const result = await res.json();
+      if (result.success) {
+        if (user) {
+          fetchOrders(user.id);
+        }
+      } else {
+        alert(result.error || 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+    } finally {
+      setReceiptConfirmOpen(false);
+      setOrderToConfirm(null);
+    }
   };
 
   const fetchAddresses = async (userId: number) => {
@@ -840,7 +874,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Tabs Selector (Icons) */}
-            <div className="grid grid-cols-5 gap-2 md:gap-4 py-4 border-t border-b border-gray-50 mt-2">
+            <div className="grid grid-cols-4 gap-2 md:gap-4 py-4 border-t border-b border-gray-50 mt-2">
               {TABS.map(tab => {
                 const tabCount = orders.filter(o => o.status === tab.id).length;
                 const icon = TAB_ICONS[tab.id];
@@ -913,11 +947,21 @@ export default function ProfilePage() {
                         </div>
                         <div className="md:ml-4 flex items-center gap-4 text-xs text-gray-500">
                           <span>{itemCount} รายการ</span>
-                          <span className="hidden md:inline text-gray-300">|</span>
-                          <span>{PAYMENT_LABELS[order.payment_method] || order.payment_method}</span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
+                        {order.status === 'shipped' && (
+                          <button
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleConfirmReceipt(order.id);
+                            }}
+                            className="bg-[#1b3322] hover:bg-[#1b3322]/90 text-white font-bold px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer whitespace-nowrap shadow-sm hover:scale-105 active:scale-95"
+                          >
+                            ยืนยันได้รับสินค้า
+                          </button>
+                        )}
                         <span className={`text-xs font-bold px-3 py-1 rounded-full ${statusInfo.color}`}>{statusInfo.label}</span>
                         <span className="text-md font-bold text-primary">{price.toFixed(0)} บาท</span>
                         <span className="material-symbols-outlined text-gray-400 text-[20px] group-hover:translate-x-1 transition-transform">chevron_right</span>
@@ -948,6 +992,32 @@ export default function ProfilePage() {
               </button>
               <button
                 onClick={() => { setDeleteConfirmOpen(false); setAddressToDelete(null); }}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-full font-bold text-xs transition-all cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Receipt Confirmation Modal */}
+      {receiptConfirmOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white w-full max-w-sm p-6 rounded-3xl border border-gray-100 shadow-2xl relative animate-scale-up flex flex-col items-center text-center gap-4">
+            <h3 className="text-lg font-bold text-[#1b3322]">ยืนยันการได้รับสินค้า</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              คุณยืนยันว่าได้รับสินค้าสำหรับคำสั่งซื้อ #SF-{orderToConfirm} เรียบร้อยแล้วใช่หรือไม่?
+            </p>
+            <div className="flex gap-3 w-full mt-2">
+              <button
+                onClick={handleConfirmReceiptSubmit}
+                className="flex-1 bg-[#1b3322] hover:bg-[#1b3322]/90 text-white py-2.5 rounded-full font-bold text-xs transition-all shadow-sm cursor-pointer"
+              >
+                ยืนยัน
+              </button>
+              <button
+                onClick={() => { setReceiptConfirmOpen(false); setOrderToConfirm(null); }}
                 className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-full font-bold text-xs transition-all cursor-pointer"
               >
                 ยกเลิก

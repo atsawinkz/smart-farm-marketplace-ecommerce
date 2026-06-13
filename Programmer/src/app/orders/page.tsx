@@ -9,6 +9,7 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
   pending: { label: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800' },
   paid: { label: 'ชำระเงินแล้ว', color: 'bg-blue-100 text-blue-800' },
   shipped: { label: 'จัดส่งแล้ว', color: 'bg-green-100 text-green-800' },
+  completed: { label: 'เสร็จสิ้น', color: 'bg-gray-100 text-gray-800' },
   cancelled: { label: 'ยกเลิก', color: 'bg-red-100 text-red-800' },
 };
 

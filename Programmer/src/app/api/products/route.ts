@@ -70,18 +70,34 @@ export async function GET() {
         p.name,
         p.description,
         p.original_price,
-        NULL AS promo_price,
-        p.original_price AS price,
+        CASE
+          WHEN DATEDIFF(p.expiry_date, CURDATE()) <= 3 THEN p.original_price
+          ELSE NULL
+        END AS promo_price,
+        CASE
+          WHEN DATEDIFF(p.expiry_date, CURDATE()) <= 3 THEN ROUND(p.original_price * 0.7)
+          ELSE p.original_price
+        END AS price,
         p.stock_quantity,
         p.image_url,
-        (CASE WHEN p.total_sale > 5 THEN TRUE ELSE FALSE END) AS is_best_seller,
+        COALESCE(monthly_sales.sales_qty, 0) AS total_sale,
+        (CASE WHEN COALESCE(monthly_sales.sales_qty, 0) > 5 THEN TRUE ELSE FALSE END) AS is_best_seller,
         p.lot_in_date,
         p.expiry_date,
         c.name AS category_name,
         c.main_type
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.category_id
-      ORDER BY p.total_sale DESC, p.product_id ASC
+      LEFT JOIN (
+        SELECT od.product_id, SUM(od.quantity) AS sales_qty
+        FROM order_details od
+        JOIN orders o ON od.order_id = o.order_id
+        WHERE o.status IN ('paid', 'shipped', 'completed')
+          AND YEAR(o.created_at) = YEAR(CURDATE())
+          AND MONTH(o.created_at) = MONTH(CURDATE())
+        GROUP BY od.product_id
+      ) monthly_sales ON p.product_id = monthly_sales.product_id
+      ORDER BY total_sale DESC, p.product_id ASC
     `);
     
     if (products && products.length > 0) {
