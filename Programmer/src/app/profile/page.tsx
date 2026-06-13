@@ -297,7 +297,7 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <span className="font-bold text-2xl truncate">{user.name}</span>
               </div>
-              <span className="text-white/70 text-sm mt-2 font-mono truncate">{user.email}</span>
+              <span className="text-white/70 text-sm mt-2 font-mono truncate">{user.username}</span>
             </div>
           </div>
 
