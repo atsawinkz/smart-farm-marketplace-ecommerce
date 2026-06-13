@@ -37,7 +37,12 @@ export default function LoginPage() {
       } else {
         // Store user state
         localStorage.setItem("user", JSON.stringify(data.user));
-        router.push("/");
+        // Route admin users to admin dashboard, regular users to homepage
+        if (data.user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       }
     } catch (err) {
       console.error("Login client error:", err);
