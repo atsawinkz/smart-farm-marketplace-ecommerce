@@ -152,7 +152,7 @@ export default function LoginPage() {
 
 
             <button
-              className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group disabled:opacity-50"
+              className="w-full max-w-[220px] mx-auto bg-primary text-on-primary py-3 rounded-full font-label-lg text-label-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group disabled:opacity-50 cursor-pointer"
               type="submit"
               disabled={loading}
             >
