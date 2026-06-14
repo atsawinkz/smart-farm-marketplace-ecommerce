@@ -108,6 +108,63 @@ const INITIAL_PRODUCTS: Product[] = [
   }
 ];
 
+// ─── Flying Cart Item Component ───────────────────────────────────────────────
+interface FlyItemProps {
+  item: { id: string; imgSrc: string; startX: number; startY: number; endX: number; endY: number };
+}
+
+function FlyingCartItem({ item }: FlyItemProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const dx = item.endX - item.startX;
+    const dy = item.endY - item.startY;
+    // Arc height: midpoint goes up by 120px relative to the line
+    const midControlX = dx / 2;
+    const midControlY = dy / 2 - 140;
+
+    el.animate(
+      [
+        { transform: 'translate(0px, 0px) scale(1)', opacity: 1 },
+        { transform: `translate(${midControlX}px, ${midControlY}px) scale(0.85)`, opacity: 0.9, offset: 0.5 },
+        { transform: `translate(${dx}px, ${dy}px) scale(0.15)`, opacity: 0 },
+      ],
+      { duration: 800, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' }
+    );
+  }, [item]);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'fixed',
+        left: item.startX - 22,
+        top: item.startY - 22,
+        width: 44,
+        height: 44,
+        borderRadius: '50%',
+        overflow: 'hidden',
+        zIndex: 9999,
+        pointerEvents: 'none',
+        boxShadow: '0 4px 16px rgba(23,52,22,0.35)',
+        border: '2.5px solid #4ade80',
+        background: '#fff',
+      }}
+    >
+      <img
+        src={item.imgSrc}
+        alt=""
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   // Start with empty array — products load from API only (prevents stock bypass via fake placeholder IDs)
@@ -120,8 +177,34 @@ export default function HomePage() {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [user, setUser] = useState<any>(null);
   const [addedToCartIds, setAddedToCartIds] = useState<Set<number>>(new Set());
+  const [flyingItems, setFlyingItems] = useState<Array<{
+    id: string;
+    imgSrc: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+  }>>([]);
   const slideInterval = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
+
+  const triggerFlyToCart = (product: Product, e: React.MouseEvent) => {
+    const btnEl = e.currentTarget as HTMLElement;
+    const btnRect = btnEl.getBoundingClientRect();
+    const cartEl = document.getElementById('header-cart-icon');
+    if (!cartEl) return;
+    const cartRect = cartEl.getBoundingClientRect();
+    const flyId = `fly-${Date.now()}-${product.id}`;
+    setFlyingItems(prev => [...prev, {
+      id: flyId,
+      imgSrc: product.image_url,
+      startX: btnRect.left + btnRect.width / 2,
+      startY: btnRect.top + btnRect.height / 2,
+      endX: cartRect.left + cartRect.width / 2,
+      endY: cartRect.top + cartRect.height / 2,
+    }]);
+    setTimeout(() => setFlyingItems(prev => prev.filter(i => i.id !== flyId)), 900);
+  };
 
   // Load user from localStorage
   useEffect(() => {
@@ -305,12 +388,13 @@ export default function HomePage() {
             )}
           </div>
           <button
-            onClick={() => {
+            onClick={(e) => {
               if (!user) {
                 router.push('/login');
                 return;
               }
               addToCart(product);
+              triggerFlyToCart(product, e);
               setAddedToCartIds(prev => new Set(prev).add(product.id));
               setTimeout(() => {
                 setAddedToCartIds(prev => {
@@ -346,6 +430,11 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col font-body-md text-body-md bg-surface text-on-surface">
+      {/* Flying cart items — rendered in a fixed layer above everything */}
+      {flyingItems.map(item => (
+        <FlyingCartItem key={item.id} item={item} />
+      ))}
+
       {/* TopNavBar */}
       <header
         className={`sticky top-0 z-50 w-full bg-primary/95 dark:bg-primary-container/95 backdrop-blur-md transition-all duration-300 ${
@@ -408,7 +497,7 @@ export default function HomePage() {
             </div>
 
             {user && (
-              <Link href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
+              <Link id="header-cart-icon" href="/cart" className="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center relative">
                 <span className="material-symbols-outlined" data-icon="shopping_cart">
                   shopping_cart
                 </span>

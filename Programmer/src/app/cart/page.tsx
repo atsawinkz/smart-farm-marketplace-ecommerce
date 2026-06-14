@@ -50,6 +50,8 @@ export default function CartPage() {
 
   // Load user from localStorage
   const [user, setUser] = React.useState<any>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null);
+  const confirmDeleteProduct = cartItems.find(i => i.product.id === confirmDeleteId)?.product;
   React.useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
@@ -283,7 +285,7 @@ export default function CartPage() {
 
                       {/* Remove Button */}
                       <button
-                        onClick={() => removeFromCart(item.product.id)}
+                        onClick={() => setConfirmDeleteId(item.product.id)}
                         className="text-outline hover:text-error transition-colors p-2 rounded-full hover:bg-error-container/20 flex-shrink-0"
                         aria-label="Remove item"
                       >
@@ -350,6 +352,50 @@ export default function CartPage() {
 
         </div>
       </main>
+      {/* ── Delete Confirmation Modal ─────────────────────────────── */}
+      {confirmDeleteId !== null && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div
+            className="bg-surface-container-lowest w-full max-w-sm rounded-3xl border border-outline-variant/20 shadow-2xl p-7 flex flex-col gap-5"
+            style={{ animation: 'scaleUp 0.2s ease' }}
+          >
+            {/* Icon */}
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-3xl text-error">delete</span>
+              </div>
+              <h2 className="text-lg font-bold text-on-surface">ลบสินค้าออกจากตะกร้า?</h2>
+              {confirmDeleteProduct && (
+                <p className="text-sm text-outline leading-relaxed">
+                  คุณต้องการลบ
+                  <span className="font-semibold text-on-surface"> &ldquo;{confirmDeleteProduct.name}&rdquo; </span>
+                  ออกจากตะกร้าสินค้าใช่หรือไม่?
+                </p>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 mt-1">
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="flex-1 border border-outline-variant/40 text-on-surface-variant py-3 rounded-full font-semibold hover:bg-surface-container-low transition-all cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={() => {
+                  if (confirmDeleteId !== null) removeFromCart(confirmDeleteId);
+                  setConfirmDeleteId(null);
+                }}
+                className="flex-1 bg-error text-on-error py-3 rounded-full font-semibold hover:bg-error/90 transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">delete</span>
+                ลบสินค้า
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -24,8 +24,21 @@ export default function CheckoutPage() {
   const [pendingOrderParams, setPendingOrderParams] = React.useState<string | null>(null);
   const pendingOrderId = React.useRef<number | null>(null);
 
+  const clearCheckedItemsRef = React.useRef(clearCheckedItems);
+  clearCheckedItemsRef.current = clearCheckedItems;
+
+  // Clear cart items ONLY when the user actually leaves the checkout page
+  // and an order has already been created
   React.useEffect(() => {
-    if (!showQR || isExpired) return;
+    return () => {
+      if (pendingOrderId.current !== null) {
+        clearCheckedItemsRef.current();
+      }
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!pendingOrderParams || isExpired) return;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -47,7 +60,14 @@ export default function CheckoutPage() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [showQR, isExpired]);
+  }, [pendingOrderParams, isExpired]);
+
+  // When order is cancelled (timer ran out while modal was closed), reopen modal to show cancelled state
+  React.useEffect(() => {
+    if (isCancelled) {
+      setShowQR(true);
+    }
+  }, [isCancelled]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -62,7 +82,7 @@ export default function CheckoutPage() {
   const [savingAddress, setSavingAddress] = React.useState(false);
   const [editingAddress, setEditingAddress] = React.useState(false);
   const [addressForm, setAddressForm] = React.useState({
-    address: '', subdistrict: '', district: '', province: '', postal_code: '', phone: ''
+    name: '', address: '', subdistrict: '', district: '', province: '', postal_code: '', phone: ''
   });
 
   React.useEffect(() => {
@@ -74,6 +94,7 @@ export default function CheckoutPage() {
       
       // Populate from localStorage first
       setAddressForm({
+        name: u.name || '',
         address: u.address || '',
         subdistrict: u.subdistrict || '',
         district: u.district || '',
@@ -85,7 +106,7 @@ export default function CheckoutPage() {
         setEditingAddress(true);
       }
 
-      // Fetch latest profile from database
+      // Fetch latest profile and addresses
       fetch(`/api/auth/profile?id=${u.id}`)
         .then(res => res.json())
         .then(result => {
@@ -93,19 +114,40 @@ export default function CheckoutPage() {
             const latestUser = result.data;
             localStorage.setItem('user', JSON.stringify(latestUser));
             setUser(latestUser);
-            setAddressForm({
-              address: latestUser.address || '',
-              subdistrict: latestUser.subdistrict || '',
-              district: latestUser.district || '',
-              province: latestUser.province || '',
-              postal_code: latestUser.postal_code || '',
-              phone: latestUser.phone || '',
-            });
-            if (latestUser.address) {
-              setEditingAddress(false);
-            } else {
-              setEditingAddress(true);
-            }
+            
+            // Now fetch addresses to get the correct recipient name
+            fetch(`/api/auth/addresses?user_id=${u.id}`)
+              .then(aRes => aRes.json())
+              .then(aResult => {
+                if (aResult.success && aResult.data && aResult.data.length > 0) {
+                  const defAddr = aResult.data.find((a: any) => a.is_default) || aResult.data[0];
+                  setAddressForm({
+                    name: defAddr.name || latestUser.name,
+                    address: defAddr.address || '',
+                    subdistrict: defAddr.subdistrict || '',
+                    district: defAddr.district || '',
+                    province: defAddr.province || '',
+                    postal_code: defAddr.postal_code || '',
+                    phone: defAddr.phone || '',
+                  });
+                  setEditingAddress(false);
+                } else {
+                  setAddressForm({
+                    name: latestUser.name || '',
+                    address: latestUser.address || '',
+                    subdistrict: latestUser.subdistrict || '',
+                    district: latestUser.district || '',
+                    province: latestUser.province || '',
+                    postal_code: latestUser.postal_code || '',
+                    phone: latestUser.phone || '',
+                  });
+                  if (latestUser.address) {
+                    setEditingAddress(false);
+                  } else {
+                    setEditingAddress(true);
+                  }
+                }
+              });
           }
         })
         .catch(err => console.error('Error fetching profile:', err));
@@ -162,15 +204,17 @@ export default function CheckoutPage() {
     if (!user) return;
     setSavingAddress(true);
     try {
-      const res = await fetch('/api/auth/profile', {
-        method: 'PUT',
+      // Also save to addresses table so the recipient name is preserved
+      const res = await fetch('/api/auth/addresses', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: user.id, name: user.name, email: user.email,
+          user_id: user.id, name: addressForm.name || user.name,
           phone: addressForm.phone || user.phone,
           address: addressForm.address, subdistrict: addressForm.subdistrict,
           district: addressForm.district, province: addressForm.province,
           postal_code: addressForm.postal_code,
+          is_default: true
         }),
       });
       const result = await res.json();
@@ -185,9 +229,8 @@ export default function CheckoutPage() {
     if (!user) { router.push('/login'); return; }
 
     // Use addressForm when form is visible (editing mode OR user has no saved address yet)
-    const hasStoredAddress = !editingAddress && user?.address;
-    const addr = hasStoredAddress ? user : addressForm;
-    if (!addr.address || !addr.district || !addr.province || !addr.phone) {
+    const addr = !editingAddress ? addressForm : addressForm;
+    if (!addr.name || !addr.address || !addr.district || !addr.province || !addr.phone) {
       setSubmitError('กรุณากรอกที่อยู่จัดส่งและเบอร์โทรศัพท์ให้ครบถ้วน');
       return;
     }
@@ -202,7 +245,7 @@ export default function CheckoutPage() {
     setSubmitError('');
     setIsSubmitting(true);
 
-    const fullAddress = `จ.${addr.province} อ.${addr.district} ต.${addr.subdistrict} ${addr.postal_code} ${addr.address}`;
+    const fullAddress = `ชื่อผู้รับ: ${addr.name} | จ.${addr.province} อ.${addr.district} ต.${addr.subdistrict} ${addr.postal_code} ${addr.address}`;
     const items = checkedItems.map(item => ({
       product_id: item.product.id,
       quantity: item.quantity,
@@ -319,24 +362,31 @@ export default function CheckoutPage() {
                 !editingAddress ? (
                   <button onClick={() => setEditingAddress(true)} className="text-sm font-semibold text-primary hover:text-surface-tint transition-colors cursor-pointer">แก้ไข</button>
                 ) : (
-                  <button onClick={() => { setEditingAddress(false); if (user) setAddressForm({ address: user.address||'', subdistrict: user.subdistrict||'', district: user.district||'', province: user.province||'', postal_code: user.postal_code||'', phone: user.phone||'' }); }} className="text-sm font-semibold text-outline hover:text-primary transition-colors cursor-pointer">ยกเลิก</button>
+                  <button onClick={() => { setEditingAddress(false); }} className="text-sm font-semibold text-outline hover:text-primary transition-colors cursor-pointer">ยกเลิก</button>
                 )
               )}
             </div>
 
             {!editingAddress && user?.address ? (
               <div className="bg-surface-container rounded-2xl p-5 border border-outline-variant/20">
+                <p className="text-sm text-on-surface font-bold mb-2">{addressForm.name}</p>
                 <p className="text-sm text-on-surface font-medium leading-relaxed">
-                  {user.province && `จ.${user.province}`}
-                  {user.district && ` อ.${user.district}`}
-                  {user.subdistrict && ` ต.${user.subdistrict}`}
-                  {user.postal_code && ` ${user.postal_code}`}
-                  {user.address && ` ${user.address}`}
+                  {addressForm.province && `จ.${addressForm.province}`}
+                  {addressForm.district && ` อ.${addressForm.district}`}
+                  {addressForm.subdistrict && ` ต.${addressForm.subdistrict}`}
+                  {addressForm.postal_code && ` ${addressForm.postal_code}`}
+                  {addressForm.address && ` ${addressForm.address}`}
                 </p>
-                {user.phone && <p className="text-sm text-outline mt-2">โทร: {user.phone}</p>}
+                {addressForm.phone && <p className="text-sm text-outline mt-2">โทร: {addressForm.phone}</p>}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">ชื่อผู้รับ *</label>
+                  <input value={addr.name} onChange={e => setAddressForm(p => ({ ...p, name: e.target.value }))}
+                    disabled={!editingAddress}
+                    placeholder="ชื่อผู้รับสินค้า" className="w-full px-4 py-3 rounded-xl border border-outline-variant/40 bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-70 disabled:bg-surface-container" />
+                </div>
                 <div>
                   <label className="block text-sm font-semibold text-on-surface-variant mb-1.5">จังหวัด *</label>
                   <div className="relative">
@@ -406,7 +456,7 @@ export default function CheckoutPage() {
                 </div>
                 {editingAddress && (
                   <div className="md:col-span-2 flex gap-3">
-                    <button onClick={() => { setEditingAddress(false); if (user) setAddressForm({ address: user.address||'', subdistrict: user.subdistrict||'', district: user.district||'', province: user.province||'', postal_code: user.postal_code||'', phone: user.phone||'' }); }}
+                    <button onClick={() => { setEditingAddress(false); if (user) setAddressForm({ name: user.name||'', address: user.address||'', subdistrict: user.subdistrict||'', district: user.district||'', province: user.province||'', postal_code: user.postal_code||'', phone: user.phone||'' }); }}
                       className="flex-1 border border-outline-variant/40 text-on-surface-variant py-3 rounded-full font-semibold hover:bg-surface-container-low transition-all cursor-pointer">ยกเลิก</button>
                     <button onClick={handleSaveAddress} disabled={savingAddress || !addr.address || !addr.district || !addr.province}
                       className="flex-1 bg-primary text-on-primary py-3 rounded-full font-semibold hover:bg-surface-tint transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer">
@@ -544,7 +594,7 @@ export default function CheckoutPage() {
                       <div className="text-center flex flex-col items-center">
                         {!isExpired ? (
                           <div className="w-48 h-48 bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
-                            <img src={`https://promptpay.io/0948713358/${netTotal}.png`} alt="PromptPay QR Code" className="w-full h-full object-contain" />
+                            <img src="/qr/IMG_5100.JPG" alt="PromptPay QR Code" className="w-full h-full object-contain" />
                           </div>
                         ) : (
                           <div className="w-48 h-48 bg-surface-container rounded-2xl flex flex-col items-center justify-center gap-3 border border-error/30">

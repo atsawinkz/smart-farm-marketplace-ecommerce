@@ -72,8 +72,8 @@ export async function POST(request: Request) {
     // If this is default, also update the main users table for compatibility
     if (setAsDefault) {
       await query(
-        `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
-        [name, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
+        `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+        [address, subdistrict || '', district, province, postal_code || '', phone, user_id]
       );
     }
 
@@ -122,8 +122,8 @@ export async function PUT(request: Request) {
       if (addrRes.length > 0) {
         const a = addrRes[0];
         await query(
-          `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
-          [a.recipient_name, a.address, a.subdistrict, a.district, a.province, a.postal_code, a.recipient_phone, user_id]
+          `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+          [a.address, a.subdistrict, a.district, a.province, a.postal_code, a.recipient_phone, user_id]
         );
       }
 
@@ -150,8 +150,8 @@ export async function PUT(request: Request) {
     // If this address is default, also update the users table
     if (is_default) {
       await query(
-        `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
-        [name, address, subdistrict || '', district, province, postal_code || '', phone, user_id]
+        `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+        [address, subdistrict || '', district, province, postal_code || '', phone, user_id]
       );
     }
 
@@ -195,8 +195,8 @@ export async function DELETE(request: Request) {
 
         const r = remaining[0];
         await query(
-          `UPDATE users SET name = ?, address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
-          [r.name, r.address, r.subdistrict, r.district, r.province, r.postal_code, r.phone, parseInt(userId)]
+          `UPDATE users SET address = ?, subdistrict = ?, district = ?, province = ?, postal_code = ?, phone = ? WHERE user_id = ?`,
+          [r.address, r.subdistrict, r.district, r.province, r.postal_code, r.phone, parseInt(userId)]
         );
       } else {
         // Clear address in users table

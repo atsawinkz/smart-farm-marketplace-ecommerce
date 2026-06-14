@@ -28,6 +28,50 @@ export default function OrderDetailPage() {
   const [order, setOrder] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
 
+  // Timer states
+  const PAYMENT_TIMEOUT = 300;
+  const [timeLeft, setTimeLeft] = React.useState<number | null>(null);
+  const [isExpired, setIsExpired] = React.useState(false);
+  const [isCancelled, setIsCancelled] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!order || order.payment_status !== 'pending' || order.status !== 'pending' || order.payment_method !== 'promptpay') return;
+
+    const createdAt = new Date(order.created_at).getTime();
+
+    const updateTimer = () => {
+      const elapsed = Math.floor((Date.now() - createdAt) / 1000);
+      const remaining = Math.max(0, PAYMENT_TIMEOUT - elapsed);
+      setTimeLeft(remaining);
+
+      if (remaining === 0 && !isExpired) {
+        setIsExpired(true);
+        if (!isCancelled) {
+          fetch('/api/orders', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: order.id, status: 'cancelled' }),
+          })
+            .then(() => {
+              setIsCancelled(true);
+              setOrder((prev: any) => ({ ...prev, status: 'cancelled' }));
+            })
+            .catch(() => setIsCancelled(true));
+        }
+      }
+    };
+
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  }, [order, isExpired, isCancelled]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   React.useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) { router.push('/login'); return; }
@@ -121,6 +165,43 @@ export default function OrderDetailPage() {
               </div>
             )}
           </div>
+
+          {/* Payment QR for Pending PromptPay */}
+          {order.payment_method === 'promptpay' && order.status === 'pending' && order.payment_status === 'pending' && timeLeft !== null && (
+            <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm flex flex-col items-center">
+              <div className="flex items-center gap-3 mb-6 w-full justify-center">
+                <span className="material-symbols-outlined text-3xl text-primary">qr_code_scanner</span>
+                <div className="text-left">
+                  <p className="font-bold text-primary text-lg font-headline-md">ชำระเงินผ่านพร้อมเพย์</p>
+                  <p className="text-sm text-outline">สแกน QR Code เพื่อยืนยันคำสั่งซื้อ</p>
+                </div>
+              </div>
+
+              {!isExpired ? (
+                <div className="w-56 h-56 bg-white rounded-2xl p-3 shadow-sm flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+                  <img src="/qr/IMG_5100.JPG" alt="PromptPay QR Code" className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="w-56 h-56 bg-surface-container rounded-2xl flex flex-col items-center justify-center gap-3 border border-error/30">
+                  <span className="material-symbols-outlined text-5xl text-error">timer_off</span>
+                  <p className="text-error font-bold text-lg">หมดเวลาชำระเงิน</p>
+                  <p className="text-sm text-outline text-center px-4">คำสั่งซื้อนี้ถูกยกเลิกเนื่องจากไม่ได้ชำระเงินในเวลาที่กำหนด</p>
+                </div>
+              )}
+
+              {!isExpired && (
+                <div className="mt-6 flex flex-col items-center gap-2">
+                  <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+                    <span className="material-symbols-outlined text-primary text-[20px]">timer</span>
+                    <span className={`font-mono font-bold text-xl tracking-wider ${timeLeft <= 60 ? 'text-error animate-pulse' : 'text-primary'}`}>
+                      {formatTime(timeLeft)}
+                    </span>
+                  </div>
+                  <p className="mt-2 font-bold text-on-surface text-lg">ยอดชำระ {Math.round(parseFloat(order.total_price))} บาท</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Items */}
           <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/20 shadow-sm">
